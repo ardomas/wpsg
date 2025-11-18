@@ -32,6 +32,21 @@ class WPSG_Locales_Base {
         // This class can be extended later if needed.
     }
 
+    public static function get_locale_config( $locale = null ) {
+        if ( ! $locale ) {
+            $locale = 'id'; // default, atau bisa dari get_locale, dst
+        }
+        $file = WPSG_DIR . 'includes/tools/locales/locales.json';
+        if ( ! file_exists( $file ) ) return [];
+        $locales = json_decode( file_get_contents( $file ), true );
+        return $locales[ $locale ] ?? $locales['en'];
+    }
+
+    public static function get_config_value( $key, $locale = null, $default = '' ) {
+        $config = self::get_locale_config( $locale );
+        return isset( $config[ $key ] ) ? $config[ $key ] : $default;
+    }
+
     /**
      * Return the default locale slug for formatting.
      * Could be extended to retrieve from settings.

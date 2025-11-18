@@ -8,10 +8,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Locales module loader for WPSG
  */
 
-// Require class files
-require_once WPSG_DIR . 'includes/tools/locales/class-locale-base.php';
-require_once WPSG_DIR . 'includes/tools/locales/class-locale-date.php';
-require_once WPSG_DIR . 'includes/tools/locales/class-locale-currency.php';
+// List of required classes for the locales tool.
+$locales_class_files = [
+    WPSG_DIR . 'includes/tools/locales/class-locale-base.php',
+    WPSG_DIR . 'includes/tools/locales/class-locale-date.php',
+    WPSG_DIR . 'includes/tools/locales/class-locale-currency.php'
+];
+
+foreach( $locales_class_files as $item_file ){
+    if ( file_exists( $item_file ) ) {
+        require_once $item_file;
+    }
+}
 
 // Initialize module
 add_action( 'plugins_loaded', function() {
