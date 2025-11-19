@@ -14,7 +14,7 @@ if ( ! defined('ABSPATH') ) exit;
         <!-- Quick links / Dashboard cards -->
         <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/profile'); ?>">
             <h3>Profile</h3>
-            <p>Manage website profile.</p>
+            <p>Manage web rofile.</p>
         </a>
 
         <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/articles'); ?>">

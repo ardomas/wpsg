@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WPSG — Wonder Pieces Simple Gear
+ * Plugin Name: WPSG — Wonder Pieces in Simple Gear
  * Plugin URI:  https://ardomas.com/
  * Description: Modular utility plugin containing small tools for WordPress. Developed by Sam & Gepeto.
  * Version:     0.1.0

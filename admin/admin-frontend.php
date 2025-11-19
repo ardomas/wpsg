@@ -8,9 +8,11 @@ class WPSG_Admin_Frontend {
     private static $instance = null;
 
     private function __construct() {
-        // if (!has_action('admin_menu', array($this, 'register_admin_menu'))) {
-        //     add_action('admin_menu', array($this, 'register_admin_menu'));
-        // }
+        // Register admin menu
+        // add_action('admin_menu', [$this, 'register_admin_menu']);
+
+        // Enqueue scripts/styles untuk admin page WPSG
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
     }
 
     public static function get_instance() {
@@ -22,14 +24,37 @@ class WPSG_Admin_Frontend {
 
     public function register_admin_menu() {
         add_menu_page(
-            'WPSG Dashboard',        // Page title
-            'WPSG Admin',            // Menu title
-            'manage_options',        // Capability
-            'wpsg-admin',            // Menu slug
-            array($this, 'load_admin_page'), // Callback
+            'WPSG Dashboard',          // Page title
+            'WPSG Admin',              // Menu title
+            'manage_options',          // Capability
+            'wpsg-admin',              // Menu slug
+            [$this, 'load_admin_page'],// Callback
             'dashicons-admin-generic', // Icon
-            3                        // Position
+            3                          // Position
         );
+    }
+
+    public function enqueue_admin_assets($hook) {
+        if (strpos($hook, 'wpsg-admin') !== false) {
+            // WP Editor & Media
+            wp_enqueue_editor();
+            wp_enqueue_media();
+
+            // CSS & JS custom
+            wp_enqueue_script(
+                'wpsg-profile-js',
+                plugin_dir_url(__FILE__) . 'views/profile.js',
+                ['jquery', 'wp-mediaelement', 'wp-editor'],
+                '1.0',
+                true
+            );
+            wp_enqueue_style(
+                'wpsg-admin-css',
+                plugin_dir_url(__FILE__) . 'views/profile.css',
+                [],
+                '1.0'
+            );
+        }
     }
 
     public function load_admin_page() {
@@ -40,10 +65,10 @@ class WPSG_Admin_Frontend {
             case 'profile':
                 $GLOBALS['wpsg_view_file'] = plugin_dir_path(__FILE__) . 'views/profile.php';
                 break;
+
             case 'dashboard':
             default:
                 $GLOBALS['wpsg_view_file'] = plugin_dir_path(__FILE__) . 'views/dashboard.php';
-                $GLOBALS['wpsg_view_file'] = null;
         }
 
         require_once plugin_dir_path(__FILE__) . 'views/layout.php';
