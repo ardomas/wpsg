@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.wpsg-admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.wpsg-sidebar {
+    width: 240px;
+    background: #222;
+    color: #eee;
+    padding: 20px;
+}
+
+.wpsg-sidebar .brand {
+    margin-bottom: 20px;
+}
+
+.wpsg-sidebar a {
+    color: #ccc;
+    text-decoration: none;
+    display: block;
+    padding: 8px 0;
+}
+
+.wpsg-sidebar a:hover {
+    color: #fff;
+}
+
+.wpsg-content {
+    flex: 1;
+    padding: 30px;
+}

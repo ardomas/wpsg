@@ -18,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Load Required Classes
  * ------------------------------------------------------------
  */
-require_once __DIR__ . '/includes/tools/locales/class-locale-base.php';
-require_once __DIR__ . '/includes/tools/locales/class-locale-date.php';
-require_once __DIR__ . '/includes/tools/locales/class-currency.php';
+// require_once __DIR__ . '/includes/tools/locales/class-locale-base.php';
+// require_once __DIR__ . '/includes/tools/locales/class-locale-date.php';
+// require_once __DIR__ . '/includes/tools/locales/class-currency.php';
 
 
 /**

@@ -1,0 +1,21 @@
+.wpsg-frontend-admin {
+    padding: 20px;
+    background: #f9f9f9;
+}
+
+.wpsg-admin-menu a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #0073aa;
+}
+
+.wpsg-admin-menu a:hover {
+    text-decoration: underline;
+}
+
+.wpsg-admin-content {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
