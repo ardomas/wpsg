@@ -12,27 +12,27 @@ if ( ! defined('ABSPATH') ) exit;
     <div class="wpsg-cards" style="text-align: center;">
 
         <!-- Quick links / Dashboard cards -->
-        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/articles'); ?>">
-            <h3>Articles</h3>
-            <p>Manage all articles.</p>
-        </a>
-
-        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/announcement'); ?>">
-            <h3>Announcements</h3>
-            <p>Manage all announcements.</p>
-        </a>
-
-        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/profile'); ?>">
+        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/profile'); ?>">
             <h3>Profile</h3>
             <p>Manage website profile.</p>
         </a>
 
-        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/social-media'); ?>">
+        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/articles'); ?>">
+            <h3>Articles</h3>
+            <p>Manage all articles.</p>
+        </a>
+
+        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/announcement'); ?>">
+            <h3>Announcements</h3>
+            <p>Manage all announcements.</p>
+        </a>
+
+        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/social-media'); ?>">
             <h3>Social Media</h3>
             <p>Integrate with social media accounts.</p>
         </a>
 
-        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/membership'); ?>">
+        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/membership'); ?>">
             <h3>Membership</h3>
             <p>Manage membership data.</p>
         </a>

@@ -129,9 +129,9 @@ function wpsg_active($key) {
         <!-- dynamic menu -->
         <div class="wpsg-group-menu">
 
+            <div class="wpsg-item-menu"><a href="/wpsg-admin/profile"<?= wpsg_active('profile') ?>>Profile</a></div>
             <div class="wpsg-item-menu"><a href="/wpsg-admin/articles"<?= wpsg_active('articles') ?>>Articles</a></div>
             <div class="wpsg-item-menu"><a href="/wpsg-admin/announcement"<?= wpsg_active('announcement') ?>>Announcement</a></div>
-            <div class="wpsg-item-menu"><a href="/wpsg-admin/profile"<?= wpsg_active('profile') ?>>Profile</a></div>
             <div class="wpsg-item-menu"><a href="/wpsg-admin/social-media"<?= wpsg_active('social-media') ?>>Social Media</a></div>
             <div class="wpsg-item-menu"><a href="/wpsg-admin/membership"<?= wpsg_active('membership') ?>>Membership</a></div>
 
