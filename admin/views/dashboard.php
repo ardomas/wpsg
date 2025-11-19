@@ -9,32 +9,34 @@ if ( ! defined('ABSPATH') ) exit;
 
     <p>Selamat datang di panel administrasi WPSG.</p>
 
-    <div class="wpsg-cards">
+    <div class="wpsg-cards" style="text-align: center;">
 
-        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/articles'); ?>">
+        <!-- Quick links / Dashboard cards -->
+        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/articles'); ?>">
             <h3>Articles</h3>
-            <p>Kelola artikel.</p>
+            <p>Manage all articles.</p>
         </a>
 
-        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/annuoncement'); ?>">
-            <h3>Announcement</h3>
-            <p>Kelola pengumuman.</p>
+        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/announcement'); ?>">
+            <h3>Announcements</h3>
+            <p>Manage all announcements.</p>
         </a>
 
-        <a class="wpsg-card" href="<?php echo admin_url('../wpsg-admin/profile'); ?>">
+        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/profile'); ?>">
             <h3>Profile</h3>
-            <p>Edit profil situs.</p>
+            <p>Manage website profile.</p>
         </a>
 
-        <a class="wpsg-card" href="#">
+        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/social-media'); ?>">
             <h3>Social Media</h3>
-            <p>Integrasi akun sosial.</p>
+            <p>Integrate with social media accounts.</p>
         </a>
 
-        <a class="wpsg-card" href="#">
+        <a class="wpsg-card" href="<?php echo admin_url('wpsg-admin/membership'); ?>">
             <h3>Membership</h3>
-            <p>Kelola keanggotaan.</p>
+            <p>Manage membership data.</p>
         </a>
+
 
     </div>
 </div>
