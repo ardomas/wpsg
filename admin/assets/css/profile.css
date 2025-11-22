@@ -1,0 +1,53 @@
+/* Profile layout (keeps consistent with sidebar.css) */
+.wpsg-profile-wrapper { display:flex; gap:20px; align-items:flex-start; }
+.wpsg-profile-left { flex: 3; }
+.wpsg-profile-right { flex: 1.1; }
+
+/* SIDEBAR */
+#wpsg-sidebar {
+    width: 160px;
+    min-height: 100vh;
+    position: fixed;
+    top: 32px; /* untuk top admin bar WP */
+    left: 0;
+    z-index: 9999;
+}
+
+/* KONTEN UTAMA */
+#wpsg-content {
+    margin-left: 60px; 
+    /* menyesuaikan lebar sidebar */
+    padding: 30px;
+    width: calc(100% - 160px); /* ini kuncinya */
+    box-sizing: border-box;
+    /* overflow-x: hidden; */
+}
+
+/* Cards */
+.wpsg-card { background: #fff; border:1px solid #e1e1e1; padding:18px; border-radius:6px; margin-bottom:18px; box-shadow: none; }
+.wpsg-card-title { font-size:16px; margin:0 0 12px; }
+
+/* Fields */
+.wpsg-field { margin-bottom:12px; }
+.wpsg-field label { display:block; font-weight:600; margin-bottom:6px; }
+.wpsg-field input.regular-text, .wpsg-field textarea { width:100%; padding:8px; border:1px solid #ccd0d4; border-radius:4px; }
+
+/* Two-column rows */
+.wpsg-row { display:flex; gap:12px; }
+.wpsg-col-2 { flex:1; }
+.wpsg-col-3 { flex:1; }
+
+/* Logo preview */
+.wpsg-logo-preview { text-align:center; padding:18px; background:#f7f7f7; border-radius:6px; border:1px dashed #ddd; margin-bottom:12px; }
+.wpsg-logo-preview img { max-width:100%; max-height:120px; object-fit:contain; }
+
+/* Social rows / repeaters */
+.wpsg-social-row, .wpsg-repeat-item { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.wpsg-social-row select { width:35%; }
+.wpsg-social-row input { flex:1; }
+
+/* repeat item remove link */
+.wpsg-remove-item { margin-left:8px; color:#d33; text-decoration:none; }
+
+/* small helpers */
+.description { color:#666; margin-top:4px; }

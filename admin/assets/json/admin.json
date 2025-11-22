@@ -1,0 +1,197 @@
+{
+    "sidebar-menu": {
+        "wp-admin": {
+            "title": "WP Admin",
+            "icon": "dashicons-wordpress",
+            "path": null,
+            "module_class": null,
+            "description": "Back to WP-Admin",
+            "dashboard-view": false
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "icon": "dashicons-layout",
+            "path": "admin/modules/class-dashboard.php",
+            "module_class": "WPSG_Dashboard",
+            "description": "This Page",
+            "dashboard-view": false
+        },
+        "profile": {
+            "title": "Profile",
+            "icon": "dashicons-index-card",
+            "path": "modules/profile.php",
+            "module_class": "WPSG_Profile",
+            "submenu": "profile-menu",
+            "description": "Manage Profile Data",
+            "dashboard-view": true
+        },
+        "social-media": {
+            "title": "Social Media",
+            "icon": "dashicons-smiley",
+            "path": "modules/social-media.php",
+            "module_class": "WPSG_SocialMedia",
+            "description": "Integrate with Social Media",
+            "dashboard-view": true
+        },
+        "articles": {
+            "title": "Articles",
+            "icon": "dashicons-welcome-write-blog",
+            "path": "modules/articles.php",
+            "module_class": "WPSG_Articles",
+            "description": "Manage all articles",
+            "dashboard-view": true
+        },
+        "announcement": {
+            "title": "Announcements",
+            "icon": "dashicons-megaphone",
+            "path": "modules/announcements.php",
+            "module_class": "WPSG_Announcements",
+            "description": "Manage all announcements",
+            "dashboard-view": true
+        },
+        "membership": {
+            "title": "Membership",
+            "icon": "dashicons-groups",
+            "path": "modules/membership.php",
+            "module_class": "WPSG_Membership",
+            "description": "Manage membership data",
+            "dashboard-view": true
+        },
+        "settings": {
+            "title": "Settings",
+            "icon": "dashicons-admin-generic",
+            "path": "modules/settings.php",
+            "submenu": "settings-menu",
+            "module_class": "WPSG_Settings",
+            "description": "Configure default site/organization settings",
+            "dashboard-view": true
+        }
+    },
+
+    "profile-menu": {
+        "identity": {
+            "title": "Identity",
+            "icon": "dashicons-index-card",
+            "path": "modules/profile/identity.php",
+            "module_class": "WPSG_ProfileIdentity",
+            "description": "Centralized settings for your organization's identity, address, branding, and more."
+        },
+        "address": {
+            "title": "Address",
+            "icon": "dashicons-location-alt",
+            "path": "modules/profile/address.php",
+            "module_class": "WPSG_ProfileAddress",
+            "description": "Manage your organization's physical and mailing addresses."
+        },
+        "contact": {
+            "title": "Contact",
+            "icon": "dashicons-email",
+            "path": "modules/profile/contact.php",
+            "module_class": "WPSG_ProfileContact",
+            "description": "Update your organization's contact information, including phone numbers and email addresses."
+        },
+        "social": {
+            "title": "Social",
+            "icon": "dashicons-share",
+            "path": "modules/profile/social.php",
+            "module_class": "WPSG_ProfileSocial",
+            "description": "Link your organization's social media profiles and manage social sharing settings."
+        },
+        "values": {
+            "title": "Values",
+            "icon": "dashicons-heart",
+            "path": "modules/profile/values.php",
+            "module_class": "WPSG_ProfileValues",
+            "description": "Define and manage your organization's core values and mission statement."
+        },
+        "branding": {
+            "title": "Branding",
+            "icon": "dashicons-art",
+            "path": "modules/profile/branding.php",
+            "module_class": "WPSG_ProfileBranding",
+            "description": "Customize your organization's branding elements, including logos, colors, and themes."
+        },
+        "preferences": {
+            "title": "Preferences",
+            "icon": "dashicons-admin-generic",
+            "path": "modules/profile/preferences.php",
+            "module_class": "WPSG_ProfilePreferences",
+            "description": "Set your organization's preferences for notifications, privacy, and other settings."
+        }
+    },
+
+    "settings-menu": {
+        "general": {
+            "title": "General",
+            "icon": "dashicons-admin-settings",
+            "path": "modules/settings/general.php",
+            "module_class": "WPSG_SettingsGeneral",
+            "description": "General plugin settings"
+        },
+        "platform-private": {
+            "title": "Private Media Platforms",
+            "icon": "dashicons-shield",
+            "path": "modules/settings/platform-private.php",
+            "module_class": "WPSG_SettingsPlatformPrivate",
+            "description": "Customize Private Social Media Platform settings"
+        },
+        "platform-public": {
+            "title": "Public Media Platforms",
+            "icon": "dashicons-admin-site",
+            "path": "modules/settings/platform-public.php",
+            "module_class": "WPSG_SettingsPlatformPublic",
+            "description": "Customize Public Social Media Platform settings"
+        },
+        "business-type": {
+            "title": "Business Types",
+            "icon": "dashicons-businessman",
+            "path": "modules/settings/business-types.php",
+            "module_class": "WPSG_SettingsBusinessTypes",
+            "description": "Manage Business Types settings"
+        }
+    },
+
+    "platform-private-default": {
+        "whatsapp": {
+            "name": "WhatsApp",
+            "pattern": "https://wa.me/{number}",
+            "key": "",
+            "active": 1,
+            "url": "https://www.whatsapp.com/",
+            "description": "Private messaging via WhatsApp"
+        },
+        "telegram": {
+            "name": "Telegram",
+            "pattern": "https://t.me/{username}",
+            "key": "",
+            "active": 1,
+            "url": "https://telegram.org/",
+            "description": "Private messaging via Telegram"
+        },
+        "line": {
+            "name": "Line",
+            "pattern": "https://line.me/ti/p/{id}",
+            "key": "",
+            "active": 1,
+            "url": "https://line.me/",
+            "description": "Private messaging via Line"
+        },
+        "kakaotalk": {
+            "name": "KakaoTalk",
+            "pattern": "kakao://{id}",
+            "key": "",
+            "active": 1,
+            "url": "https://www.kakaocorp.com/service/KakaoTalk",
+            "description": "Private messaging via KakaoTalk"
+        },
+        "messenger": {
+            "name": "Facebook Messenger",
+            "pattern": "https://m.me/{username}",
+            "key": "",
+            "active": 1,
+            "url": "https://www.messenger.com/",
+            "description": "Private messaging via Facebook Messenger"
+        }
+    }
+
+}

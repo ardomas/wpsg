@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Path ke layout
-$layout = __DIR__ . '/views/layout.php';
+$layout = __DIR__ . '/views/sidebar.php';
 
 if (file_exists($layout)) {
     require $layout;

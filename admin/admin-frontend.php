@@ -1,79 +1,212 @@
 <?php
 // admin/admin-frontend.php
 
-if ( ! defined('ABSPATH') ) exit;
+if (!defined('ABSPATH')) exit;
 
-class WPSG_Admin_Frontend {
+class WPSG_AdminFrontend {
 
     private static $instance = null;
+    private static $admin_data = [];
 
     private function __construct() {
-        // Register admin menu
-        // add_action('admin_menu', [$this, 'register_admin_menu']);
+        // Load Admin Default Data
+        self::load_admin_default_data();
 
-        // Enqueue scripts/styles untuk admin page WPSG
+        // REGISTER MENU
+        add_action('admin_menu', [$this, 'register_admin_menu']);
+
+        // ENQUEUE GLOBAL ADMIN ASSETS
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
     }
 
     public static function get_instance() {
-        if ( self::$instance === null ) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
+    private function load_admin_default_data() {
+        $json = plugin_dir_path(__FILE__) . 'assets/json/admin.json';
+        if (!file_exists($json)) {
+            return [];
+        }
+        self::$admin_data = json_decode(file_get_contents($json), true);
+        return self::$admin_data;
+    }
+
+    public function get_admin_data() {
+        return self::$admin_data;
+    }
+
+    public function get_admin_data_by_key($key) {
+        return self::$admin_data[$key] ?? null;
+    }
+
+    /**
+     * REGISTER ADMIN MENU
+     */
     public function register_admin_menu() {
         add_menu_page(
-            'WPSG Dashboard',          // Page title
-            'WPSG Admin',              // Menu title
-            'manage_options',          // Capability
-            'wpsg-admin',              // Menu slug
-            [$this, 'load_admin_page'],// Callback
-            'dashicons-admin-generic', // Icon
-            3                          // Position
+            'WPSG Dashboard',
+            'WPSG Admin',
+            'manage_options',
+            'wpsg-admin',
+            [$this, 'load_admin_page'],
+            'dashicons-admin-generic',
+            3
         );
     }
 
+    /**
+     * ENQUEUE GLOBAL ADMIN ASSETS
+     */
     public function enqueue_admin_assets($hook) {
-        if (strpos($hook, 'wpsg-admin') !== false) {
-            // WP Editor & Media
-            wp_enqueue_editor();
-            wp_enqueue_media();
-
-            // CSS & JS custom
-            wp_enqueue_script(
-                'wpsg-profile-js',
-                plugin_dir_url(__FILE__) . 'views/profile.js',
-                ['jquery', 'wp-mediaelement', 'wp-editor'],
-                '1.0',
-                true
-            );
-            wp_enqueue_style(
-                'wpsg-admin-css',
-                plugin_dir_url(__FILE__) . 'views/profile.css',
-                [],
-                '1.0'
-            );
+        // Pastikan hanya untuk halaman WPSG
+        if ($hook !== 'toplevel_page_wpsg-admin' && strpos($hook, 'wpsg-admin') === false) {
+            return;
         }
+
+        // Load WP core admin styles
+        wp_enqueue_style('dashicons');
+        wp_enqueue_style('wp-admin');
+        wp_enqueue_style('admin-menu');
+        wp_enqueue_style('admin-bar');
+        wp_enqueue_style('common');
+        wp_enqueue_style('forms');
+
+        // WP editor + media
+        wp_enqueue_editor();
+        wp_enqueue_media();
+
+        wp_enqueue_style('wpsg-core-layout', plugin_dir_url(__FILE__) . 'assets/css/core-layout.css', [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-sidebar'    , plugin_dir_url(__FILE__) . 'assets/css/sidebar.css'    , [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-content'    , plugin_dir_url(__FILE__) . 'assets/css/content.css'    , [], WPSG_VERSION);
+
+        require_once WPSG_DIR . 'admin/modules/class-dashboard.php';
+        add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
+
     }
 
+    /**
+     * LOAD ADMIN PAGE — hanya router / loader
+     */
     public function load_admin_page() {
-        $page = $_GET['subpage'] ?? 'dashboard';
+        $page = $_GET['page'] ?? 'wpsg-admin';
+        $view = $_GET['view'] ?? 'dashboard';
+        $tab  = $_GET['tab' ] ?? '';
         $GLOBALS['wpsg_current_page'] = $page;
+        $GLOBALS['wpsg_current_view'] = $view;
 
-        switch ($page) {
-            case 'profile':
-                $GLOBALS['wpsg_view_file'] = plugin_dir_path(__FILE__) . 'views/profile.php';
-                break;
+        $sidebar_menu = self::get_admin_data_by_key('sidebar-menu');
+        ?>
 
-            case 'dashboard':
-            default:
-                $GLOBALS['wpsg_view_file'] = plugin_dir_path(__FILE__) . 'views/dashboard.php';
-        }
+        <!-- ========================================================= -->
+        <!--   WPSG ADMIN LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)      -->
+        <!-- ========================================================= -->
+        <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
 
-        require_once plugin_dir_path(__FILE__) . 'views/layout.php';
+            <!-- ===================== -->
+            <!--       SIDEBAR         -->
+            <!-- ===================== -->
+            <?php
+            require plugin_dir_path(__FILE__) . 'views/sidebar.php';
+            ?>
+
+            <!-- ===================== -->
+            <!--      MAIN CONTENT     -->
+            <!-- ===================== -->
+            <div id="wpsg-admin-main" style="flex:1; padding:20px;">
+
+                <div class="wrap">
+                    <?php
+                    if (isset($sidebar_menu[$view]['module_class'])) {
+                        if( isset( $sidebar_menu[$view]['path'] ) ){
+                            if( $tab!='' ){
+
+                                $submenu = $sidebar_menu[$view]['submenu'] ?? '';
+
+                                $sidetab_menu = WPSG_AdminData::get( $submenu, []);
+/*
+                                    ?><strong><?php 
+                                    print_r( $sidetab_menu );
+                                    echo '<br/>';
+                                    print_r( $sidetab_menu[$tab] );
+                                    echo '<br/>';
+                                    print_r( $sidetab_menu[$tab]['path'] );
+                                    die('test dulu ya');
+                                    ?></strong><?php
+*/
+                                if( file_exists( WPSG_DIR . $sidetab_menu[$tab]['path'] ) ){
+
+                                    require_once WPSG_DIR . $sidetab_menu[$tab]['path'];
+                                    $class_name = $sidetab_menu[$tab]['module_class'];
+                                    // print_r( $class_name );
+
+                                    if( class_exists( $class_name ) ){
+                                        $module = new $class_name();
+                                        $module->render();
+                                    } else {
+                                        echo '<h2>Tab Module class not found: ' . esc_html( $class_name ) . '</h2>';
+                                    }                                   
+                                } else {
+                                    echo '<h2>Tab Module file not found: ' . esc_html( WPSG_DIR . $sidetab_menu[$tab]['path'] ) . '</h2>';
+                                    return;
+                                }
+
+                            } else {
+
+                                if( $view=='settings'  ){
+                                    // Pastikan hanya main site yang bisa mengakses
+                                    if (!is_main_site()) {
+                                        wp_die('You do not have permission to access this page.');
+                                    }
+
+                                    // Pastikan user minimal admin
+                                    if (!current_user_can('manage_options')) {
+                                        wp_die('You do not have sufficient permissions to access this page.');
+                                    }
+                                }
+
+                                if( file_exists( WPSG_DIR . $sidebar_menu[$view]['path'] ) ){
+                                    // die( WPSG_DIR . $sidebar_menu[$view]['path'] );
+                                    require_once WPSG_DIR . $sidebar_menu[$view]['path'];
+
+                                    $class_name = $sidebar_menu[$view]['module_class'];
+                                    // die( $class_name );
+
+                                    if (class_exists($class_name)) {
+                                        $module = new $class_name();
+                                        $module->render();
+                                    } else {
+                                        echo '<h2>Module class not found: ' . esc_html($class_name) . '</h2>';
+                                    }
+
+                                } else {
+                                    echo '<h2>Module file not found for view: ' . esc_html($view) . '</h2>';
+                                    return;                                
+                                }
+                            }
+
+                        } else {
+                            echo '<h2>Module path not defined for view: ' . esc_html($view) . '</h2>';
+                            return;
+                        }
+
+                    } else {
+                        echo '<h2>404: View Not Found</h2>';
+                    }
+                    ?>
+                </div>
+
+            </div> <!-- /#wpsg-admin-main -->
+
+        </div> <!-- /#wpsg-admin-container -->
+
+        <?php
     }
+
 }
 
-// Inisialisasi hanya sekali
-WPSG_Admin_Frontend::get_instance();
+// INITIALIZE
+WPSG_AdminFrontend::get_instance();

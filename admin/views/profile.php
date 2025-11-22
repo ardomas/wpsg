@@ -2,120 +2,333 @@
 // admin/views/profile.php
 if (!defined('ABSPATH')) exit;
 
-// Ambil data profile
-$profile_data = get_option('wpsg_profile_data', [
-    'logo' => '',
-    'name' => '',
+// load existing profile option (single option)
+$profile = get_option('wpsg_organization_profile', []);
+
+// default fields
+$defaults = [
+    'full_name' => '',
     'short_name' => '',
-    'types' => [],
-    'slogan' => '',
+    'tagline' => '',
     'description' => '',
-    'history' => '',
-    'vision' => '',
-    'mission' => '',
-    'goal' => '',
-    'address' => '',
-    'city' => '',
-    'country' => '',
-    'postcode' => '',
+    'founded_year' => '',
     'phone' => '',
     'email' => '',
-    'map' => '',
-]);
+    'website' => '',
+    'address' => '',
+    'city' => '',
+    'province' => '',
+    'country' => '',
+    'postal_code' => '',
+    'map_link' => '',
+    'logo_id' => get_theme_mod('custom_logo') ? get_theme_mod('custom_logo') : '',
+    'socials' => [],
+    'history' => '',
+    'vision' => '',
+    'missions' => [],
+    'goals' => [],
+];
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wpsg_profile_nonce']) && wp_verify_nonce($_POST['wpsg_profile_nonce'], 'wpsg_save_profile')) {
-    $profile_data['name'] = sanitize_text_field($_POST['name']);
-    $profile_data['short_name'] = sanitize_text_field($_POST['short_name']);
-    $profile_data['slogan'] = sanitize_text_field($_POST['slogan']);
-    $profile_data['types'] = isset($_POST['types']) ? array_map('sanitize_text_field', $_POST['types']) : [];
+$profile = wp_parse_args($profile, $defaults);
 
-    $profile_data['address'] = sanitize_text_field($_POST['address']);
-    $profile_data['city'] = sanitize_text_field($_POST['city']);
-    $profile_data['country'] = sanitize_text_field($_POST['country']);
-    $profile_data['postcode'] = sanitize_text_field($_POST['postcode']);
-    $profile_data['phone'] = sanitize_text_field($_POST['phone']);
-    $profile_data['email'] = sanitize_email($_POST['email']);
-    $profile_data['map'] = sanitize_text_field($_POST['map']);
-
-    $profile_data['description'] = wp_kses_post($_POST['description']);
-    $profile_data['history'] = wp_kses_post($_POST['history']);
-    $profile_data['vision'] = wp_kses_post($_POST['vision']);
-    $profile_data['mission'] = wp_kses_post($_POST['mission']);
-    $profile_data['goal'] = wp_kses_post($_POST['goal']);
-
-    // Gunakan logo dari Media Library saja
-    if (!empty($_POST['logo_media_url'])) {
-        $profile_data['logo'] = esc_url($_POST['logo_media_url']);
-    }
-
-    update_option('wpsg_profile_data', $profile_data);
-    echo '<div class="notice notice-success"><p>Profile saved successfully.</p></div>';
+// helpers
+function wpsg_profile_field($key, $default='') {
+    global $profile;
+    return isset($profile[$key]) ? $profile[$key] : $default;
 }
 
+$logo_url = '';
+if (!empty($profile['logo_id'])) {
+    $logo_url = wp_get_attachment_url($profile['logo_id']);
+} elseif (get_theme_mod('custom_logo')) {
+    $logo_url = wp_get_attachment_url(get_theme_mod('custom_logo'));
+}
+
+$base_admin_url = admin_url('admin.php?page=wpsg-admin');
 ?>
 
-<h1>Organization / Institution Profile</h1>
+<div class="wpsg-page-header">
+    <h1>Organization Profile</h1>
+    <p class="description">Information about your organization (company, school, community or NGO).</p>
+</div>
 
-<form method="post" action="" id="wpsg-profile-form">
-    <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+<div style="display: flex; gap: 20px;">
 
-    <!-- LOGO -->
-    <div class="wpsg-form-row">
-        <label>Logo</label>
-        <div>
-            <img id="logo-preview" class="wpsg-logo-preview" src="<?php echo esc_url($profile_data['logo']); ?>" <?php echo $profile_data['logo'] ? '' : 'style="display:none;"'; ?>>
-            <input type="hidden" name="logo_media_url" id="logo_media_url" value="<?php echo esc_url($profile_data['logo']); ?>">
-            <button type="button" id="choose-logo" class="button">Choose from Media Library</button>
+    <!-- LEFT COLUMN -->
+    <div style="width: calc(100vw - 160px); ">
+
+
+        <h2>Manage Profile Information</h2>
+        <div style="width: calc(100vw-160px); display: flex; gap: 20px;">
+            <div class="wpsg-col-2">
+
+                <!-- GENERAL / IDENTITY -->
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="general">
+                    <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+                    <input type="hidden" name="action" value="wpsg_save_section">
+                    <input type="hidden" name="section" value="general">
+
+                    <div class="wpsg-card">
+                        <h2 class="wpsg-card-title">General Information</h2>
+
+                        <div class="wpsg-row">
+                            <div class="wpsg-col-2">
+                                <label for="full_name" class="wpsg-row">Full Name</label>
+                                <input id="full_name" name="full_name" type="text" value="<?php echo esc_attr( wpsg_profile_field('full_name') ); ?>" class="regular-text" required>
+                            </div>
+                            <div class="wpsg-col-2">
+                                <label for="short_name" class="wpsg-row">Short Name / Abbreviation (optional)</label>
+                                <input id="short_name" name="short_name" type="text" value="<?php echo esc_attr( wpsg_profile_field('short_name') ); ?>" class="regular-text">
+                            </div>
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="tagline" class="wpsg-row">Tagline / Motto / Slogan</label>
+                            <input id="tagline" name="tagline" type="text" value="<?php echo esc_attr( wpsg_profile_field('tagline') ); ?>" class="regular-text">
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="description" class="wpsg-row">Description</label>
+                            <textarea id="description" name="description" rows="5"><?php echo esc_textarea( wpsg_profile_field('description') ); ?></textarea>
+                        </div>
+
+                        <div class="wpsg-row">
+                            <div class="wpsg-col-2">
+                                <label for="founded_year" class="wpsg-row">Founded Year</label>
+                                <input id="founded_year" name="founded_year" type="text" value="<?php echo esc_attr( wpsg_profile_field('founded_year') ); ?>" class="regular-text" placeholder="e.g. 1998">
+                            </div>
+                            <div class="wpsg-col-2">
+                                <p class="description" style="margin-top:28px;">Save this section to preserve General Information.</p>
+                            </div>
+                        </div>
+
+                        <p>
+                            <button type="submit" class="button button-primary">Save General</button>
+                        </p>
+                    </div>
+                </form>
+
+                <!-- CONTACT -->
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="contact">
+                    <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+                    <input type="hidden" name="action" value="wpsg_save_section">
+                    <input type="hidden" name="section" value="contact">
+
+                    <div class="wpsg-card">
+                        <h2 class="wpsg-card-title">Contact Information</h2>
+
+                        <div class="wpsg-field">
+                            <label for="phone">Phone Number</label>
+                            <input id="phone" name="phone" type="text" value="<?php echo esc_attr( wpsg_profile_field('phone') ); ?>" class="regular-text">
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="email">Email</label>
+                            <input id="email" name="email" type="email" value="<?php echo esc_attr( wpsg_profile_field('email') ); ?>" class="regular-text">
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="website">Website</label>
+                            <input id="website" name="website" type="text" value="<?php echo esc_attr( wpsg_profile_field('website') ); ?>" class="regular-text">
+                        </div>
+
+                        <p>
+                            <button type="submit" class="button button-primary">Save Contact</button>
+                        </p>
+                    </div>
+                </form>
+
+                <!-- ADDRESS -->
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="address">
+                    <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+                    <input type="hidden" name="action" value="wpsg_save_section">
+                    <input type="hidden" name="section" value="address">
+
+                    <div class="wpsg-card">
+                        <h2 class="wpsg-card-title">Address</h2>
+
+                        <div class="wpsg-field">
+                            <label for="address">Street Address</label>
+                            <textarea id="address" name="address" rows="3"><?php echo esc_textarea( wpsg_profile_field('address') ); ?></textarea>
+                        </div>
+
+                        <div class="wpsg-row">
+                            <div class="wpsg-col-3">
+                                <label for="city">City</label>
+                                <input id="city" name="city" type="text" value="<?php echo esc_attr( wpsg_profile_field('city') ); ?>" class="regular-text">
+                            </div>
+                            <div class="wpsg-col-3">
+                                <label for="province">State / Province</label>
+                                <input id="province" name="province" type="text" value="<?php echo esc_attr( wpsg_profile_field('province') ); ?>" class="regular-text">
+                            </div>
+                            <div class="wpsg-col-3">
+                                <label for="postal_code">Postal Code</label>
+                                <input id="postal_code" name="postal_code" type="text" value="<?php echo esc_attr( wpsg_profile_field('postal_code') ); ?>" class="regular-text">
+                            </div>
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="country">Country</label>
+                            <input id="country" name="country" type="text" value="<?php echo esc_attr( wpsg_profile_field('country') ); ?>" class="regular-text">
+                        </div>
+
+                        <div class="wpsg-field">
+                            <label for="map_link">Map Link (Google Maps URL)</label>
+                            <input id="map_link" name="map_link" type="text" value="<?php echo esc_attr( wpsg_profile_field('map_link') ); ?>" class="regular-text" placeholder="https://maps.google.com/...">
+                        </div>
+
+                        <p>
+                            <button type="submit" class="button button-primary">Save Address</button>
+                        </p>
+                    </div>
+                </form>
+
+
+            </div>
+            <div class="wpsg-col-2">
+
+                <!-- LOGO -->
+                <div class="wpsg-card">
+                    <h2 class="wpsg-card-title">Logo</h2>
+                    <p class="description">Use WordPress Media Library to select organization logo. If blank, website logo will be used.</p>
+
+                    <div class="wpsg-logo-preview">
+                        <?php if ($logo_url): ?>
+                            <img id="wpsg-logo-img" src="<?php echo esc_url($logo_url); ?>" alt="Logo Preview">
+                        <?php else: ?>
+                            <img id="wpsg-logo-img" src="" alt="Logo Preview" style="display:none;">
+                        <?php endif; ?>
+                    </div>
+
+                    <p>
+                        <button id="wpsg-select-logo" class="button">Select Logo from Media Library</button>
+                        <button id="wpsg-remove-logo" class="button" style="<?php echo $profile['logo_id'] ? '' : 'display:none;'; ?>">Remove Logo</button>
+                    </p>
+
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="logo" style="margin-top:12px;">
+                        <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+                        <input type="hidden" name="action" value="wpsg_save_section">
+                        <input type="hidden" name="section" value="logo">
+                        <input type="hidden" id="wpsg_logo_id" name="logo_id" value="<?php echo esc_attr( wpsg_profile_field('logo_id') ); ?>">
+                        <button type="submit" class="button button-primary">Save Logo</button>
+                    </form>
+                </div>
+
+                <!-- SOCIALS -->
+                <div class="wpsg-card">
+                    <h2 class="wpsg-card-title">Social Media</h2>
+                    <p class="description">Add the social platforms used by your organization. Choose a platform and add the account handle or full url.</p>
+
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="socials">
+                        <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+                        <input type="hidden" name="action" value="wpsg_save_section">
+                        <input type="hidden" name="section" value="socials">
+
+                        <div id="wpsg-social-list">
+                            <?php
+                            $socials = wpsg_profile_field('socials', []);
+                            if (!is_array($socials)) $socials = [];
+                            foreach ($socials as $s) {
+                                $platform = isset($s['platform']) ? $s['platform'] : '';
+                                $handle = isset($s['handle']) ? $s['handle'] : '';
+                                echo '<div class="wpsg-social-row">';
+                                echo '<select name="socials_platform[]">'. wpsg_social_platform_options($platform) .'</select>';
+                                echo '<input type="text" name="socials_handle[]" value="'.esc_attr($handle).'" class="regular-text" placeholder="username or full URL">';
+                                echo '<a href="#" class="wpsg-remove-item">Remove</a>';
+                                echo '</div>';
+                            }
+                            ?>
+                        </div>
+
+                        <p>
+                            <button class="button wpsg-add-social">+ Add Social</button>
+                        </p>
+
+                        <p>
+                            <button type="submit" class="button button-primary">Save Socials</button>
+                        </p>
+                    </form>
+                </div>
+
+            </div>
         </div>
-    </div>
 
-    <!-- TEXT FIELDS -->
-    <div class="wpsg-form-row">
-        <label for="name">Institution Name</label>
-        <input type="text" name="name" id="name" value="<?php echo esc_attr($profile_data['name']); ?>" required>
-    </div>
+        <!-- IDENTITY & DIRECTION (history, vision, mission, goals) -->
+        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="wpsg-partial-form" data-section="identity">
+            <?php wp_nonce_field('wpsg_save_profile', 'wpsg_profile_nonce'); ?>
+            <input type="hidden" name="action" value="wpsg_save_section">
+            <input type="hidden" name="section" value="identity">
 
-    <div class="wpsg-form-row">
-        <label for="short_name">Short Name</label>
-        <input type="text" name="short_name" id="short_name" value="<?php echo esc_attr($profile_data['short_name']); ?>">
-    </div>
+            <div class="wpsg-card">
+                <h2 class="wpsg-card-title">History, Vision, Mission & Goals</h2>
 
-    <div class="wpsg-form-row">
-        <label for="slogan">Slogan</label>
-        <input type="text" name="slogan" id="slogan" value="<?php echo esc_attr($profile_data['slogan']); ?>">
-    </div>
+                <div class="wpsg-field">
+                    <label for="history">Brief History</label>
+                    <?php wp_editor( wpsg_profile_field('history'), 'wpsg_history', ['textarea_name'=>'history','textarea_rows'=>6] ); ?>
+                </div>
 
-    <!-- TYPE -->
-    <div class="wpsg-form-row">
-        <label for="types">Type</label>
-        <select name="types[]" id="types" multiple>
-            <?php 
-            $options = ['Company','Organization','Education','Profit','Non-Profit'];
-            foreach ($options as $opt):
-                $selected = in_array($opt, $profile_data['types']) ? 'selected' : '';
-            ?>
-                <option value="<?php echo esc_attr($opt); ?>" <?php echo $selected; ?>><?php echo esc_html($opt); ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+                <div class="wpsg-field">
+                    <label for="vision">Vision</label>
+                    <?php wp_editor( wpsg_profile_field('vision'), 'wpsg_vision', ['textarea_name'=>'vision','textarea_rows'=>4] ); ?>
+                </div>
 
-    <!-- WYSIWYG FIELDS -->
-    <?php 
-    $wysiwyg_fields = ['description'=>'Description','history'=>'Brief History','vision'=>'Vision','mission'=>'Mission','goal'=>'Goal'];
-    foreach ($wysiwyg_fields as $field_key => $label): ?>
-        <div class="wpsg-form-row" style="width:100%;">
-            <label for="<?php echo $field_key; ?>"><?php echo $label; ?></label>
-            <?php wp_editor($profile_data[$field_key], $field_key, [
-                'textarea_name'=>$field_key,
-                'editor_height'=>250,
-                'media_buttons'=>true,
-                'tinymce'=>true
-            ]); ?>
-        </div>
-    <?php endforeach; ?>
+                <div class="wpsg-field">
+                    <label>Mission (multiple items)</label>
+                    <div id="wpsg-missions">
+                        <?php
+                        $missions = wpsg_profile_field('missions', []);
+                        if (!is_array($missions)) $missions = [];
+                        foreach ($missions as $m) {
+                            echo '<div class="wpsg-repeat-item"><input type="text" name="missions[]" value="'.esc_attr($m).'" class="regular-text"><a href="#" class="wpsg-remove-item">Remove</a></div>';
+                        }
+                        ?>
+                    </div>
+                    <p><button class="button wpsg-add-item" data-target="#wpsg-missions">Add Mission</button></p>
+                </div>
 
-    <div class="wpsg-form-row">
-        <button type="submit" class="button button-primary">Save Profile</button>
-    </div>
-</form>
+                <div class="wpsg-field">
+                    <label>Goals (multiple items)</label>
+                    <div id="wpsg-goals">
+                        <?php
+                        $goals = wpsg_profile_field('goals', []);
+                        if (!is_array($goals)) $goals = [];
+                        foreach ($goals as $g) {
+                            echo '<div class="wpsg-repeat-item"><input type="text" name="goals[]" value="'.esc_attr($g).'" class="regular-text"><a href="#" class="wpsg-remove-item">Remove</a></div>';
+                        }
+                        ?>
+                    </div>
+                    <p><button class="button wpsg-add-item" data-target="#wpsg-goals">Add Goal</button></p>
+                </div>
+
+                <p>
+                    <button type="submit" class="button button-primary">Save Identity</button>
+                </p>
+            </div>
+        </form>
+
+    </div> <!-- left -->
+
+</div> <!-- wrapper -->
+
+<?php
+// Helper to render platform options (server-side)
+function wpsg_social_platform_options($selected = '') {
+    $platforms = [
+        'facebook' => 'Facebook',
+        'instagram' => 'Instagram',
+        'twitter' => 'Twitter / X',
+        'youtube' => 'YouTube',
+        'linkedin' => 'LinkedIn',
+        'tiktok' => 'TikTok',
+        'whatsapp' => 'WhatsApp',
+        'telegram' => 'Telegram',
+        'custom' => 'Custom (name)'
+    ];
+    $out = '';
+    foreach($platforms as $key=>$label) {
+        $sel = ($selected === $key) ? ' selected' : '';
+        $out .= '<option value="'.esc_attr($key).'"'.$sel.'>'.esc_html($label).'</option>';
+    }
+    return $out;
+}
+?>

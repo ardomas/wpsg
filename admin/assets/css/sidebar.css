@@ -1,0 +1,128 @@
+/* ============================================================
+   SIDEBAR – WPSG Custom Sidebar (WP Admin style)
+   ============================================================ */
+
+:root {
+    --wpsg-sidebar-width: 160px;
+
+    /* Warna mengacu WP admin modern */
+    --wpsg-sidebar-bg: #1d2327;
+    --wpsg-sidebar-separator: #2c3338;
+    --wpsg-sidebar-border: #3c434a;
+
+    --wpsg-sidebar-text: #c3c4c7;
+    --wpsg-sidebar-text-hover: #ffffff;
+
+    --wpsg-sidebar-icon: #a7aaad;
+
+    --wpsg-admin-accent-bg: #4681b9;
+    --wpsg-admin-accent: #cbd633;
+
+    --wpsg-sidebar-menu-bg: #1d2327;
+    --wpsg-sidebar-menu: #c3c4c7;
+    --wpsg-sidebar-menu-hover-bg: #3f4950;
+    --wpsg-sidebar-menu-hover: #5aa3df;
+    --wpsg-sidebar-menu-active-bg: #2271b1;
+    --wpsg-sidebar-menu-active: #d6e8f5;
+    --wpsg-sidebar-menu-hover-active-bg: #3081c4;
+    --wpsg-sidebar-menu-hover-active: #e8f4fd;
+}
+
+/* Container sidebar */
+#wpsg-sidebar {
+    width: var(--wpsg-sidebar-width);
+    background: var(--wpsg-sidebar-bg);
+    color: var(--wpsg-sidebar-text);
+    position: fixed;
+    top: 32px; /* WP admin bar */
+    left: 0;
+    bottom: 0;
+    padding: 16px 0;
+    border-right: 1px solid var(--wpsg-sidebar-border);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* Header */
+.wpsg-sidebar-header {
+    padding: 12px 20px 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--wpsg-sidebar-border);
+}
+
+.wpsg-sidebar-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--wpsg-sidebar-text);
+}
+
+.wpsg-sidebar-header .version {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* Menu */
+.wpsg-admin-sidebar {
+    width: 160px;
+    position: fixed;
+    top: 32px; /* di bawah admin bar */
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.wpsg-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wpsg-menu li a {
+    display: flex;
+    position: relative;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--wpsg-sidebar-text);
+    transition: 0.15s;
+}
+
+.wpsg-menu li a:hover {
+    background: var(--wpsg-sidebar-menu-hover-bg);
+    color: var(--wpsg-sidebar-menu-hover);
+}
+.wpsg-menu li a:hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;                              /* ketebalan garis */
+    height: 100%;
+    background: var(--wpsg-sidebar-menu-hover); /* warna biru WordPress */
+}
+
+.wpsg-menu li.active > a {
+    background: var(--wpsg-sidebar-menu-active-bg);
+    color: var(--wpsg-sidebar-menu-active);
+}
+
+.wpsg-menu li.active > a:hover {
+    background: var(--wpsg-sidebar-menu-hover-active-bg);
+    color: var(--wpsg-sidebar-menu-hover-active);
+}
+.wpsg-menu li.active > a:hover::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;                  /* ketebalan garis biru */
+    height: 100%;
+    background: var(--wpsg-sidebar-menu-hover-active);
+}
+
+.wpsg-menu li.disabled a {
+    opacity: 0.4;
+    pointer-events: none;
+}
