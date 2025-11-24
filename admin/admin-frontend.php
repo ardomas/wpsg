@@ -117,9 +117,11 @@ class WPSG_AdminFrontend {
 
                         echo '<h2 class="nav-tab-wrapper">';
                         foreach ($subdata as $tab_key => $tab_item) {
-                            $url = add_query_arg(['tab' => $tab_key]);
-                            $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';
-                            echo "<a href='" . esc_url($url) . "' class='nav-tab $active'>" . esc_html($tab_item['title']) . "</a>";
+                            if( $tab_item['view']===true ){
+                                $url = add_query_arg(['tab' => $tab_key]);
+                                $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';
+                                echo "<a href='" . esc_url($url) . "' class='nav-tab $active'>" . esc_html($tab_item['title']) . "</a>";
+                            }
                         }
                         echo '</h2>';
 

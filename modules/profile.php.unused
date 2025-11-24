@@ -61,21 +61,25 @@ class WPSG_Profile {
 
         foreach ($profile_menu as $key => $item) {
 
-            $title = $item['title'] ?? ucfirst($key);
+            print_r( $item );
+            if( $item['view']===true ){
 
-            $link = admin_url(
-                'admin.php?page=wpsg-admin&view=profile&tab=' . urlencode($key)
-            );
-            ?>
-            
-            <a class="wpsg-card-link" href="<?php echo esc_url($link); ?>">
-                <div class="wpsg-card">
-                    <h3><?php echo esc_html($title); ?></h3>
-                    <p><?php echo esc_html('Manage ' . strtolower($title) . ' settings'); ?></p>
-                </div>
-            </a>
+                $title = $item['title'] ?? ucfirst($key);
 
-            <?php
+                $link = admin_url(
+                    'admin.php?page=wpsg-admin&view=profile&tab=' . urlencode($key)
+                );
+                ?>
+                
+                <a class="wpsg-card-link" href="<?php echo esc_url($link); ?>">
+                    <div class="wpsg-card">
+                        <h3><?php echo esc_html($title); ?></h3>
+                        <p><?php echo esc_html('Manage ' . strtolower($title) . ' settings'); ?></p>
+                    </div>
+                </a>
+
+                <?php
+            }
         }
     }
 

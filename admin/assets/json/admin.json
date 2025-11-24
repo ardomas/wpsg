@@ -68,49 +68,56 @@
             "icon": "dashicons-index-card",
             "path": "modules/profile/identity.php",
             "module_class": "WPSG_ProfileIdentity",
-            "description": "Centralized settings for your organization's identity, address, branding, and more."
+            "description": "Centralized settings for your organization's identity, address, branding, and more.",
+            "view": true
         },
         "address": {
             "title": "Address",
             "icon": "dashicons-location-alt",
             "path": "modules/profile/address.php",
             "module_class": "WPSG_ProfileAddress",
-            "description": "Manage your organization's physical and mailing addresses."
+            "description": "Manage your organization's physical and mailing addresses.",
+            "view": true
         },
         "contact": {
             "title": "Contact",
             "icon": "dashicons-email",
             "path": "modules/profile/contact.php",
             "module_class": "WPSG_ProfileContact",
-            "description": "Update your organization's contact information, including phone numbers and email addresses."
+            "description": "Update your organization's contact information, including phone numbers and email addresses.",
+            "view": true
         },
         "social": {
             "title": "Social",
             "icon": "dashicons-share",
             "path": "modules/profile/social.php",
             "module_class": "WPSG_ProfileSocial",
-            "description": "Link your organization's social media profiles and manage social sharing settings."
+            "description": "Link your organization's social media profiles and manage social sharing settings.",
+            "view": true
         },
         "values": {
             "title": "Values",
             "icon": "dashicons-heart",
             "path": "modules/profile/values.php",
             "module_class": "WPSG_ProfileValues",
-            "description": "Define and manage your organization's core values and mission statement."
+            "description": "Define and manage your organization's core values and mission statement.",
+            "view": true
         },
         "branding": {
             "title": "Branding",
             "icon": "dashicons-art",
             "path": "modules/profile/branding.php",
             "module_class": "WPSG_ProfileBranding",
-            "description": "Customize your organization's branding elements, including logos, colors, and themes."
+            "description": "Customize your organization's branding elements, including logos, colors, and themes.",
+            "view": true
         },
         "preferences": {
             "title": "Preferences",
             "icon": "dashicons-admin-generic",
             "path": "modules/profile/preferences.php",
             "module_class": "WPSG_ProfilePreferences",
-            "description": "Set your organization's preferences for notifications, privacy, and other settings."
+            "description": "Set your organization's preferences for notifications, privacy, and other settings.",
+            "view": false
         }
     },
 
@@ -120,28 +127,32 @@
             "icon": "dashicons-admin-settings",
             "path": "modules/settings/general.php",
             "module_class": "WPSG_SettingsGeneral",
-            "description": "General plugin settings"
+            "description": "General plugin settings",
+            "view": true
         },
         "platform-private": {
             "title": "Private Media Platforms",
             "icon": "dashicons-shield",
             "path": "modules/settings/platform-private.php",
             "module_class": "WPSG_SettingsPlatformPrivate",
-            "description": "Customize Private Social Media Platform settings"
+            "description": "Customize Private Social Media Platform settings",
+            "view": true
         },
         "platform-public": {
             "title": "Public Media Platforms",
             "icon": "dashicons-admin-site",
             "path": "modules/settings/platform-public.php",
             "module_class": "WPSG_SettingsPlatformPublic",
-            "description": "Customize Public Social Media Platform settings"
+            "description": "Customize Public Social Media Platform settings",
+            "view": true
         },
         "business-type": {
             "title": "Business Types",
             "icon": "dashicons-businessman",
             "path": "modules/settings/business-types.php",
             "module_class": "WPSG_SettingsBusinessTypes",
-            "description": "Manage Business Types settings"
+            "description": "Manage Business Types settings",
+            "view": true
         }
     },
 
