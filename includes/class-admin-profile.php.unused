@@ -10,7 +10,11 @@ class WPSG_AdminProfile
 
     public function __construct()
     {
-        $this->config = WPSG_Config::get('profile_settings.branding', []);
+        // $wpsg_config      = WPSG_Config::instance();
+        $wpsg_profile_settings = WPSG_Config::get( 'profile_settings', [] );
+        $this->config = $wpsg_profile_settings[ 'branding' ] ?? [];
+        // WPSG_Config::instance()->get('profile_settings.branding', []);
+
         $this->savedValues = $this->load_saved_values();
 
         add_action('admin_menu', [$this, 'register_menu']);

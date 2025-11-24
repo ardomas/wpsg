@@ -11,6 +11,12 @@ class WPSG_Config
     private $config_path;
     private $data = [];
 
+    private function __construct()
+    {
+        $this->config_path = plugin_dir_path(__FILE__) . '../assets/json/settings.json';
+        $this->load();
+    }
+
     /**
      * Singleton
      */
@@ -20,12 +26,6 @@ class WPSG_Config
             self::$instance = new self();
         }
         return self::$instance;
-    }
-
-    private function __construct()
-    {
-        $this->config_path = plugin_dir_path(__FILE__) . '../assets/json/settings.json';
-        $this->load();
     }
 
     /**
@@ -47,7 +47,7 @@ class WPSG_Config
     /**
      * Get entire config or specific section/key
      */
-    public function get($key = null, $default = null)
+    public static function get($key = null, $default = null)
     {
         if ($key === null) {
             return $this->data;
@@ -59,12 +59,12 @@ class WPSG_Config
     /**
      * For future use: overwrite/merge/save config
      */
-    public function set($key, $value)
+    public static function set($key, $value)
     {
         $this->data[$key] = $value;
     }
 
-    public function save()
+    public static function save()
     {
         file_put_contents(
             $this->config_path,
