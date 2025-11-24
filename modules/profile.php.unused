@@ -61,7 +61,6 @@ class WPSG_Profile {
 
         foreach ($profile_menu as $key => $item) {
 
-            print_r( $item );
             if( $item['view']===true ){
 
                 $title = $item['title'] ?? ucfirst($key);

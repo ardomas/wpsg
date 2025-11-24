@@ -33,18 +33,27 @@ $current_view = isset($GLOBALS['wpsg_current_view']) ? $GLOBALS['wpsg_current_vi
         <?php
         foreach ($sidebar_menu as $key => $item_menu) {
             // Default link
-            $link = '/wp-admin';
-            if ($key !== 'wp-admin') {
-                $link = esc_url('admin.php?page=wpsg-admin&view=' . $key);
-            }
-            ?>
-            <li class="<?php echo ($current_view === $key) ? 'active' : ''; ?>">
-                <a href="<?php echo $link; ?>">
-                    <span class="dashicons <?php echo esc_attr($item_menu['icon']); ?>"></span>
-                    <?php echo esc_html($item_menu['title']); ?>
-                </a>
-            </li>
-        <?php } ?>
+
+            // if( $item_menu['site']==='all' || is_super_admin() ) {
+
+                $link = '/wp-admin';
+                if ($key !== 'wp-admin') {
+                    $link = esc_url('admin.php?page=wpsg-admin&view=' . $key);
+                }
+                ?>
+                <li class="<?php echo ($current_view === $key) ? 'active' : ''; ?>">
+                    <a href="<?php echo $link; ?>">
+                        <span class="dashicons <?php echo esc_attr($item_menu['icon']); ?>"></span>
+                        <?php echo esc_html($item_menu['title']); ?>
+                    </a>
+                </li>
+
+            <?php
+
+            // }
+
+        } 
+        ?>
 
         <!-- Placeholder menu lain -->
         <li class="disabled">

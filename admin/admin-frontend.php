@@ -117,6 +117,7 @@ class WPSG_AdminFrontend {
 
                         echo '<h2 class="nav-tab-wrapper">';
                         foreach ($subdata as $tab_key => $tab_item) {
+
                             if( $tab_item['view']===true ){
                                 $url = add_query_arg(['tab' => $tab_key]);
                                 $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';

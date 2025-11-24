@@ -79,9 +79,26 @@ class WPSG_AdminData {
         return isset(self::$data[$key]) ? self::$data[$key] : $default;
     }
 
+    private static function cast_as_menu( $raw_data ){
+        $clean_data = [];
+        foreach( $raw_data as $key=>$item ){
+
+            if( !isset( $item['dashboard'] ) ) $item['dashboard'] = true;
+            if( !isset( $item['view']      ) ) $item['view'] = true;
+            if( !isset( $item['site']      ) ) $item['site'] = 'main';
+
+            if( ( $item['dashboard'] || $item['view'] ) && ( $item['site']==='all' || is_super_admin() ) ){
+                $clean_data[$key] = $item;
+            }
+
+        }
+        return $clean_data;
+    }
+
     // Shortcut untuk sidebar menu
     public static function get_sidebar_menu() {
-        return self::get('sidebar-menu', []);
+        $raw_sidebar = self::get('sidebar-menu', []);
+        return self::cast_as_menu( $raw_sidebar );
     }
 
     /**

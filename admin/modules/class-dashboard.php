@@ -15,7 +15,6 @@ class WPSG_Dashboard {
 
         ?>
 
-
         <div class="wpsg">
 
             <h1>WPSG Dashboard</h1>
@@ -34,10 +33,12 @@ class WPSG_Dashboard {
     }
 
     public static function render_cards() {
-        $sidebar_menu = WPSG_AdminData::get('sidebar-menu', []);
+
+        $sidebar_menu = WPSG_AdminData::get_sidebar_menu();
 
         foreach ($sidebar_menu as $key => $item_menu) {
-            if (!empty($item_menu['dashboard-view'])) {
+
+            if ( $item_menu['dashboard'] ) {
                 $link = esc_url('admin.php?page=wpsg-admin&view=' . $key);
                 ?>
                 <a class="wpsg-card-link" href="<?php echo $link; ?>"><div class="wpsg-card">
@@ -46,6 +47,7 @@ class WPSG_Dashboard {
                 </div></a>
                 <?php
             }
+
         }
     }
 

@@ -6,7 +6,9 @@
             "path": null,
             "module_class": null,
             "description": "Back to WP-Admin",
-            "dashboard-view": false
+            "dashboard": false,
+            "site": "all",
+            "view": true
         },
         "dashboard": {
             "title": "Dashboard",
@@ -14,7 +16,9 @@
             "path": "admin/modules/class-dashboard.php",
             "module_class": "WPSG_Dashboard",
             "description": "This Page",
-            "dashboard-view": false
+            "dashboard": false,
+            "site": "all",
+            "view": true
         },
         "profile": {
             "title": "Profile",
@@ -24,7 +28,9 @@
             "submenu": "profile-menu",
             "default": "identity",
             "description": "Manage Profile Data",
-            "dashboard-view": true
+            "dashboard": true,
+            "site": "all",
+            "view": true
         },
         "articles": {
             "title": "Articles",
@@ -32,7 +38,9 @@
             "path": "modules/articles.php",
             "module_class": "WPSG_Articles",
             "description": "Manage all articles",
-            "dashboard-view": true
+            "dashboard": true,
+            "site": "all",
+            "view": false
         },
         "announcement": {
             "title": "Announcements",
@@ -40,7 +48,9 @@
             "path": "modules/announcements.php",
             "module_class": "WPSG_Announcements",
             "description": "Manage all announcements",
-            "dashboard-view": true
+            "dashboard": true,
+            "site": "all",
+            "view": true
         },
         "membership": {
             "title": "Membership",
@@ -48,7 +58,9 @@
             "path": "modules/membership.php",
             "module_class": "WPSG_Membership",
             "description": "Manage membership data",
-            "dashboard-view": true
+            "dashboard": true,
+            "site": "main",
+            "view": true
         },
         "settings": {
             "title": "Settings",
@@ -58,7 +70,9 @@
             "default": "general",
             "module_class": "WPSG_Settings",
             "description": "Configure default site/organization settings",
-            "dashboard-view": true
+            "dashboard": true,
+            "site": "main",
+            "view": true
         }
     },
 
@@ -69,6 +83,7 @@
             "path": "modules/profile/identity.php",
             "module_class": "WPSG_ProfileIdentity",
             "description": "Centralized settings for your organization's identity, address, branding, and more.",
+            "site": "all",
             "view": true
         },
         "address": {
@@ -77,6 +92,7 @@
             "path": "modules/profile/address.php",
             "module_class": "WPSG_ProfileAddress",
             "description": "Manage your organization's physical and mailing addresses.",
+            "site": "all",
             "view": true
         },
         "contact": {
@@ -85,6 +101,7 @@
             "path": "modules/profile/contact.php",
             "module_class": "WPSG_ProfileContact",
             "description": "Update your organization's contact information, including phone numbers and email addresses.",
+            "site": "all",
             "view": true
         },
         "social": {
@@ -93,6 +110,7 @@
             "path": "modules/profile/social.php",
             "module_class": "WPSG_ProfileSocial",
             "description": "Link your organization's social media profiles and manage social sharing settings.",
+            "site": "all",
             "view": true
         },
         "values": {
@@ -101,6 +119,7 @@
             "path": "modules/profile/values.php",
             "module_class": "WPSG_ProfileValues",
             "description": "Define and manage your organization's core values and mission statement.",
+            "site": "all",
             "view": true
         },
         "branding": {
@@ -109,6 +128,7 @@
             "path": "modules/profile/branding.php",
             "module_class": "WPSG_ProfileBranding",
             "description": "Customize your organization's branding elements, including logos, colors, and themes.",
+            "site": "all",
             "view": true
         },
         "preferences": {
@@ -117,6 +137,7 @@
             "path": "modules/profile/preferences.php",
             "module_class": "WPSG_ProfilePreferences",
             "description": "Set your organization's preferences for notifications, privacy, and other settings.",
+            "site": "all",
             "view": false
         }
     },
@@ -128,6 +149,7 @@
             "path": "modules/settings/general.php",
             "module_class": "WPSG_SettingsGeneral",
             "description": "General plugin settings",
+            "site": "main",
             "view": true
         },
         "platform-private": {
@@ -136,6 +158,7 @@
             "path": "modules/settings/platform-private.php",
             "module_class": "WPSG_SettingsPlatformPrivate",
             "description": "Customize Private Social Media Platform settings",
+            "site": "main",
             "view": true
         },
         "platform-public": {
@@ -144,6 +167,7 @@
             "path": "modules/settings/platform-public.php",
             "module_class": "WPSG_SettingsPlatformPublic",
             "description": "Customize Public Social Media Platform settings",
+            "site": "main",
             "view": true
         },
         "business-type": {
@@ -152,6 +176,7 @@
             "path": "modules/settings/business-types.php",
             "module_class": "WPSG_SettingsBusinessTypes",
             "description": "Manage Business Types settings",
+            "site": "main",
             "view": true
         }
     },
