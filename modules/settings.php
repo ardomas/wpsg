@@ -4,12 +4,13 @@ if (!defined('ABSPATH')) exit;
 class WPSG_Settings {
 
     public static function enqueue_assets($hook) {
+        // Hanya load jika berada di halaman WPSG Settings
         if ($hook !== 'toplevel_page_wpsg-admin' && strpos($hook, 'wpsg-admin') === false) return;
         // enqueue CSS/JS umum untuk Settings jika diperlukan
     }
 
     public function render() {
-        // Tentukan tab aktif
+        // Tentukan tab aktif dari URL, default ke 'general'
         $tab = $_GET['tab'] ?? 'general';
 
         // Ambil semua tab settings dari admin.json
@@ -18,14 +19,14 @@ class WPSG_Settings {
         ?>
         <div class="wpsg">
             <h1>Settings</h1>
-            <p>Configure default settings for your site/organization.</p>
+            <p>Configure default configurations.</p>
 
             <!-- Tab navigation -->
             <h2 class="nav-tab-wrapper">
                 <?php foreach ($settings_menu as $key => $item): ?>
                     <a href="<?php echo esc_url(add_query_arg('tab', $key)); ?>"
-                    class="nav-tab <?php echo ($tab === $key) ? 'nav-tab-active' : ''; ?>">
-                    <?php echo esc_html($item['title']); ?>
+                       class="nav-tab <?php echo ($tab === $key) ? 'nav-tab-active' : ''; ?>">
+                        <?php echo esc_html($item['title']); ?>
                     </a>
                 <?php endforeach; ?>
             </h2>
@@ -33,24 +34,25 @@ class WPSG_Settings {
             <!-- Tab content -->
             <div class="wpsg-tab-content">
                 <?php
-                if (isset($settings_menu[$tab])) {
-                    $sub_tab_file = WPSG_DIR . $settings_menu[$tab]['path'];
-                    $class_name = $settings_menu[$tab]['module_class'];
+                // Jika tab tidak ditemukan, fallback ke general
+                if (!isset($settings_menu[$tab])) {
+                    $tab = 'general';
+                }
 
-                    if (file_exists($sub_tab_file)) {
-                        require_once $sub_tab_file;
+                $sub_tab_file = WPSG_DIR . $settings_menu[$tab]['path'];
+                $class_name   = $settings_menu[$tab]['module_class'];
 
-                        if (class_exists($class_name)) {
-                            $module = new $class_name();
-                            $module->render();
-                        } else {
-                            echo '<p>Class not found: ' . esc_html($class_name) . '</p>';
-                        }
+                if (file_exists($sub_tab_file)) {
+                    require_once $sub_tab_file;
+
+                    if (class_exists($class_name)) {
+                        $module = new $class_name();
+                        $module->render();
                     } else {
-                        echo '<p>Tab file not found: ' . esc_html($sub_tab_file) . '</p>';
+                        echo '<p>Class not found: ' . esc_html($class_name) . '</p>';
                     }
                 } else {
-                    echo '<p>Tab not found: ' . esc_html($tab) . '</p>';
+                    echo '<p>Tab file not found: ' . esc_html($sub_tab_file) . '</p>';
                 }
                 ?>
             </div>
@@ -58,8 +60,7 @@ class WPSG_Settings {
         <?php
     }
 
-
-    // Helper untuk get/save option
+    // Helper untuk get/save option secara umum
     public static function get($key, $default = '') {
         return get_option($key, $default);
     }

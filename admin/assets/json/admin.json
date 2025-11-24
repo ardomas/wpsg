@@ -22,15 +22,8 @@
             "path": "modules/profile.php",
             "module_class": "WPSG_Profile",
             "submenu": "profile-menu",
+            "default": "identity",
             "description": "Manage Profile Data",
-            "dashboard-view": true
-        },
-        "social-media": {
-            "title": "Social Media",
-            "icon": "dashicons-smiley",
-            "path": "modules/social-media.php",
-            "module_class": "WPSG_SocialMedia",
-            "description": "Integrate with Social Media",
             "dashboard-view": true
         },
         "articles": {
@@ -62,6 +55,7 @@
             "icon": "dashicons-admin-generic",
             "path": "modules/settings.php",
             "submenu": "settings-menu",
+            "default": "general",
             "module_class": "WPSG_Settings",
             "description": "Configure default site/organization settings",
             "dashboard-view": true
@@ -191,6 +185,65 @@
             "active": 1,
             "url": "https://www.messenger.com/",
             "description": "Private messaging via Facebook Messenger"
+        }
+    },
+
+    "platform-public-default": {
+        "facebook": {
+            "name": "Facebook",
+            "pattern": "https://www.facebook.com/{username}",
+            "key": "facebook",
+            "active": 1,
+            "url": "https://www.facebook.com",
+            "description": "Global social media platform for connecting with friends, family, and audiences."
+        },
+        "instagram": {
+            "name": "Instagram",
+            "pattern": "https://www.instagram.com/{username}",
+            "key": "instagram",
+            "active": 1,
+            "url": "https://www.instagram.com",
+            "description": "Photo and video sharing social network, ideal for visual branding."
+        },
+        "twitter": {
+            "name": "Twitter",
+            "pattern": "https://twitter.com/{username}",
+            "key": "twitter",
+            "active": 1,
+            "url": "https://twitter.com",
+            "description": "Microblogging platform for updates, conversations, and audience engagement."
+        },
+        "linkedin": {
+            "name": "LinkedIn",
+            "pattern": "https://www.linkedin.com/in/{username}",
+            "key": "linkedin",
+            "active": 1,
+            "url": "https://www.linkedin.com",
+            "description": "Professional networking platform for business and career branding."
+        },
+        "tiktok": {
+            "name": "TikTok",
+            "pattern": "https://www.tiktok.com/@{username}",
+            "key": "tiktok",
+            "active": 1,
+            "url": "https://www.tiktok.com",
+            "description": "Short video platform for viral content and creative branding."
+        },
+        "youtube": {
+            "name": "YouTube",
+            "pattern": "https://www.youtube.com/@{username}",
+            "key": "youtube",
+            "active": 1,
+            "url": "https://www.youtube.com",
+            "description": "Video sharing platform, great for tutorials, vlogs, and long-form branding content."
+        },
+        "pinterest": {
+            "name": "Pinterest",
+            "pattern": "https://www.pinterest.com/{username}",
+            "key": "pinterest",
+            "active": 1,
+            "url": "https://www.pinterest.com",
+            "description": "Visual discovery and inspiration platform, ideal for lifestyle and design branding."
         }
     }
 

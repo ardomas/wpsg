@@ -27,16 +27,20 @@ class WPSG_Profile {
             <p>Manage all organizational profile settings.</p>
 
             <!-- Back to Dashboard -->
+            <!--
             <p>
                 <a href="<?php echo admin_url('admin.php?page=wpsg-admin&view=dashboard'); ?>"
                    class="button button-secondary">
                     ← Back to Dashboard
                 </a>
             </p>
+            -->
 
-            <div class="wpsg-admin-wrapper">
-                <div class="wpsg-flex" style="gap: 20px; flex-wrap: wrap;">
-                    <?php self::render_cards(); ?>
+                <div class="wpsg-admin-wrapper">
+                    <div class="wpsg-flex" style="gap: 20px; flex-wrap: wrap;">
+                        <?php self::render_cards(); ?>
+                    </div>
+
                 </div>
             </div>
 

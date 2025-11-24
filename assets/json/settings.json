@@ -1,0 +1,81 @@
+{
+  "profile_settings": {
+    "branding": {
+      "purpose": {
+        "key": "profile_purpose",
+        "type": "text",
+        "label": "Core Purpose",
+        "description": "Penjelasan tujuan inti dari brand atau organisasi.",
+        "default": ""
+      },
+      "logos": {
+        "key": "profile_logos",
+        "type": "array_upload",
+        "label": "Brand Logos",
+        "description": "Upload satu atau lebih logo brand. Gunakan label untuk membedakan jenis logo.",
+        "fields": {
+          "label": {
+            "type": "text",
+            "label": "Logo Label"
+          },
+          "file_url": {
+            "type": "upload",
+            "label": "Logo File URL"
+          },
+          "mime": {
+            "type": "text",
+            "label": "MIME Type"
+          }
+        },
+        "default": []
+      },
+      "colors": {
+        "key": "profile_colors",
+        "type": "array_color",
+        "label": "Color Palette",
+        "description": "Daftar warna utama, sekunder, atau aksen untuk brand.",
+        "fields": {
+          "type": {
+            "type": "select",
+            "options": ["primary", "secondary", "accent", "neutral", "custom"],
+            "label": "Color Type"
+          },
+          "name": {
+            "type": "text",
+            "label": "Color Name"
+          },
+          "hex": {
+            "type": "color",
+            "label": "HEX Value"
+          }
+        },
+        "default": []
+      },
+      "typography": {
+        "key": "profile_typography",
+        "type": "object",
+        "label": "Typography",
+        "description": "Pengaturan font utama dan fallback font untuk branding.",
+        "fields": {
+          "font_name": {
+            "type": "text",
+            "label": "Primary Font Name"
+          },
+          "font_url": {
+            "type": "text",
+            "label": "Google Font URL"
+          },
+          "fallback": {
+            "type": "text",
+            "label": "Fallback Font"
+          }
+        },
+        "default": {
+          "font_name": "",
+          "font_url": "",
+          "fallback": "sans-serif"
+        }
+      }
+    }
+  }
+}

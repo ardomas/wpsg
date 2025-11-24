@@ -7,6 +7,8 @@ class WPSG_AdminData {
     private static $instance = null;
     private static $data = [];
 
+    private static $business_types = [];
+
     private function __construct() {
         self::load_json();
     }
@@ -138,6 +140,35 @@ class WPSG_AdminData {
                 ['%s', '%s', '%s']
             );
         }
+    }
+
+    // Ambil semua business types
+    public static function get_business_types() {
+        return self::get_setting('wpsg_business_types', []);
+    }
+
+    // Simpan/update business types
+    public static function set_business_types(array $data) {
+        self::set_setting('wpsg_business_types', $data);
+    }
+
+    // Ambil data platform-public, pakai default jika belum ada
+    public static function get_platform_public() {
+        $option_key = 'wpsg_platform_public';
+        $data = self::get_setting($option_key, null);
+
+        if ($data === null) {
+            $data = self::get('platform-public-default', []);
+            self::set_setting($option_key, $data);
+        }
+
+        return $data;
+    }
+
+    // Simpan data platform-public, pakai default jika belum ada
+    public static function set_platform_public($data) {
+        if (!is_array($data)) return false;
+        return self::set_setting('wpsg_platform_public', $data);
     }
 
     // Ambil data platform-private, pakai default jika belum ada

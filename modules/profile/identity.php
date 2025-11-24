@@ -13,120 +13,142 @@ class WPSG_ProfileIdentity {
 
     /** Load business types dari Settings -> General */
     private function load_data_references() {
-        $this->business_types =  WPSG_AdminData::get_setting('wpsg_general_business_types', '*'); // Ambil semua site
+        $this->business_types = WPSG_AdminData::get_setting('wpsg_business_types', '*'); // Ambil semua site
     }
 
     public function render() {
         $data = $this->get_data();
-
         ?>
-        <div class="wpsg">
-            <h1>Identity Settings</h1>
-            <p>Manage your organization’s identity and essential details.</p>
+        <form method="post">
 
-            <p>
-                <a href="<?php echo admin_url('admin.php?page=wpsg-admin&view=profile'); ?>"
-                   class="button button-secondary">
-                    ← Back to Profile
-                </a>
-            </p>
+            <div class="wpsg wpsg-boxed">
 
-            <form method="post">
-                <?php wp_nonce_field('wpsg_identity_save', 'wpsg_identity_nonce'); ?>
+                <div class="wrap">
 
-                <table class="form-table">
+                    <h3>Manage your organization’s identity and essential details.</h3>
 
-                    <!-- Full Name -->
-                    <tr>
-                        <th><label for="full_name">Full Name</label></th>
-                        <td>
-                            <input type="text"
-                                   id="full_name"
-                                   name="full_name"
-                                   class="regular-text"
-                                   style="width: 100%;"
-                                   value="<?php echo esc_attr($data['full_name'] ?? ''); ?>">
-                        </td>
-                    </tr>
+                    <?php wp_nonce_field('wpsg_identity_save', 'wpsg_identity_nonce'); ?>
 
-                    <!-- Short Name + Business Type -->
-                    <tr>
-                        <th><label for="short_name">Short Name & Business Type</label></th>
-                        <td>
-                            <input type="text"
-                                   id="short_name"
-                                   name="short_name"
-                                   class="regular-text"
-                                   placeholder="Short Name / Abbreviation"
-                                   value="<?php echo esc_attr($data['short_name'] ?? ''); ?>">
+                    <div class="wpsg-boxed wpsg-form-field">
+                        <!-- Full Name -->
+                        <label for="full_name"><strong>Full Name</strong></label>
+                        <input type="text"
+                                id="full_name"
+                                name="full_name"
+                                class="regular-text"
+                                value="<?php echo esc_attr($data['full_name'] ?? ''); ?>">
+                    </div>
 
-                        </td>
-                    </tr>
-                    <tr>
-                        <th><label><strong>Business Type</strong></label></th>
-                        <td>
-                            <select id="business_type"
-                                    name="business_type[]"
-                                    multiple
-                                    style="min-width: 280px; height: 120px;">
+                    <div class="wpsg-flex">
+                        <div class="wpsg-card">
 
-                                <?php
-                                $selected_types = $data['business_type'] ?? [];
-                                if (!is_array($selected_types)) $selected_types = [];
+                            <div class="wpsg-form-field">
+                                    <label for="short_name"><strong>Short Name</strong></label>
+                                    <input type="text"
+                                            id="short_name"
+                                            name="short_name"
+                                            class="regular-text"
+                                            placeholder="Short Name / Abbreviation"
+                                            value="<?php echo esc_attr($data['short_name'] ?? ''); ?>">
+                            </div>
+                            <div class="wpsg-form-field">
+                                <label for="tagline">Tagline / Motto / Slogan</label>
+                                <input type="text"
+                                        id="tagline"
+                                        name="tagline"
+                                        class="regular-text"
+                                        style="width: 100%;"
+                                        value="<?php echo esc_attr($data['tagline'] ?? ''); ?>">
+                            </div>
 
-                                foreach ($this->business_types as $key => $label): ?>
-                                    <option value="<?php echo esc_attr($key); ?>"
-                                        <?php echo in_array($key, $selected_types) ? 'selected' : ''; ?>>
-                                        <?php echo esc_html($label); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </td>
-                    </tr>
+                            <div class="wpsg-form-field">
+                                <label for="year_established"><strong>Year Established</strong></label>
+                                <input type="number"
+                                    id="year_established"
+                                    name="year_established"
+                                    width="100px; text-align: center;"
+                                    min="1800"
+                                    max="<?php echo date('Y'); ?>"
+                                    value="<?php echo esc_attr($data['year_established'] ?? ''); ?>">
+                            </div>
 
-                    <!-- Description -->
-                    <tr>
-                        <th><label for="description">Short Description</label></th>
-                        <td>
+                        </div>
+                        <div class="wpsg-card">
+                            <div class="wpsg-form-field">
+                                <label for="business_type"><strong>Business Type</strong></label>
+                                <select id="business_type"
+                                        name="business_type[]"
+                                        multiple
+                                        style="width: 100%; min-width: 280px; height: 120px;">
+                                    <?php
+                                    $selected_types = $data['business_type'] ?? [];
+                                    if (!is_array($selected_types)) $selected_types = [];
+                                    foreach ($this->business_types as $key => $label): ?>
+                                        <option value="<?php echo esc_attr($key); ?>"
+                                            <?php echo in_array($key, $selected_types) ? 'selected' : ''; ?>>
+                                            <?php echo esc_html($label['name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="wpsg-boxed wpsg-form-field">
+                        <label for="profile_summary"><strong>Profile Summary</strong></label>
+                        <div class="wpsg-row">
+
                             <?php
-                                $content = $data['description'] ?? '';
+                                $content = $data['profile_summary'] ?? '';
                                 wp_editor(
                                     $content,
-                                    'wpsg_identity_description',
+                                    'wpsg_identity_profile_summary',
                                     [
-                                        'textarea_name' => 'description',
+                                        'textarea_name' => 'profile_summary',
                                         'textarea_rows' => 6,
                                         'media_buttons' => false,
                                         'teeny' => true
                                     ]
                                 );
                             ?>
-                        </td>
-                    </tr>
 
-                    <!-- Year Established -->
-                    <tr>
-                        <th><label for="year_established">Year Established</label></th>
-                        <td>
-                            <input type="number"
-                                   id="year_established"
-                                   name="year_established"
-                                   min="1800"
-                                   max="<?php echo date('Y'); ?>"
-                                   value="<?php echo esc_attr($data['year_established'] ?? ''); ?>">
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
 
-                </table>
+                    <div class="wpsg-boxed wpsg-form-field">
+                        <label for="brief_history"><strong>Brief History</strong></label>
+                        <div class="wpsg-row">
 
-                <p>
-                    <button type="submit" class="button button-primary">
-                        Save Changes
-                    </button>
-                </p>
+                            <?php
+                                $content = $data['brief_history'] ?? '';
+                                wp_editor(
+                                    $content,
+                                    'wpsg_identity_brief_history',
+                                    [
+                                        'textarea_name' => 'brief_history',
+                                        'textarea_rows' => 6,
+                                        'media_buttons' => false,
+                                        'teeny' => true
+                                    ]
+                                );
+                            ?>
 
-            </form>
-        </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <p>
+                <button type="submit" class="button button-primary">
+                    Save Changes
+                </button>
+            </p>
+
+        </form>
         <?php
     }
 
@@ -142,11 +164,12 @@ class WPSG_ProfileIdentity {
             'full_name'        => sanitize_text_field($_POST['full_name'] ?? ''),
             'short_name'       => sanitize_text_field($_POST['short_name'] ?? ''),
             'business_type'    => array_map('sanitize_text_field', $business_type),
-            'description'      => wp_kses_post($_POST['description'] ?? ''),
+            'tagline'          => sanitize_text_field($_POST['tagline'] ?? ''),
+            'profile_summary'  => wp_kses_post($_POST['profile_summary'] ?? ''),
+            'brief_history'    => wp_kses_post($_POST['brief_history'] ?? ''),
             'year_established' => intval($_POST['year_established'] ?? 0),
         ];
 
-        // Simpan ke tabel wp_wpsg_data, site_id default null
         WPSG_AdminData::set_data($this->option_key, $clean);
 
         add_action('admin_notices', function() {

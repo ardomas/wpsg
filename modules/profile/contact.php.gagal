@@ -1,0 +1,200 @@
+<?php
+if (!defined('ABSPATH')) exit;
+
+class WPSG_ProfileContact {
+
+    private $option_key = 'profile_contact';
+    private $platforms  = [];
+
+    public function __construct() {
+        // Load dynamic platforms
+        $this->platforms = WPSG_AdminData::get_platform_private();
+
+        // Handle form submit
+        $this->form_handler();
+    }
+
+    /** Render HTML */
+    public function render() {
+        $data = $this->get_data();
+        ?>
+        <div class="wrap wpsg">
+
+            <h3>Manage your organization’s contact information.</h3>
+
+            <form method="post">
+                <?php wp_nonce_field('wpsg_contact_save', 'wpsg_contact_nonce'); ?>
+
+                <table class="form-table">
+
+                    <!-- STATIC: Email -->
+                    <tr>
+                        <th>
+                            <label for="contact_email">Email</label>
+                        </th>
+                        <td>
+                            <input type="email"
+                                   id="contact_email"
+                                   name="contact_email"
+                                   class="regular-text"
+                                   style="width: 320px;"
+                                   placeholder="name@example.com"
+                                   value="<?php echo esc_attr($data['contact_email'] ?? ''); ?>">
+
+                            <div class="wpsg-preview" data-preview="contact_email"></div>
+                        </td>
+                    </tr>
+
+                    <!-- STATIC: Phone -->
+                    <tr>
+                        <th>
+                            <label for="contact_phone">Phone</label>
+                        </th>
+                        <td>
+                            <input type="text"
+                                   id="contact_phone"
+                                   name="contact_phone"
+                                   class="regular-text"
+                                   style="width: 200px;"
+                                   placeholder="+62..."
+                                   value="<?php echo esc_attr($data['contact_phone'] ?? ''); ?>">
+
+                            <div class="wpsg-preview" data-preview="contact_phone"></div>
+                        </td>
+                    </tr>
+
+                    <!-- DYNAMIC CONTACT FIELDS -->
+                    <?php foreach ($this->platforms as $key => $item): 
+                        if (empty($item['active'])) continue;
+
+                        $label  = $item['name'] ?: ucfirst($key);
+                        $url    = $item['url'] ?? '';
+                        $pattern = $item['pattern'] ?? '{contact}';
+
+                        $value = $data['platform_'.$key] ?? '';
+                    ?>
+                    <tr>
+                        <th>
+                            <label for="platform_<?php echo esc_attr($key); ?>">
+                                <?php if ($url): ?>
+                                    <a href="<?php echo esc_url($url); ?>" target="_blank">
+                                        <?php echo esc_html($label); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <?php echo esc_html($label); ?>
+                                <?php endif; ?>
+                            </label>
+                        </th>
+
+                        <td>
+                            <input type="text"
+                                   id="platform_<?php echo esc_attr($key); ?>"
+                                   name="platform_<?php echo esc_attr($key); ?>"
+                                   class="regular-text"
+                                   style="width: 300px;"
+                                   placeholder="<?php echo esc_attr($pattern); ?>"
+                                   data-pattern="<?php echo esc_attr($pattern); ?>"
+                                   data-baseurl="<?php echo esc_attr($url); ?>"
+                                   value="<?php echo esc_attr($value); ?>">
+
+                            <div class="wpsg-preview" data-preview="platform_<?php echo esc_attr($key); ?>"></div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+
+                </table>
+
+                <p>
+                    <button type="submit" class="button button-primary">
+                        Save Changes
+                    </button>
+                </p>
+
+            </form>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            function updatePreview(input) {
+                const preview = document.querySelector(
+                    '.wpsg-preview[data-preview="' + input.id + '"]'
+                );
+                if (!preview) return;
+
+                const val = input.value.trim();
+                const pattern = input.dataset.pattern || '{contact}';
+                const baseurl = input.dataset.baseurl || '';
+
+                if (!val) {
+                    preview.textContent = '';
+                    return;
+                }
+
+                // Replace {contact}
+                let output = pattern.replace('{contact}', val);
+
+                // Auto combine with Base URL if provided
+                if (baseurl) {
+                    // Ensure slash formatting
+                    let url = baseurl.replace(/\/+$/,''); 
+                    let contact = output.replace(/^\/+/,'');
+
+                    preview.innerHTML = `<code>${url}/${contact}</code>`;
+                } else {
+                    preview.innerHTML = `<code>${output}</code>`;
+                }
+            }
+
+            document.querySelectorAll('input[data-pattern]').forEach(input => {
+                input.addEventListener('input', () => updatePreview(input));
+                updatePreview(input);
+            });
+
+            // static: email / phone simple preview
+            const simpleFields = document.querySelectorAll('#contact_email, #contact_phone');
+            simpleFields.forEach(input => {
+                const prev = document.querySelector(
+                    '.wpsg-preview[data-preview="' + input.id + '"]'
+                );
+                input.addEventListener('input', () => {
+                    prev.textContent = input.value.trim();
+                });
+                prev.textContent = input.value.trim();
+            });
+        });
+        </script>
+        <?php
+    }
+
+    /** PROCESS FORM */
+    private function form_handler() {
+        if (!isset($_POST['wpsg_contact_nonce'])) return;
+        if (!wp_verify_nonce($_POST['wpsg_contact_nonce'], 'wpsg_contact_save')) return;
+
+        $clean = [];
+
+        // Static
+        $clean['contact_email'] = sanitize_text_field($_POST['contact_email'] ?? '');
+        $clean['contact_phone'] = sanitize_text_field($_POST['contact_phone'] ?? '');
+
+        // Dynamic
+        foreach ($this->platforms as $key => $item) {
+            $field = 'platform_'.$key;
+            if (isset($_POST[$field])) {
+                $clean[$field] = sanitize_text_field($_POST[$field]);
+            }
+        }
+
+        WPSG_AdminData::set_data($this->option_key, $clean);
+
+        add_action('admin_notices', function() {
+            echo '<div class="updated"><p>Contact information saved successfully.</p></div>';
+        });
+    }
+
+    /** GET DATA */
+    private function get_data() {
+        return WPSG_AdminData::get_data($this->option_key, []);
+    }
+}

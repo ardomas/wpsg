@@ -1,6 +1,5 @@
 <?php
 // admin/admin-frontend.php
-
 if (!defined('ABSPATH')) exit;
 
 class WPSG_AdminFrontend {
@@ -28,9 +27,7 @@ class WPSG_AdminFrontend {
 
     private function load_admin_default_data() {
         $json = plugin_dir_path(__FILE__) . 'assets/json/admin.json';
-        if (!file_exists($json)) {
-            return [];
-        }
+        if (!file_exists($json)) return [];
         self::$admin_data = json_decode(file_get_contents($json), true);
         return self::$admin_data;
     }
@@ -62,12 +59,8 @@ class WPSG_AdminFrontend {
      * ENQUEUE GLOBAL ADMIN ASSETS
      */
     public function enqueue_admin_assets($hook) {
-        // Pastikan hanya untuk halaman WPSG
-        if ($hook !== 'toplevel_page_wpsg-admin' && strpos($hook, 'wpsg-admin') === false) {
-            return;
-        }
+        if ($hook !== 'toplevel_page_wpsg-admin' && strpos($hook, 'wpsg-admin') === false) return;
 
-        // Load WP core admin styles
         wp_enqueue_style('dashicons');
         wp_enqueue_style('wp-admin');
         wp_enqueue_style('admin-menu');
@@ -75,7 +68,6 @@ class WPSG_AdminFrontend {
         wp_enqueue_style('common');
         wp_enqueue_style('forms');
 
-        // WP editor + media
         wp_enqueue_editor();
         wp_enqueue_media();
 
@@ -85,127 +77,92 @@ class WPSG_AdminFrontend {
 
         require_once WPSG_DIR . 'admin/modules/class-dashboard.php';
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
-
     }
 
     /**
-     * LOAD ADMIN PAGE — hanya router / loader
+     * LOAD ADMIN PAGE
      */
     public function load_admin_page() {
         $page = $_GET['page'] ?? 'wpsg-admin';
         $view = $_GET['view'] ?? 'dashboard';
-        $tab  = $_GET['tab' ] ?? '';
+        $tab  = $_GET['tab'] ?? '';
         $GLOBALS['wpsg_current_page'] = $page;
         $GLOBALS['wpsg_current_view'] = $view;
 
         $sidebar_menu = self::get_admin_data_by_key('sidebar-menu');
-        ?>
 
-        <!-- ========================================================= -->
-        <!--   WPSG ADMIN LAYOUT WRAPPER (SIDEBAR + MAIN CONTENT)      -->
-        <!-- ========================================================= -->
+        ?>
         <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
 
-            <!-- ===================== -->
-            <!--       SIDEBAR         -->
-            <!-- ===================== -->
-            <?php
-            require plugin_dir_path(__FILE__) . 'views/sidebar.php';
-            ?>
+            <!-- SIDEBAR -->
+            <?php require plugin_dir_path(__FILE__) . 'views/sidebar.php'; ?>
 
-            <!-- ===================== -->
-            <!--      MAIN CONTENT     -->
-            <!-- ===================== -->
+            <!-- MAIN CONTENT -->
             <div id="wpsg-admin-main" style="flex:1; padding:20px;">
-
                 <div class="wrap">
                     <?php
-                    if (isset($sidebar_menu[$view]['module_class'])) {
-                        if( isset( $sidebar_menu[$view]['path'] ) ){
-                            if( $tab!='' ){
+                    if (!isset($sidebar_menu[$view])) {
+                        echo '<h2>404: View Not Found</h2>';
+                        return;
+                    }
 
-                                $submenu = $sidebar_menu[$view]['submenu'] ?? '';
+                    $view_data = $sidebar_menu[$view];
+                    $submenu = $view_data['submenu'] ?? null;
 
-                                $sidetab_menu = WPSG_AdminData::get( $submenu, []);
-/*
-                                    ?><strong><?php 
-                                    print_r( $sidetab_menu );
-                                    echo '<br/>';
-                                    print_r( $sidetab_menu[$tab] );
-                                    echo '<br/>';
-                                    print_r( $sidetab_menu[$tab]['path'] );
-                                    die('test dulu ya');
-                                    ?></strong><?php
-*/
-                                if( file_exists( WPSG_DIR . $sidetab_menu[$tab]['path'] ) ){
+                    if ($submenu) {
 
-                                    require_once WPSG_DIR . $sidetab_menu[$tab]['path'];
-                                    $class_name = $sidetab_menu[$tab]['module_class'];
-                                    // print_r( $class_name );
+                        $subdata = self::get_admin_data_by_key($submenu);
 
-                                    if( class_exists( $class_name ) ){
-                                        $module = new $class_name();
-                                        $module->render();
-                                    } else {
-                                        echo '<h2>Tab Module class not found: ' . esc_html( $class_name ) . '</h2>';
-                                    }                                   
-                                } else {
-                                    echo '<h2>Tab Module file not found: ' . esc_html( WPSG_DIR . $sidetab_menu[$tab]['path'] ) . '</h2>';
-                                    return;
-                                }
+                        $current_tab = $tab ?: array_key_first($subdata);
 
+                        echo '<h2 class="nav-tab-wrapper">';
+                        foreach ($subdata as $tab_key => $tab_item) {
+                            $url = add_query_arg(['tab' => $tab_key]);
+                            $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';
+                            echo "<a href='" . esc_url($url) . "' class='nav-tab $active'>" . esc_html($tab_item['title']) . "</a>";
+                        }
+                        echo '</h2>';
+
+                        $tab_file  = WPSG_DIR . $subdata[$current_tab]['path'];
+                        $class_name = $subdata[$current_tab]['module_class'];
+
+                        if (file_exists($tab_file)) {
+                            require_once $tab_file;
+                            if (class_exists($class_name)) {
+                                $module = new $class_name();
+                                $module->render();
                             } else {
-
-                                if( $view=='settings'  ){
-                                    // Pastikan hanya main site yang bisa mengakses
-                                    if (!is_main_site()) {
-                                        wp_die('You do not have permission to access this page.');
-                                    }
-
-                                    // Pastikan user minimal admin
-                                    if (!current_user_can('manage_options')) {
-                                        wp_die('You do not have sufficient permissions to access this page.');
-                                    }
-                                }
-
-                                if( file_exists( WPSG_DIR . $sidebar_menu[$view]['path'] ) ){
-                                    // die( WPSG_DIR . $sidebar_menu[$view]['path'] );
-                                    require_once WPSG_DIR . $sidebar_menu[$view]['path'];
-
-                                    $class_name = $sidebar_menu[$view]['module_class'];
-                                    // die( $class_name );
-
-                                    if (class_exists($class_name)) {
-                                        $module = new $class_name();
-                                        $module->render();
-                                    } else {
-                                        echo '<h2>Module class not found: ' . esc_html($class_name) . '</h2>';
-                                    }
-
-                                } else {
-                                    echo '<h2>Module file not found for view: ' . esc_html($view) . '</h2>';
-                                    return;                                
-                                }
+                                echo '<h2>Tab Module class not found: ' . esc_html($class_name) . '</h2>';
                             }
-
                         } else {
-                            echo '<h2>Module path not defined for view: ' . esc_html($view) . '</h2>';
-                            return;
+                            echo '<h2>Tab Module file not found: ' . esc_html($tab_file) . '</h2>';
                         }
 
                     } else {
-                        echo '<h2>404: View Not Found</h2>';
+                        // Render default module view
+                        $file = WPSG_DIR . $view_data['path'];
+                        $class = $view_data['module_class'];
+
+                        if (!file_exists($file)) {
+                            echo '<h2>Module file not found for view: ' . esc_html($view) . '</h2>';
+                            return;
+                        }
+
+                        require_once $file;
+                        if (class_exists($class)) {
+                            $module = new $class();
+                            $module->render();
+                        } else {
+                            echo '<h2>Module class not found: ' . esc_html($class) . '</h2>';
+                        }
                     }
                     ?>
                 </div>
+            </div>
 
-            </div> <!-- /#wpsg-admin-main -->
-
-        </div> <!-- /#wpsg-admin-container -->
-
+        </div>
         <?php
     }
-
 }
 
 // INITIALIZE

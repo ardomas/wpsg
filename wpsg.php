@@ -11,10 +11,14 @@
 
 if (!defined('ABSPATH')) exit;
 
+// require_once __DIR__ . '/includes/autoload.php';
+
 // Constants
 define('WPSG_VERSION', '0.1.0');
 define('WPSG_DIR', plugin_dir_path(__FILE__));
 define('WPSG_URL', plugin_dir_url(__FILE__));
+
+require_once WPSG_DIR . 'includes/class-wpsg-config.php';
 
 register_activation_hook(__FILE__, function() {
     WPSG_AdminData::get_instance(); // pastikan instance terload
@@ -35,3 +39,6 @@ add_action('plugins_loaded', function () {
 
 require_once WPSG_DIR . 'includes/class-admin-data.php';
 WPSG_AdminData::get_instance();
+
+require_once WPSG_DIR . 'includes/class-admin-profile.php';
+new \WPSG\WPSG_AdminProfile();

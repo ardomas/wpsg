@@ -11,6 +11,24 @@ body {
     background: #f0f0f1;
 }
 
+.nav-tab {
+    background-color: #e7e7e7 !important;
+    border: 1px solid #d1d1d1 !important;
+    border-bottom: none !important;
+    color: #555 !important;
+}
+.nav-tab:hover {
+    background-color: #f3f3f3 !important;
+    color: #0073aa !important;
+}
+
+.nav-tab-active {
+    background-color: #fff !important;
+    border-color: #d1d1d1 #d1d1d1 #fff !important;
+    z-index: 2 !important;
+    color: #0073aa !important;
+    box-shadow: none !important;
+}
 
 /* Untuk menonaktifkan sidebar WP */
 #adminmenu,
@@ -83,11 +101,11 @@ body {
     min-height: 120px;
 }
 
+/*
 .wpsg-card:hover {
-    transform: translateY(-1px);
     box-shadow: 0 0 12px 3px rgba(0,0,0,0.125);
 }
-
+*/
 
 /* Title di dalam card */
 .wpsg-card h1, .wpsg-card h2, .wpsg-card h3, .wpsg-card h4 {
@@ -97,6 +115,11 @@ body {
     background-color: #d3e4f0;
     color: #1d2327;
 }
+.wpsg-card:hover h1, .wpsg-card:hover h2, .wpsg-card:hover h3, .wpsg-card:hover h4 {
+    background-color: #b0d4ea;
+    transition: 0.2s ease-in-out;
+}
+
 .wpsg-card h1 { font-size: 2.500rem; }
 .wpsg-card h2 { font-size: 1.250rem; }
 .wpsg-card h3 { font-size: 1.125rem; }
@@ -133,4 +156,59 @@ a.wpsg-card-link {
         flex: 1 1 100%;
         min-width: 100%;
     }
+}
+
+.wpsg-form .input-wrapper {
+    position: relative;
+    display: block;
+    width: 100%; /* bebas */
+}
+
+.wpsg-form .input-wrapper input {
+    width: 100%;
+    padding-right: 32px; /* ruang untuk tombol */
+}
+
+.wpsg-form .input-wrapper .clear-btn {
+    position: absolute;
+    right: 6px;
+    top: 0px;
+    height: 100%;
+    transform: translateY(-50%);
+    border: none;
+    background: #ddd;
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px;
+    display: none; /* muncul saat input ada isinya */
+}
+
+.wpsg-boxed {
+    background: #fff;
+    border: 1px solid #d1d1d1;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.wpsg-form-field {
+    margin-top   : 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.wpsg-form-field label {
+    display: block;
+    width: 100%;
+}
+
+.wpsg-form-field input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.wpsg-form-field label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
 }
