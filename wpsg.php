@@ -19,9 +19,6 @@ define('WPSG_VERSION', '0.1.0');
 define('WPSG_DIR', plugin_dir_path(__FILE__));
 define('WPSG_URL', plugin_dir_url(__FILE__));
 
-// require_once WPSG_DIR . 'includes/class-wpsg-config.php';
-// WPSG_Config::instance();
-
 register_activation_hook(__FILE__, function() {
     WPSG_AdminData::get_instance(); // pastikan instance terload
     WPSG_AdminData::create_settings_table(); // buat tabel
@@ -45,5 +42,3 @@ require_once WPSG_DIR . '/includes/class-wpsg-announcements.php';
 
 WPSG_AdminData::get_instance();
 
-// require_once WPSG_DIR . 'includes/class-admin-profile.php';
-// new \WPSG\WPSG_AdminProfile();
