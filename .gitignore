@@ -1,1 +1,2 @@
 # ignore all files with extenstion name: unused
+*.unused
