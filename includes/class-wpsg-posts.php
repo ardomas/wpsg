@@ -33,7 +33,15 @@ class WPSG_Posts {
             title VARCHAR(255) NOT NULL,
             status ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
             author_id INT(11) NOT NULL,
-            publish_date DATETIME NOT NULL,
+
+            start_date DATE DEFAULT NULL,
+            end_date DATE DEFAULT NULL,
+
+            start_time TIME DEFAULT NULL,
+            end_time TIME DEFAULT NULL,
+
+            published_at DATETIME NOT NULL,
+
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id)
@@ -72,14 +80,18 @@ class WPSG_Posts {
     // ========================
     public function create_post($data = []) {
         $defaults = [
-            'post_type'   => 'post',
-            'title'       => '',
-            'status'      => 'draft',
-            'site_id'     => get_current_blog_id(),
-            'author_id'   => get_current_user_id(),
-            'publish_date'=> current_time('mysql'),
-            'created_at'  => current_time('mysql'),
-            'updated_at'  => current_time('mysql'),
+            'post_type'     => 'post',
+            'title'         => '',
+            'status'        => 'draft',
+            'site_id'       => get_current_blog_id(),
+            'author_id'     => get_current_user_id(),
+            'published_at'  => current_time('mysql'),
+            'start_date'    => null,
+            'end_date'      => null,
+            'start_time'    => null,
+            'end_time'      => null,
+            'created_at'    => current_time('mysql'),
+            'updated_at'    => current_time('mysql'),
         ];
         $data = wp_parse_args($data, $defaults);
         $this->wpdb->insert($this->table_posts, $data);
@@ -101,7 +113,11 @@ class WPSG_Posts {
         $args = wp_parse_args($args, $defaults);
 
         $query = $this->wpdb->prepare(
-            "SELECT * FROM {$this->table_posts} WHERE post_type = %s AND status = %s AND site_id = %d ORDER BY publish_date DESC",
+            "SELECT * FROM {$this->table_posts} 
+             WHERE post_type = %s 
+             AND status = %s 
+             AND site_id = %d 
+             ORDER BY published_at DESC",
             $args['post_type'], $args['status'], $args['site_id']
         );
         return $this->wpdb->get_results($query);

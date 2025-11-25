@@ -39,7 +39,10 @@ add_action('plugins_loaded', function () {
     }
 });
 
-require_once WPSG_DIR . 'includes/class-admin-data.php';
+require_once WPSG_DIR . '/includes/class-admin-data.php';
+require_once WPSG_DIR . '/includes/class-wpsg-posts.php';
+require_once WPSG_DIR . '/includes/class-wpsg-announcements.php';
+
 WPSG_AdminData::get_instance();
 
 // require_once WPSG_DIR . 'includes/class-admin-profile.php';
