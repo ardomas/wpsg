@@ -1,12 +1,12 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-function wpsg_announcements_page() {
+function wpsg_announcement_data_page() {
     ?>
     <div class="wrap">
         <h1>Manage Announcements</h1>
         <form method="post" action="">
-            <?php wp_nonce_field('wpsg_announcements_action', 'wpsg_announcements_nonce'); ?>
+            <?php wp_nonce_field('wpsg_announcement_data_action', 'wpsg_announcement_data_nonce'); ?>
             <table class="form-table">
                 <tr>
                     <th><label for="announcement_title">Title</label></th>
@@ -21,7 +21,7 @@ function wpsg_announcements_page() {
         </form>
         <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['wpsg_announcements_nonce']) && wp_verify_nonce($_POST['wpsg_announcements_nonce'], 'wpsg_announcements_action')) {
+            if (isset($_POST['wpsg_announcement_data_nonce']) && wp_verify_nonce($_POST['wpsg_announcement_data_nonce'], 'wpsg_announcement_data_action')) {
                 $post_data = [
                     'post_title'    => sanitize_text_field($_POST['announcement_title']),
                     'post_content'  => wp_kses_post($_POST['announcement_content']),

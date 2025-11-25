@@ -45,8 +45,8 @@
         "announcement": {
             "title": "Announcements",
             "icon": "dashicons-megaphone",
-            "path": "modules/announcements.php",
-            "module_class": "WPSG_Announcements",
+            "path": "modules/announcements/list.php",
+            "module_class": "WPSG_AnnouncementsList",
             "description": "Manage all announcements",
             "dashboard": true,
             "site": "all",
@@ -139,6 +139,30 @@
             "description": "Set your organization's preferences for notifications, privacy, and other settings.",
             "site": "all",
             "view": false
+        }
+    },
+
+    "announcements": {
+        "list": {
+            "page": "wpsg-admin",
+            "view": "announcements",
+            "path": "modules/announcements/list",
+            "class": "WPSG_AnnouncementsList",
+            "default": true
+        },
+        "add": {
+            "page": "wpsg-admin",
+            "view": "announcements",
+            "path": "modules/announcements/form",
+            "class": "WPSG_AnnouncementsForm",
+            "default": false
+        },
+        "edit": {
+            "page": "wpsg-admin",
+            "view": "announcements",
+            "path": "modules/announcements/form",
+            "class": "WPSG_AnnouncementsForm",
+            "default": false
         }
     },
 

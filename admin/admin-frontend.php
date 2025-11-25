@@ -79,13 +79,84 @@ class WPSG_AdminFrontend {
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
     }
 
+    public function render_display( $view_data ){
+
+        $view  = $_GET['view'] ?? 'dashboard';
+        $file  = WPSG_DIR . $view_data['path'];
+        $class = $view_data['module_class'];
+
+        if( file_exists( $file ) ){
+
+            require_once $file;
+
+            if (class_exists($class)) {
+
+                $module = new $class();
+                $module->render();
+
+            } else {
+
+                echo '<h2>Class not found: ' . esc_html($class_name) . '</h2>';
+
+            }
+
+        } else {
+
+            echo '<h2>Module file not found for view: ' . esc_html($view) . '</h2>';
+            return;
+
+        }
+
+    }
+
+    public function render_tabs( $menu_data ){
+
+        $tab  = $_GET['tab'] ?? '';
+
+        $current_tab = $tab ?: array_key_first($menu_data);
+
+        echo '<h2 class="nav-tab-wrapper">';
+        foreach ($menu_data as $tab_key => $tab_item) {
+
+            if( $tab_item['view']===true ){
+                $url = add_query_arg(['tab' => $tab_key]);
+                $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';
+                echo "<a href='" . esc_url($url) . "' class='nav-tab $active'>" . esc_html($tab_item['title']) . "</a>";
+            }
+        }
+        echo '</h2>';
+
+        $view_data = $menu_data[$current_tab];
+        $this->render_display( $view_data );
+
+    }
+
+    public function get_admin_config($page, $view, $action = 'list') {
+
+        $admin_config = self::admin_data; // Load admin.json
+
+        if (isset($admin_config[$view][$action])) {
+            return $admin_config[$view][$action];
+        }
+
+        // fallback: default list
+        if (isset($admin_config[$view]['list'])) {
+            return $admin_config[$view]['list'];
+        }
+
+        return null;
+    }
+
     /**
      * LOAD ADMIN PAGE
      */
     public function load_admin_page() {
         $page = $_GET['page'] ?? 'wpsg-admin';
         $view = $_GET['view'] ?? 'dashboard';
-        $tab  = $_GET['tab'] ?? '';
+
+        // $action = $_GET['action'] ?? '';
+        // $config = $this->get_admin_config($page, $view, $action);
+
         $GLOBALS['wpsg_current_page'] = $page;
         $GLOBALS['wpsg_current_view'] = $view;
 
@@ -111,53 +182,12 @@ class WPSG_AdminFrontend {
 
                     if ($submenu) {
 
-                        $subdata = self::get_admin_data_by_key($submenu);
-
-                        $current_tab = $tab ?: array_key_first($subdata);
-
-                        echo '<h2 class="nav-tab-wrapper">';
-                        foreach ($subdata as $tab_key => $tab_item) {
-
-                            if( $tab_item['view']===true ){
-                                $url = add_query_arg(['tab' => $tab_key]);
-                                $active = ($current_tab === $tab_key) ? 'nav-tab-active' : '';
-                                echo "<a href='" . esc_url($url) . "' class='nav-tab $active'>" . esc_html($tab_item['title']) . "</a>";
-                            }
-                        }
-                        echo '</h2>';
-
-                        $tab_file  = WPSG_DIR . $subdata[$current_tab]['path'];
-                        $class_name = $subdata[$current_tab]['module_class'];
-
-                        if (file_exists($tab_file)) {
-                            require_once $tab_file;
-                            if (class_exists($class_name)) {
-                                $module = new $class_name();
-                                $module->render();
-                            } else {
-                                echo '<h2>Tab Module class not found: ' . esc_html($class_name) . '</h2>';
-                            }
-                        } else {
-                            echo '<h2>Tab Module file not found: ' . esc_html($tab_file) . '</h2>';
-                        }
+                        self::render_tabs( self::get_admin_data_by_key($submenu) );
 
                     } else {
-                        // Render default module view
-                        $file = WPSG_DIR . $view_data['path'];
-                        $class = $view_data['module_class'];
 
-                        if (!file_exists($file)) {
-                            echo '<h2>Module file not found for view: ' . esc_html($view) . '</h2>';
-                            return;
-                        }
+                        self::render_display( $view_data );
 
-                        require_once $file;
-                        if (class_exists($class)) {
-                            $module = new $class();
-                            $module->render();
-                        } else {
-                            echo '<h2>Module class not found: ' . esc_html($class) . '</h2>';
-                        }
                     }
                     ?>
                 </div>

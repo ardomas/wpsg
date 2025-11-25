@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class WPSG_Announcements {
+class WPSG_AnnouncementsData {
 
     /**
      * Post type key
@@ -148,4 +148,4 @@ class WPSG_Announcements {
     }
 }
 
-WPSG_Announcements::init();
+WPSG_AnnouncementsData::init();
