@@ -38,7 +38,7 @@
             "path": "modules/articles.php",
             "module_class": "WPSG_Articles",
             "description": "Manage all articles",
-            "dashboard": true,
+            "dashboard": false,
             "site": "all",
             "view": false
         },
