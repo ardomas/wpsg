@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) exit;
 class WPSG_AdminData {
 
     private static $instance = null;
+    private static $type = 'data';
     private static $data = [];
 
     private static $business_types = [];
@@ -80,7 +81,9 @@ class WPSG_AdminData {
     }
 
     private static function cast_as_menu( $raw_data ){
+
         $clean_data = [];
+
         foreach( $raw_data as $key=>$item ){
 
             if( !isset( $item['dashboard'] ) ) $item['dashboard'] = true;
@@ -97,8 +100,8 @@ class WPSG_AdminData {
 
     // Shortcut untuk sidebar menu
     public static function get_sidebar_menu() {
-        $raw_sidebar = self::get('sidebar-menu', []);
-        return self::cast_as_menu( $raw_sidebar );
+        $raw_sidebar = self::get('sidebar', []);
+        return self::cast_as_menu( $raw_sidebar['data'] );
     }
 
     /**

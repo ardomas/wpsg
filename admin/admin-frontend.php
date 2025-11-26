@@ -79,9 +79,9 @@ class WPSG_AdminFrontend {
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
     }
 
-    public function render_display( $view_data ){
+    private function render_display( $view_data ){
 
-        $view  = $_GET['view'] ?? 'dashboard';
+        $view  = $GLOBALS['wpsg_current_view'];
         $file  = WPSG_DIR . $view_data['path'];
         $class = $view_data['module_class'];
 
@@ -109,9 +109,9 @@ class WPSG_AdminFrontend {
 
     }
 
-    public function render_tabs( $menu_data ){
+    private function render_tabs( $menu_data ){
 
-        $tab  = $_GET['tab'] ?? '';
+        $tab  = $GLOBALS['wpsg_current_tab'];
 
         $current_tab = $tab ?: array_key_first($menu_data);
 
@@ -131,36 +131,55 @@ class WPSG_AdminFrontend {
 
     }
 
-    public function get_admin_config($page, $view, $action = 'list') {
+    /* previous name: get_admin_config() */
+    private static function get_admin_menu() {
 
-        $admin_config = self::admin_data; // Load admin.json
+        $view = $GLOBALS['wpsg_current_view'];
+        if( $view == 'dashboard' ) $view = 'sidebar';
 
-        if (isset($admin_config[$view][$action])) {
-            return $admin_config[$view][$action];
+        $result = [];
+        $admin_config = self::$admin_data; // Load admin.json
+
+        if( $view!='' ){
+            $result = $admin_config[$view];
+            // $view_with_actions = ['announcements'];
+            // if( in_array( $view, $view_with_actions ) ){
+            //     $action = $GLOBALS['wpsg_current_action'];
+            //     $result = $result['data'][$action];
+            // }
         }
 
-        // fallback: default list
-        if (isset($admin_config[$view]['list'])) {
-            return $admin_config[$view]['list'];
-        }
-
-        return null;
+        return $result;
     }
 
     /**
      * LOAD ADMIN PAGE
      */
     public function load_admin_page() {
-        $page = $_GET['page'] ?? 'wpsg-admin';
-        $view = $_GET['view'] ?? 'dashboard';
 
-        // $action = $_GET['action'] ?? '';
-        // $config = $this->get_admin_config($page, $view, $action);
+        $view_with_actions = ['announcements'];
+        $is_action = false;
 
-        $GLOBALS['wpsg_current_page'] = $page;
-        $GLOBALS['wpsg_current_view'] = $view;
+        $page   = $_GET['page']   ?? 'wpsg-admin';
+        $view   = $_GET['view']   ?? 'dashboard';
+        $tab    = $_GET['tab' ]   ?? '';
 
-        $sidebar_menu = self::get_admin_data_by_key('sidebar-menu');
+        $GLOBALS['wpsg_current_page'  ] = $page;
+        $GLOBALS['wpsg_current_view'  ] = $view;
+        $GLOBALS['wpsg_current_tab'   ] = $tab;
+
+        if( in_array( $view, $view_with_actions ) ){
+            $is_action = true;
+            $action = $_GET['action'] ?? 'list';
+            $GLOBALS['wpsg_current_action'] = $action;
+        }
+
+        $raw_sidebar_menu = self::get_admin_menu();
+        $sidebar_menu = $raw_sidebar_menu['data'];
+
+        // echo '<xmp>';
+        print_r( $sidebar_menu );
+        // echo '</xmp>';
 
         ?>
         <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
@@ -174,21 +193,38 @@ class WPSG_AdminFrontend {
                     <?php
                     if (!isset($sidebar_menu[$view])) {
                         echo '<h2>404: View Not Found</h2>';
-                        return;
-                    }
-
-                    $view_data = $sidebar_menu[$view];
-                    $submenu = $view_data['submenu'] ?? null;
-
-                    if ($submenu) {
-
-                        self::render_tabs( self::get_admin_data_by_key($submenu) );
-
+                        // return;
                     } else {
 
-                        self::render_display( $view_data );
+                        $view_data = $sidebar_menu[$view];
+
+                        $submenu = $view_data['submenu'] ?? null;
+
+                        if ($submenu) {
+
+                            self::render_tabs( self::get_admin_data_by_key($submenu)['data'] );
+
+                        } else {
+                            
+                            print_r( $view_data );
+                            echo '<br/>';
+                            print_r( $view );
+
+                            self::render_display( $view_data );
+
+                            if( $is_action ){
+                                echo '<br/>';
+                                print_r( $action );
+                                echo '<br/>';
+                                print_r( $view_data );
+                            } else {
+                                // self::render_display( $view_data );
+                            }
+
+                        }
 
                     }
+
                     ?>
                 </div>
             </div>
