@@ -37,7 +37,6 @@ class WPSG_AnnouncementsList {
         <div class="wrap">
             <h1 class="wp-heading-inline">Announcements</h1>
             <a href="<?php echo admin_url('admin.php?page=' . $page . '&view=' . $view . '&action=add'); ?>" class="page-title-action">Add New</a>
-            <a href="<?php echo admin_url('admin.php?page=' . $page . '&view=' . $view); ?>" class="page-title-action">Back to List (All Announcements)</a>
             <hr class="wp-header-end">
             <table class="wp-list-table widefat fixed striped posts">
                 <thead>

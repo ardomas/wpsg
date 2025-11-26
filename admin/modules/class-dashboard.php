@@ -3,11 +3,13 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_Dashboard {
 
+    /*
     public static function enqueue_assets($hook) {
 
         if ($hook !== 'toplevel_page_wpsg-admin' && strpos($hook, 'wpsg-admin') === false) return;
 
     }
+    */
 
     public function render() {
 

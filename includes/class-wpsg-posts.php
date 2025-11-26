@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 
 class WPSG_Posts {
 
-    protected $table_posts = 'wp_wpsg_posts';
+    protected $table_posts    = 'wp_wpsg_posts';
     protected $table_postmeta = 'wp_wpsg_postmeta';
     protected $table_comments = 'wp_wpsg_comments';
     protected $wpdb;
@@ -26,6 +26,7 @@ class WPSG_Posts {
         $charset_collate = $this->wpdb->get_charset_collate();
 
         // wp_wpsg_posts
+/*
         $sql_posts = "CREATE TABLE IF NOT EXISTS {$this->table_posts} (
             id INT(11) NOT NULL AUTO_INCREMENT,
             site_id INT(11) NOT NULL,
@@ -40,7 +41,24 @@ class WPSG_Posts {
             start_time TIME DEFAULT NULL,
             end_time TIME DEFAULT NULL,
 
-            published_at DATETIME NOT NULL,
+            published_at DATETIME NULL,
+            expired_at DATETIME NOT NULL,
+
+            created_at DATETIME NOT NULL,
+            updated_at DATETIME NOT NULL,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
+*/
+
+        $sql_posts = "CREATE TABLE IF NOT EXISTS {$this->table_posts} (
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            site_id INT(11) NOT NULL,
+            post_type VARCHAR(50) NOT NULL DEFAULT 'post',
+            title VARCHAR(255) NOT NULL,
+            status ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
+            author_id INT(11) NOT NULL,
+
+            published_at DATETIME NULL,
 
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
@@ -79,6 +97,7 @@ class WPSG_Posts {
     // POSTS CRUD
     // ========================
     public function create_post($data = []) {
+/*
         $defaults = [
             'post_type'     => 'post',
             'title'         => '',
@@ -93,6 +112,17 @@ class WPSG_Posts {
             'created_at'    => current_time('mysql'),
             'updated_at'    => current_time('mysql'),
         ];
+*/
+        $defaults = [
+            'post_type'     => 'post',
+            'title'         => '',
+            'status'        => 'draft',
+            'site_id'       => get_current_blog_id(),
+            'author_id'     => get_current_user_id(),
+            'published_at'  => current_time('mysql'),
+            'created_at'    => current_time('mysql'),
+            'updated_at'    => current_time('mysql'),
+        ];
         $data = wp_parse_args($data, $defaults);
         $this->wpdb->insert($this->table_posts, $data);
         return $this->wpdb->insert_id;
@@ -102,6 +132,23 @@ class WPSG_Posts {
         return $this->wpdb->get_row(
             $this->wpdb->prepare("SELECT * FROM {$this->table_posts} WHERE id = %d", $id)
         );
+    }
+
+    public function get_all_posts($args = []) {
+        $defaults = [
+            'post_type' => 'post',
+            'status'    => 'published',
+        ];
+        $args = wp_parse_args($args, $defaults);
+
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->table_posts} 
+             WHERE post_type = %s 
+             AND status = %s 
+             ORDER BY published_at DESC",
+            $args['post_type'], $args['status']
+        );
+        return $this->wpdb->get_results($query);
     }
 
     public function get_posts($args = []) {
@@ -123,12 +170,12 @@ class WPSG_Posts {
         return $this->wpdb->get_results($query);
     }
 
-    public function update_post($id, $data = []) {
+    public function set_post($id, $data = []) {
         $data['updated_at'] = current_time('mysql');
         return $this->wpdb->update($this->table_posts, $data, ['id' => $id]);
     }
 
-    public function delete_post($id) {
+    public function del_post($id) {
         // hapus meta
         $this->wpdb->delete($this->table_postmeta, ['post_id' => $id]);
         // hapus komentar
@@ -174,7 +221,7 @@ class WPSG_Posts {
         }
     }
 
-    public function update_meta($post_id, $key, $value) {
+    public function set_meta($post_id, $key, $value) {
         $existing = $this->get_meta($post_id, $key);
         if ($existing !== null) {
             return $this->wpdb->update(
@@ -187,7 +234,7 @@ class WPSG_Posts {
         }
     }
 
-    public function delete_meta($post_id, $key = null) {
+    public function del_meta($post_id, $key = null) {
         if ($key) {
             return $this->wpdb->delete($this->table_postmeta, ['post_id' => $post_id, 'meta_key' => $key]);
         } else {
@@ -220,12 +267,12 @@ class WPSG_Posts {
         );
     }
 
-    public function update_comment($id, $data = []) {
+    public function set_comment($id, $data = []) {
         $data['updated_at'] = current_time('mysql');
         return $this->wpdb->update($this->table_comments, $data, ['id' => $id]);
     }
 
-    public function delete_comment($id) {
+    public function del_comment($id) {
         return $this->wpdb->delete($this->table_comments, ['id' => $id]);
     }
 }

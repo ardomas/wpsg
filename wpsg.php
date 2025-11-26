@@ -21,7 +21,7 @@ define('WPSG_URL', plugin_dir_url(__FILE__));
 
 require_once WPSG_DIR . '/includes/class-admin-data.php';
 require_once WPSG_DIR . '/includes/class-wpsg-posts.php';
-require_once WPSG_DIR . '/includes/class-wpsg-announcements.php';
+// require_once WPSG_DIR . '/includes/class-wpsg-announcements.php';
 
 register_activation_hook(__FILE__, function() {
     WPSG_AdminData::get_instance(); // pastikan instance terload
@@ -42,4 +42,4 @@ add_action('plugins_loaded', function () {
 });
 
 WPSG_AdminData::get_instance();
-WPSG_AnnouncementsData::init();
+// WPSG_AnnouncementsData::init();

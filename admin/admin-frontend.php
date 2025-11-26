@@ -94,6 +94,12 @@ class WPSG_AdminFrontend {
                 $module = new $class();
                 $module->render();
 
+/*
+                if( method_exists( $module, 'enqueue_assets' ) ){
+                    $module->enqueue_assets();
+                }
+*/
+
             } else {
 
                 echo '<h2>Class not found: ' . esc_html($class_name) . '</h2>';
