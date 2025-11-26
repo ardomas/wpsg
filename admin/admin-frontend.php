@@ -83,7 +83,7 @@ class WPSG_AdminFrontend {
 
         $view  = $GLOBALS['wpsg_current_view'];
         $file  = WPSG_DIR . $view_data['path'];
-        $class = $view_data['module_class'];
+        $class = $view_data['class'];
 
         if( file_exists( $file ) ){
 
@@ -141,7 +141,9 @@ class WPSG_AdminFrontend {
         $admin_config = self::$admin_data; // Load admin.json
 
         if( $view!='' ){
-            $result = $admin_config[$view];
+            if( isset( $admin_config[$view] ) ){
+                $result = $admin_config[$view];
+            }
             // $view_with_actions = ['announcements'];
             // if( in_array( $view, $view_with_actions ) ){
             //     $action = $GLOBALS['wpsg_current_action'];
@@ -175,10 +177,14 @@ class WPSG_AdminFrontend {
         }
 
         $raw_sidebar_menu = self::get_admin_menu();
-        $sidebar_menu = $raw_sidebar_menu['data'];
+        if( isset( $raw_sidebar_menu['data'] ) ){
+            $sidebar_menu = $raw_sidebar_menu['data'];
+        } else {
+            $sidebar_menu = $raw_sidebar_menu;
+        }
 
         // echo '<xmp>';
-        print_r( $sidebar_menu );
+        // print_r( $sidebar_menu );
         // echo '</xmp>';
 
         ?>
@@ -205,20 +211,17 @@ class WPSG_AdminFrontend {
                             self::render_tabs( self::get_admin_data_by_key($submenu)['data'] );
 
                         } else {
-                            
-                            print_r( $view_data );
-                            echo '<br/>';
-                            print_r( $view );
-
-                            self::render_display( $view_data );
 
                             if( $is_action ){
-                                echo '<br/>';
-                                print_r( $action );
-                                echo '<br/>';
-                                print_r( $view_data );
+
+                                $view_data = self::get_admin_data_by_key( $view )['data'];
+
+                                self::render_display( $view_data[$action] );
+
                             } else {
-                                // self::render_display( $view_data );
+
+                                self::render_display( $view_data );
+
                             }
 
                         }

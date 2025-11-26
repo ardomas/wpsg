@@ -6,7 +6,7 @@
                 "title": "WP Admin",
                 "icon": "dashicons-wordpress",
                 "path": null,
-                "module_class": null,
+                "class": null,
                 "description": "Back to WP-Admin",
                 "dashboard": false,
                 "site": "all",
@@ -16,7 +16,7 @@
                 "title": "Dashboard",
                 "icon": "dashicons-layout",
                 "path": "admin/modules/class-dashboard.php",
-                "module_class": "WPSG_Dashboard",
+                "class": "WPSG_Dashboard",
                 "description": "This Page",
                 "dashboard": false,
                 "site": "all",
@@ -26,7 +26,7 @@
                 "title": "Profile",
                 "icon": "dashicons-index-card",
                 "path": "modules/profile.php",
-                "module_class": "WPSG_Profile",
+                "class": "WPSG_Profile",
                 "submenu": "profile",
                 "default": "identity",
                 "description": "Manage Profile Data",
@@ -38,7 +38,7 @@
                 "title": "Articles",
                 "icon": "dashicons-welcome-write-blog",
                 "path": "modules/articles.php",
-                "module_class": "WPSG_Articles",
+                "class": "WPSG_Articles",
                 "description": "Manage all articles",
                 "dashboard": false,
                 "site": "all",
@@ -48,7 +48,7 @@
                 "title": "Announcements",
                 "icon": "dashicons-megaphone",
                 "path": "modules/announcements/list.php",
-                "module_class": "WPSG_AnnouncementsList",
+                "class": "WPSG_AnnouncementsList",
                 "description": "Manage all announcements",
                 "dashboard": true,
                 "site": "all",
@@ -58,7 +58,7 @@
                 "title": "Membership",
                 "icon": "dashicons-groups",
                 "path": "modules/membership.php",
-                "module_class": "WPSG_Membership",
+                "class": "WPSG_Membership",
                 "description": "Manage membership data",
                 "dashboard": true,
                 "site": "main",
@@ -70,7 +70,7 @@
                 "path": "modules/settings.php",
                 "submenu": "settings",
                 "default": "general",
-                "module_class": "WPSG_Settings",
+                "class": "WPSG_Settings",
                 "description": "Configure default site/organization settings",
                 "dashboard": true,
                 "site": "main",
@@ -86,7 +86,7 @@
                 "title": "Identity",
                 "icon": "dashicons-index-card",
                 "path": "modules/profile/identity.php",
-                "module_class": "WPSG_ProfileIdentity",
+                "class": "WPSG_ProfileIdentity",
                 "description": "Centralized settings for your organization's identity, address, branding, and more.",
                 "site": "all",
                 "view": true
@@ -95,7 +95,7 @@
                 "title": "Address",
                 "icon": "dashicons-location-alt",
                 "path": "modules/profile/address.php",
-                "module_class": "WPSG_ProfileAddress",
+                "class": "WPSG_ProfileAddress",
                 "description": "Manage your organization's physical and mailing addresses.",
                 "site": "all",
                 "view": true
@@ -104,7 +104,7 @@
                 "title": "Contact",
                 "icon": "dashicons-email",
                 "path": "modules/profile/contact.php",
-                "module_class": "WPSG_ProfileContact",
+                "class": "WPSG_ProfileContact",
                 "description": "Update your organization's contact information, including phone numbers and email addresses.",
                 "site": "all",
                 "view": true
@@ -113,7 +113,7 @@
                 "title": "Social",
                 "icon": "dashicons-share",
                 "path": "modules/profile/social.php",
-                "module_class": "WPSG_ProfileSocial",
+                "class": "WPSG_ProfileSocial",
                 "description": "Link your organization's social media profiles and manage social sharing settings.",
                 "site": "all",
                 "view": true
@@ -122,7 +122,7 @@
                 "title": "Values",
                 "icon": "dashicons-heart",
                 "path": "modules/profile/values.php",
-                "module_class": "WPSG_ProfileValues",
+                "class": "WPSG_ProfileValues",
                 "description": "Define and manage your organization's core values and mission statement.",
                 "site": "all",
                 "view": true
@@ -131,7 +131,7 @@
                 "title": "Branding",
                 "icon": "dashicons-art",
                 "path": "modules/profile/branding.php",
-                "module_class": "WPSG_ProfileBranding",
+                "class": "WPSG_ProfileBranding",
                 "description": "Customize your organization's branding elements, including logos, colors, and themes.",
                 "site": "all",
                 "view": true
@@ -140,7 +140,7 @@
                 "title": "Preferences",
                 "icon": "dashicons-admin-generic",
                 "path": "modules/profile/preferences.php",
-                "module_class": "WPSG_ProfilePreferences",
+                "class": "WPSG_ProfilePreferences",
                 "description": "Set your organization's preferences for notifications, privacy, and other settings.",
                 "site": "all",
                 "view": false
@@ -154,21 +154,21 @@
             "list": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/list",
+                "path": "modules/announcements/list.php",
                 "class": "WPSG_AnnouncementsList",
                 "default": true
             },
             "add": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/form",
+                "path": "modules/announcements/form.php",
                 "class": "WPSG_AnnouncementsForm",
                 "default": false
             },
             "edit": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/form",
+                "path": "modules/announcements/form.php",
                 "class": "WPSG_AnnouncementsForm",
                 "default": false
             }
@@ -182,7 +182,7 @@
                 "title": "General",
                 "icon": "dashicons-admin-settings",
                 "path": "modules/settings/general.php",
-                "module_class": "WPSG_SettingsGeneral",
+                "class": "WPSG_SettingsGeneral",
                 "description": "General plugin settings",
                 "site": "main",
                 "view": true
@@ -191,7 +191,7 @@
                 "title": "Private Media Platforms",
                 "icon": "dashicons-shield",
                 "path": "modules/settings/platform-private.php",
-                "module_class": "WPSG_SettingsPlatformPrivate",
+                "class": "WPSG_SettingsPlatformPrivate",
                 "description": "Customize Private Social Media Platform settings",
                 "site": "main",
                 "view": true
@@ -200,7 +200,7 @@
                 "title": "Public Media Platforms",
                 "icon": "dashicons-admin-site",
                 "path": "modules/settings/platform-public.php",
-                "module_class": "WPSG_SettingsPlatformPublic",
+                "class": "WPSG_SettingsPlatformPublic",
                 "description": "Customize Public Social Media Platform settings",
                 "site": "main",
                 "view": true
@@ -209,7 +209,7 @@
                 "title": "Business Types",
                 "icon": "dashicons-businessman",
                 "path": "modules/settings/business-types.php",
-                "module_class": "WPSG_SettingsBusinessTypes",
+                "class": "WPSG_SettingsBusinessTypes",
                 "description": "Manage Business Types settings",
                 "site": "main",
                 "view": true
