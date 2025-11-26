@@ -16,7 +16,7 @@ class WPSG_AnnouncementsForm {
         // enqueue our script
         wp_enqueue_script(
             'wpsg-announcements',
-            WPSG_URL . 'admin/js/announcements.js',
+            WPSG_URL . 'assets/js/announcements.js',
             array('jquery'),
             WPSG_VERSION,
             true
