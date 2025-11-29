@@ -1,5 +1,5 @@
 <?php
-// views/sidebar.php
+// modules/sidebar.php
 
 if (!defined('ABSPATH')) exit;
 

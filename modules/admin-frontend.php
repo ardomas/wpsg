@@ -77,7 +77,7 @@ class WPSG_AdminFrontend {
         wp_enqueue_style('wpsg-sidebar'    , plugin_dir_url(__FILE__) . '../assets/css/sidebar.css'    , [], WPSG_VERSION);
         wp_enqueue_style('wpsg-content'    , plugin_dir_url(__FILE__) . '../assets/css/content.css'    , [], WPSG_VERSION);
 
-        require_once WPSG_DIR . 'views/dashboard.php';
+        require_once WPSG_DIR . 'modules/dashboard.php';
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
     }
 
@@ -206,7 +206,7 @@ class WPSG_AdminFrontend {
         <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
 
             <!-- SIDEBAR -->
-            <?php require WPSG_DIR . 'views/sidebar.php'; ?>
+            <?php require WPSG_DIR . 'modules/sidebar.php'; ?>
 
             <!-- MAIN CONTENT -->
             <div id="wpsg-admin-main" style="flex:1; padding:20px;">

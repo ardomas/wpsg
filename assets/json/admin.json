@@ -15,7 +15,7 @@
             "dashboard": {
                 "title": "Dashboard",
                 "icon": "dashicons-layout",
-                "path": "views/dashboard.php",
+                "path": "modules/dashboard.php",
                 "class": "WPSG_Dashboard",
                 "method": "render",
                 "description": "This Page",
