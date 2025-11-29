@@ -61,16 +61,35 @@
     cursor: pointer;
     border-radius: 3px;
 }
+.repeatable-row button.remove-row::before {
+    font-family: "font awesome 6 free";
+    content: var(--fa-trash);
+    font-size: 1.25em;
+    line-height: 2em;
+    font-weight: 400;
+    padding: 0.25em 0.25em 0;
+}
+
+.repeatable-row button.remove-row > * {
+    /* margin-top: 20% !important; */
+    text-align: center;
+}
 
 .repeatable-row button.remove-row:hover {
     background-color: #c9302c;
+    color: #ff0;
 }
 
 /* Add button */
+button {
+    height: 3em;
+}
+
 button.add-repeatable,
 button#add_speaker,
 button#add_organizer,
-button#add_pricing {
+button#add_pricing
+{
     margin-top: 5px;
     margin-bottom: 15px;
 }

@@ -1,9 +1,9 @@
 <?php
-// admin/views/sidebar.php
+// views/sidebar.php
 
 if (!defined('ABSPATH')) exit;
 
-require_once WPSG_DIR . 'includes/class-admin-data.php';
+require_once WPSG_DIR . 'includes/data/class-wpsg-admin-data.php';
 
 // Ambil sidebar menu dari WPSG_AdminData
 $sidebar_menu = WPSG_AdminData::get_sidebar_menu();

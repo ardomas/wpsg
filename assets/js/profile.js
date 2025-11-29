@@ -1,4 +1,4 @@
-// admin/assets/js/profile.js
+// assets/js/profile.js
 jQuery(document).ready(function($){
 
     // WP media frame for logo

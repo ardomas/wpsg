@@ -49,7 +49,7 @@ class WPSG_SettingsBusinessTypes {
         <form method="post" action="">
             <?php wp_nonce_field('wpsg_save_business_types', 'wpsg_business_types_nonce'); ?>
 
-            <table class="form-table" id="business-types-table">
+            <table class="table bordered striped hover" id="business-types-table" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>Key</th>

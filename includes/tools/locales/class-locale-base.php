@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSG_Locales_Base
+ * WPSG_LocalesBase
  *
  * Base helpers and initialization for Locales module.
  */
-class WPSG_Locales_Base {
+class WPSG_LocalesBase {
 
     /**
      * Initialize module: register procedural helpers and shortcodes.
@@ -18,13 +18,13 @@ class WPSG_Locales_Base {
         // Register procedural wrappers (if not exists)
         if ( ! function_exists( 'wpsg_format_date' ) ) {
             function wpsg_format_date( $date = '', $format = 'long' ) {
-                return WPSG_Date_Formatter::format( $date, $format );
+                return WPSG_DateFormatter::format( $date, $format );
             }
         }
 
         if ( ! function_exists( 'wpsg_format_number' ) ) {
             function wpsg_format_number( $number = 0, $decimals = 0, $use_currency = false, $currency = 'IDR' ) {
-                return WPSG_Currency_Formatter::format( $number, (int) $decimals, (bool) $use_currency, $currency );
+                return WPSG_CurrencyFormatter::format( $number, (int) $decimals, (bool) $use_currency, $currency );
             }
         }
 

@@ -43,13 +43,14 @@ class WPSG_SettingsGeneral {
         <form method="post" action="">
             <?php wp_nonce_field('wpsg_save_general_settings', 'wpsg_general_nonce'); ?>
 
-            <div class="wpsg-boxed">
+            <div class="wpsg wpsg-boxed">
 
-                <table class="form-table">
-                    <tr>
-                        <th><label for="default_timezone">Default Timezone</label></th>
-                        <td>
-                            <select name="default_timezone" id="default_timezone">
+                <div class="wpsg-form-full wrap">
+
+                    <div class="wpsg-row">
+                        <div class="wpsg-form-field">
+                            <label for="default_timezone">Default Timezone</label>
+                            <select class="regular-text" name="default_timezone" id="default_timezone">
                                 <?php 
                                 $timezones = timezone_identifiers_list();
                                 foreach ($timezones as $tz) : ?>
@@ -58,20 +59,26 @@ class WPSG_SettingsGeneral {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
 
-                    <tr>
-                        <th><label for="default_country">Default Country</label></th>
-                        <td><input type="text" name="default_country" id="default_country" value="<?php echo esc_attr($this->data['default_country']); ?>" /></td>
-                    </tr>
+                    <div class="wpsg-row">
+                        <div class="wpsg-form-field">
+                            <label for="default_country">Default Country</label>
+                            <input class="regular-text" type="text" name="default_country" id="default_country" value="<?php echo esc_attr($this->data['default_country']); ?>" />
+                        </div>
 
-                    <tr>
-                        <th><label for="default_city">Default City</label></th>
-                        <td><input type="text" name="default_city" id="default_city" value="<?php echo esc_attr($this->data['default_city']); ?>" /></td>
-                    </tr>
+                    </div>
 
-                </table>
+                    <div class="wpsg-row">
+                        <div class="wpsg-form-field">
+                            <label for="default_city">Default City</label>
+                            <input class="regular-text" type="text" name="default_city" id="default_city" value="<?php echo esc_attr($this->data['default_city']); ?>" />
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 

@@ -53,7 +53,7 @@ class WPSG_SettingsPlatformPublic {
         <form method="post" action="">
             <?php wp_nonce_field('wpsg_save_platform_public', 'wpsg_platform_public_nonce'); ?>
 
-            <table class="form-table" id="platform-public-table">
+            <table class="table bordered striped hover" id="platform-public-table">
                 <thead>
                     <tr>
                         <th>Key</th>

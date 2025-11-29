@@ -32,13 +32,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'plugins_loaded', function() {
 
     // Initialize date formatter if needed
-    if ( method_exists( \WPSG_Date_Formatter::class, 'init' ) ) {
-        \WPSG_Date_Formatter::init();
+    if ( method_exists( \WPSG_DateFormatter::class, 'init' ) ) {
+        \WPSG_DateFormatter::init();
     }
 
     // Initialize currency formatter if needed
-    if ( method_exists( \WPSG_Currency_Formatter::class, 'init' ) ) {
-        \WPSG_Currency_Formatter::init();
+    if ( method_exists( \WPSG_CurrencyFormatter::class, 'init' ) ) {
+        \WPSG_CurrencyFormatter::init();
     }
 });
 
@@ -61,7 +61,7 @@ if ( ! function_exists( 'wpsg_format_date' ) ) {
      * @return string
      */
     function wpsg_format_date( $date, $format = null ) {
-        return \WPSG_Date_Formatter::format( $date, $format );
+        return \WPSG_DateFormatter::format( $date, $format );
     }
 }
 
@@ -74,7 +74,7 @@ if ( ! function_exists( 'wpsg_format_currency' ) ) {
      * @return string
      */
     function wpsg_format_currency( $number, $currency = 'IDR' ) {
-        return \WPSG_Currency_Formatter::format( $number, $currency );
+        return \WPSG_CurrencyFormatter::format( $number, $currency );
     }
 }
 

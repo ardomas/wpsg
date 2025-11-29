@@ -53,7 +53,7 @@ class WPSG_SettingsPlatformPrivate {
         <form method="post" action="">
             <?php wp_nonce_field('wpsg_save_platform_private', 'wpsg_platform_private_nonce'); ?>
 
-            <table class="form-table" id="platform-private-table">
+            <table class="table bordered striped hover" id="platform-private-table" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>Key</th>

@@ -17,3 +17,5 @@ foreach ( glob( $modules_dir . '*', GLOB_ONLYDIR ) as $module_path ) {
         require_once $module_init;
     }
 }
+
+wpsg_enqueue_fontawesome();

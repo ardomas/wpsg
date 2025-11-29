@@ -9,6 +9,7 @@ class WPSG_AdminFrontend {
 
     private function __construct() {
         // Load Admin Default Data
+
         self::load_admin_default_data();
 
         // REGISTER MENU
@@ -16,6 +17,7 @@ class WPSG_AdminFrontend {
 
         // ENQUEUE GLOBAL ADMIN ASSETS
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+
     }
 
     public static function get_instance() {
@@ -26,7 +28,7 @@ class WPSG_AdminFrontend {
     }
 
     private function load_admin_default_data() {
-        $json = plugin_dir_path(__FILE__) . 'assets/json/admin.json';
+        $json = WPSG_DIR . '/assets/json/admin.json';
         if (!file_exists($json)) return [];
         self::$admin_data = json_decode(file_get_contents($json), true);
         return self::$admin_data;
@@ -71,19 +73,26 @@ class WPSG_AdminFrontend {
         wp_enqueue_editor();
         wp_enqueue_media();
 
-        wp_enqueue_style('wpsg-core-layout', plugin_dir_url(__FILE__) . 'assets/css/core-layout.css', [], WPSG_VERSION);
-        wp_enqueue_style('wpsg-sidebar'    , plugin_dir_url(__FILE__) . 'assets/css/sidebar.css'    , [], WPSG_VERSION);
-        wp_enqueue_style('wpsg-content'    , plugin_dir_url(__FILE__) . 'assets/css/content.css'    , [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-core-layout', plugin_dir_url(__FILE__) . '../assets/css/core-layout.css', [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-sidebar'    , plugin_dir_url(__FILE__) . '../assets/css/sidebar.css'    , [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-content'    , plugin_dir_url(__FILE__) . '../assets/css/content.css'    , [], WPSG_VERSION);
 
-        require_once WPSG_DIR . 'admin/modules/class-dashboard.php';
+        require_once WPSG_DIR . 'views/dashboard.php';
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
     }
 
     private function render_display( $view_data ){
 
-        $view  = $GLOBALS['wpsg_current_view'];
-        $file  = WPSG_DIR . $view_data['path'];
-        $class = $view_data['class'];
+        $view   = $GLOBALS['wpsg_current_view'];
+        $file   = WPSG_DIR . $view_data['path'];
+        $class  = $view_data['class'];
+        $method = $view_data['method'] ?? 'render';
+
+        // print_r( $view_data );
+        // ?><br/><?php
+        // print_r( $method );
+
+        wpsg_enqueue_fontawesome();
 
         if( file_exists( $file ) ){
 
@@ -92,7 +101,7 @@ class WPSG_AdminFrontend {
             if (class_exists($class)) {
 
                 $module = new $class();
-                $module->render();
+                $module->$method();
 
 /*
                 if( method_exists( $module, 'enqueue_assets' ) ){
@@ -197,7 +206,7 @@ class WPSG_AdminFrontend {
         <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
 
             <!-- SIDEBAR -->
-            <?php require plugin_dir_path(__FILE__) . 'views/sidebar.php'; ?>
+            <?php require WPSG_DIR . 'views/sidebar.php'; ?>
 
             <!-- MAIN CONTENT -->
             <div id="wpsg-admin-main" style="flex:1; padding:20px;">

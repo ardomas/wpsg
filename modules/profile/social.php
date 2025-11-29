@@ -27,7 +27,7 @@ class WPSG_ProfileSocial {
 
         // Jika kosong, fallback ke admin.json
         if (empty($platforms)) {
-            $json_file = WPSG_PLUGIN_DIR . '/admin.json';
+            $json_file = WPSG_DIR . '/assets/json/admin.json';
             if (file_exists($json_file)) {
                 $json_data = json_decode(file_get_contents($json_file), true);
                 $platforms = $json_data['platform-public-default'] ?? [];

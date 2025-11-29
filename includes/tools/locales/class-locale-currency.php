@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSG_Currency_Formatter
+ * WPSG_CurrencyFormatter
  *
  * Number & currency formatting helpers and shortcode.
  */
-class WPSG_Currency_Formatter {
+class WPSG_CurrencyFormatter {
 
     /**
      * Initialize number/currency hooks.
@@ -101,4 +101,4 @@ class WPSG_Currency_Formatter {
 }
 
 // Auto init
-add_action( 'init', array( 'WPSG_Currency_Formatter', 'init' ) );
+add_action( 'init', array( 'WPSG_CurrencyFormatter', 'init' ) );

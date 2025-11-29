@@ -15,8 +15,9 @@
             "dashboard": {
                 "title": "Dashboard",
                 "icon": "dashicons-layout",
-                "path": "admin/modules/class-dashboard.php",
+                "path": "views/dashboard.php",
                 "class": "WPSG_Dashboard",
+                "method": "render",
                 "description": "This Page",
                 "dashboard": false,
                 "site": "all",
@@ -27,6 +28,7 @@
                 "icon": "dashicons-index-card",
                 "path": "modules/profile.php",
                 "class": "WPSG_Profile",
+                "method": "render",
                 "submenu": "profile",
                 "default": "identity",
                 "description": "Manage Profile Data",
@@ -39,6 +41,7 @@
                 "icon": "dashicons-welcome-write-blog",
                 "path": "modules/articles.php",
                 "class": "WPSG_Articles",
+                "method": "render",
                 "description": "Manage all articles",
                 "dashboard": false,
                 "site": "all",
@@ -49,6 +52,7 @@
                 "icon": "dashicons-megaphone",
                 "path": "modules/announcements/list.php",
                 "class": "WPSG_AnnouncementsList",
+                "method": "render",
                 "description": "Manage all announcements",
                 "dashboard": true,
                 "site": "all",
@@ -57,8 +61,9 @@
             "membership": {
                 "title": "Membership",
                 "icon": "dashicons-groups",
-                "path": "modules/membership.php",
-                "class": "WPSG_Membership",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "render_page",
                 "description": "Manage membership data",
                 "dashboard": true,
                 "site": "main",
@@ -71,6 +76,7 @@
                 "submenu": "settings",
                 "default": "general",
                 "class": "WPSG_Settings",
+                "method": "render",
                 "description": "Configure default site/organization settings",
                 "dashboard": true,
                 "site": "main",
@@ -87,6 +93,7 @@
                 "icon": "dashicons-index-card",
                 "path": "modules/profile/identity.php",
                 "class": "WPSG_ProfileIdentity",
+                "method": "render",
                 "description": "Centralized settings for your organization's identity, address, branding, and more.",
                 "site": "all",
                 "view": true
@@ -96,6 +103,7 @@
                 "icon": "dashicons-location-alt",
                 "path": "modules/profile/address.php",
                 "class": "WPSG_ProfileAddress",
+                "method": "render",
                 "description": "Manage your organization's physical and mailing addresses.",
                 "site": "all",
                 "view": true
@@ -105,6 +113,7 @@
                 "icon": "dashicons-email",
                 "path": "modules/profile/contact.php",
                 "class": "WPSG_ProfileContact",
+                "method": "render",
                 "description": "Update your organization's contact information, including phone numbers and email addresses.",
                 "site": "all",
                 "view": true
@@ -114,6 +123,7 @@
                 "icon": "dashicons-share",
                 "path": "modules/profile/social.php",
                 "class": "WPSG_ProfileSocial",
+                "method": "render",
                 "description": "Link your organization's social media profiles and manage social sharing settings.",
                 "site": "all",
                 "view": true
@@ -123,6 +133,7 @@
                 "icon": "dashicons-heart",
                 "path": "modules/profile/values.php",
                 "class": "WPSG_ProfileValues",
+                "method": "render",
                 "description": "Define and manage your organization's core values and mission statement.",
                 "site": "all",
                 "view": true
@@ -132,6 +143,7 @@
                 "icon": "dashicons-art",
                 "path": "modules/profile/branding.php",
                 "class": "WPSG_ProfileBranding",
+                "method": "render",
                 "description": "Customize your organization's branding elements, including logos, colors, and themes.",
                 "site": "all",
                 "view": true
@@ -141,6 +153,7 @@
                 "icon": "dashicons-admin-generic",
                 "path": "modules/profile/preferences.php",
                 "class": "WPSG_ProfilePreferences",
+                "method": "render",
                 "description": "Set your organization's preferences for notifications, privacy, and other settings.",
                 "site": "all",
                 "view": false
@@ -154,22 +167,33 @@
             "list": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/list.php",
-                "class": "WPSG_AnnouncementsList",
+                "path": "modules/announcements.php",
+                "class": "WPSG_Announcements",
+                "method": "list",
                 "default": true
             },
             "add": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/form.php",
-                "class": "WPSG_AnnouncementsForm",
+                "path": "modules/announcements.php",
+                "class": "WPSG_Announcements",
+                "method": "form",
                 "default": false
             },
             "edit": {
                 "page": "wpsg-admin",
                 "view": "announcements",
-                "path": "modules/announcements/form.php",
-                "class": "WPSG_AnnouncementsForm",
+                "path": "modules/announcements.php",
+                "class": "WPSG_Announcements",
+                "method": "form",
+                "default": false
+            },
+            "save": {
+                "page": "wpsg-admin",
+                "view": "announcements",
+                "path": "modules/announcements.php",
+                "class": "WPSG_Announcements",
+                "method": "save_announcement",
                 "default": false
             }
         }
@@ -183,6 +207,7 @@
                 "icon": "dashicons-admin-settings",
                 "path": "modules/settings/general.php",
                 "class": "WPSG_SettingsGeneral",
+                "method": "render",
                 "description": "General plugin settings",
                 "site": "main",
                 "view": true
@@ -192,6 +217,7 @@
                 "icon": "dashicons-shield",
                 "path": "modules/settings/platform-private.php",
                 "class": "WPSG_SettingsPlatformPrivate",
+                "method": "render",
                 "description": "Customize Private Social Media Platform settings",
                 "site": "main",
                 "view": true
@@ -201,6 +227,7 @@
                 "icon": "dashicons-admin-site",
                 "path": "modules/settings/platform-public.php",
                 "class": "WPSG_SettingsPlatformPublic",
+                "method": "render",
                 "description": "Customize Public Social Media Platform settings",
                 "site": "main",
                 "view": true
@@ -210,6 +237,7 @@
                 "icon": "dashicons-businessman",
                 "path": "modules/settings/business-types.php",
                 "class": "WPSG_SettingsBusinessTypes",
+                "method": "render",
                 "description": "Manage Business Types settings",
                 "site": "main",
                 "view": true

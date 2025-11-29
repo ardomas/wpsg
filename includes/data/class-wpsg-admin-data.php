@@ -1,5 +1,5 @@
 <?php
-// wpsg/includes/class-admin-data.php
+// wpsg/includes/data/class-wpsg-admin-data.php
 if (!defined('ABSPATH')) exit;
 
 class WPSG_AdminData {
@@ -63,7 +63,7 @@ class WPSG_AdminData {
     }
 
     private function load_json() {
-        $json_file = WPSG_DIR . 'admin/assets/json/admin.json';
+        $json_file = WPSG_DIR . 'assets/json/admin.json';
         if (file_exists($json_file)) {
             $content = file_get_contents($json_file);
             self::$data = json_decode($content, true);

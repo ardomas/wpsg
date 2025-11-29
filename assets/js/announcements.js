@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
             html += '<input type="text" name="speakers['+index+'][name]" placeholder="Name" required />';
             html += '<input type="text" name="speakers['+index+'][company]" placeholder="Company" />';
             html += '<input type="text" name="speakers['+index+'][position]" placeholder="Position" />';
-            html += '<button type="button" class="button remove-row">Remove</button></div>';
+            html += '<button type="button" class="button remove-row"></button></div>';
         }
 
         if(type === 'organizer') {
@@ -59,22 +59,22 @@ jQuery(document).ready(function($) {
             html += '<input type="text" name="organizers['+index+'][name]" placeholder="Name / Organization" required />';
             // html += '<label><input type="checkbox" name="organizers['+index+'][is_main]"> Main</label>';
             html += '<input type="text" name="organizers['+index+'][description]" placeholder="Description" />';
-            html += '<button type="button" class="button remove-row">Remove</button></div>';
+            html += '<button type="button" class="button remove-row"></button></div>';
         }
 
         if(type === 'contact') {
             html += '<div class="repeatable-row">';
             html += '<input type="text" name="contacts['+index+'][name]" placeholder="Name" required />';
             html += '<input type="text" name="contacts['+index+'][number]" placeholder="Phone / Email" />';
-            html += '<button type="button" class="button remove-row">Remove</button></div>';
+            html += '<button type="button" class="button remove-row"></button></div>';
         }
 
         if(type === 'pricing') {
             html += '<div class="repeatable-row">';
             // html += '<input type="text" name="pricings['+index+'][label]" placeholder="Label (default: Admin Fee)" required />';
-            html += '<input type="text" name="pricings['+index+'][value]" placeholder="Price / Nominal" required />';
-            html += '<input type="text" name="pricings['+index+'][note]" placeholder="Price Note" />';
-            html += '<button type="button" class="button remove-row">Remove</button></div>';
+            html += '<input type="text" name="ann_price_values['+index+'][value]" placeholder="Price / Nominal" required />';
+            html += '<input type="text" name="ann_price_values['+index+'][note]" placeholder="Price Note" />';
+            html += '<button type="button" class="button remove-row"></button></div>';
         }
 
         wrapper.append(html);
@@ -117,3 +117,35 @@ jQuery(document).ready(function($) {
     });
 
 });
+
+/*
+jQuery(document).ready(function($){
+    $('#wpsg-ann-form').on('submit', function(e){
+        e.preventDefault(); // cegah reload
+
+        var formData = $(this).serialize();
+
+        console.log( WPSG_ANN_DATA );
+        console.log( formData );
+
+        $.ajax({
+            url: WPSG_ANN_DATA.ajax_url,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+        }).done((response)=>{
+            if(response.success){
+                alert('Announcement saved! ID: ' + response.data.post_id);
+                // bisa reset form atau update UI sesuai kebutuhan
+            } else {
+                alert('Failed to save: ' + response.data.message);
+            }
+        }).fail((xhr,status,error)=>{
+            console.error(error);
+            alert('AJAX error!');
+        });
+
+    });
+});
+
+*/

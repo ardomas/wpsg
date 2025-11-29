@@ -1,6 +1,16 @@
 /* ============================================================
    CORE LAYOUT – Struktur global WP Admin + WPSG
    ============================================================ */
+:root {
+    --table-border: rgba(0,0,0,0.25);
+    /* dashicons */
+    --dashicons-plus : "\f542";
+    --dashicons-minus: "\f460";
+    --dashicons-trash: "\f182";
+    --dashicons-image: "\f128";
+    --fa-plus   : "\2b";
+    --fa-trash  : "\f2ed";
+}
 
 /* Gunakan font system WordPress */
 body {
@@ -9,6 +19,37 @@ body {
              Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
              "Helvetica Neue", sans-serif;
     background: #f0f0f1;
+}
+
+table { padding: 0px; border-spacing: 0 !important; border-collapse: collapse !important;}
+table th, table td { 
+    cursor: default; 
+    border-spacing: 0 !important; 
+    border-collapse: collapse !important;
+}
+table th { padding: 0.3em 0.8em 0; height: 2.25em; text-align: center; font-weight: 600; font-size: 1.25em; background-color: rgba(222,228,232,1); }
+table td { padding: 0.5em 0.6em;   height: 1.20em; text-align: left;   vertical-align: top; }
+
+table.wpsg-full-width { width: 100%; }
+
+table.outer-border {
+    border-width: 1px; border-style: solid; border-color: var(--table-border);
+}
+
+table.bordered td, table.bordered th {
+    border-width: 1px; border-style: solid; border-color: var(--table-border);
+}
+
+table.hover tr:hover td { background-color: rgba(248,248,168,0.35); }
+
+table.striped tr:nth-child(odd) td { background-color: rgba(255,255,255,0.25); }
+table.striped tr:nth-child(even) td { background-color: rgba(0,0,0,0.025); }
+
+.btn {
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
 }
 
 .nav-tab {

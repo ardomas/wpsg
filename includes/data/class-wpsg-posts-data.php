@@ -1,22 +1,29 @@
 <?php
 // File: wpsg/includes/class-wpsg-posts.php
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
-}
+if (!defined('ABSPATH')) exit;
 
-class WPSG_Posts {
+class WPSG_PostsData {
+
+    private static $instance = null;
 
     protected $table_posts    = 'wp_wpsg_posts';
     protected $table_postmeta = 'wp_wpsg_postmeta';
     protected $table_comments = 'wp_wpsg_comments';
     protected $wpdb;
 
-    public function __construct() {
+    private function __construct() {
         global $wpdb;
         $this->wpdb = $wpdb;
 
         $this->create_tables();
+    }
+
+    public static function get_instance(){
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
@@ -26,29 +33,6 @@ class WPSG_Posts {
         $charset_collate = $this->wpdb->get_charset_collate();
 
         // wp_wpsg_posts
-/*
-        $sql_posts = "CREATE TABLE IF NOT EXISTS {$this->table_posts} (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            site_id INT(11) NOT NULL,
-            post_type VARCHAR(50) NOT NULL DEFAULT 'post',
-            title VARCHAR(255) NOT NULL,
-            status ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
-            author_id INT(11) NOT NULL,
-
-            start_date DATE DEFAULT NULL,
-            end_date DATE DEFAULT NULL,
-
-            start_time TIME DEFAULT NULL,
-            end_time TIME DEFAULT NULL,
-
-            published_at DATETIME NULL,
-            expired_at DATETIME NOT NULL,
-
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            PRIMARY KEY (id)
-        ) $charset_collate;";
-*/
 
         $sql_posts = "CREATE TABLE IF NOT EXISTS {$this->table_posts} (
             id INT(11) NOT NULL AUTO_INCREMENT,
@@ -97,22 +81,6 @@ class WPSG_Posts {
     // POSTS CRUD
     // ========================
     public function create_post($data = []) {
-/*
-        $defaults = [
-            'post_type'     => 'post',
-            'title'         => '',
-            'status'        => 'draft',
-            'site_id'       => get_current_blog_id(),
-            'author_id'     => get_current_user_id(),
-            'published_at'  => current_time('mysql'),
-            'start_date'    => null,
-            'end_date'      => null,
-            'start_time'    => null,
-            'end_time'      => null,
-            'created_at'    => current_time('mysql'),
-            'updated_at'    => current_time('mysql'),
-        ];
-*/
         $defaults = [
             'post_type'     => 'post',
             'title'         => '',
@@ -132,6 +100,14 @@ class WPSG_Posts {
         return $this->wpdb->get_row(
             $this->wpdb->prepare("SELECT * FROM {$this->table_posts} WHERE id = %d", $id)
         );
+    }
+
+    private function _get_raw_posts(){
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->table_posts} 
+             ORDER BY published_at DESC"
+        );
+        return $this->wpdb->get_results($query);
     }
 
     public function get_all_posts($args = []) {
@@ -154,7 +130,6 @@ class WPSG_Posts {
     public function get_posts($args = []) {
         $defaults = [
             'post_type' => 'post',
-            'status'    => 'published',
             'site_id'   => get_current_blog_id(),
         ];
         $args = wp_parse_args($args, $defaults);
@@ -162,10 +137,9 @@ class WPSG_Posts {
         $query = $this->wpdb->prepare(
             "SELECT * FROM {$this->table_posts} 
              WHERE post_type = %s 
-             AND status = %s 
              AND site_id = %d 
              ORDER BY published_at DESC",
-            $args['post_type'], $args['status'], $args['site_id']
+            $args['post_type'], $args['site_id']
         );
         return $this->wpdb->get_results($query);
     }
@@ -197,6 +171,19 @@ class WPSG_Posts {
             'updated_at' => $time,
         ]);
     }
+    protected function _get_raw_meta($post_id){
+        $results = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT meta_key, meta_value FROM {$this->table_postmeta} WHERE post_id = %d",
+                $post_id
+            ),
+            OBJECT_K
+        );
+        foreach ($results as $k => $v) {
+            $results[$k] = maybe_unserialize($v->meta_value);
+        }
+        return $results;
+    }
 
     public function get_meta($post_id, $key = null) {
         if ($key) {
@@ -207,6 +194,7 @@ class WPSG_Posts {
                 )
             ));
         } else {
+
             $results = $this->wpdb->get_results(
                 $this->wpdb->prepare(
                     "SELECT meta_key, meta_value FROM {$this->table_postmeta} WHERE post_id = %d",
@@ -222,6 +210,9 @@ class WPSG_Posts {
     }
 
     public function set_meta($post_id, $key, $value) {
+        //
+        $this->delete_duplicate_meta($post_id, $key);
+        //
         $existing = $this->get_meta($post_id, $key);
         if ($existing !== null) {
             return $this->wpdb->update(
@@ -231,6 +222,45 @@ class WPSG_Posts {
             );
         } else {
             return $this->add_meta($post_id, $key, $value);
+        }
+    }
+
+    protected function delete_duplicate_meta($post_id, $key)
+    {
+        // Ambil semua meta_key yang sama
+        $rows = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT id 
+                FROM {$this->table_postmeta}
+                WHERE post_id = %d AND meta_key = %s
+                ORDER BY id DESC",
+                $post_id, 
+                $key
+            )
+        );
+
+        // Jika hanya ada 0 atau 1 baris, tidak perlu dibersihkan
+        if (count($rows) <= 1) {
+            return;
+        }
+
+        // Simpan ID yang terbaru (baris pertama karena ORDER BY id DESC)
+        $latest_id = $rows[0]->id;
+
+        // Sisanya akan dihapus
+        $ids_to_delete = array_map(
+            fn($row) => $row->id,
+            array_slice($rows, 1)
+        );
+
+        if (!empty($ids_to_delete)) {
+            $ids_in = implode(',', array_map('intval', $ids_to_delete));
+
+            // Hapus baris-baris duplikat lama
+            $this->wpdb->query("
+                DELETE FROM {$this->table_postmeta}
+                WHERE id IN ($ids_in)
+            ");
         }
     }
 

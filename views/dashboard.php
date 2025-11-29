@@ -13,7 +13,7 @@ class WPSG_Dashboard {
 
     public function render() {
 
-        wp_enqueue_style('wpsg-dashboard', plugin_dir_url(__FILE__) . 'assets/css/dashboard.css', [], WPSG_VERSION);
+        wp_enqueue_style('wpsg-dashboard', plugin_dir_url(__FILE__) . '../assets/css/dashboard.css', [], WPSG_VERSION);
 
         ?>
 

@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * WPSG_Date_Formatter
+ * WPSG_DateFormatter
  *
  * Provides date formatting helpers and shortcode.
  */
-class WPSG_Date_Formatter {
+class WPSG_DateFormatter {
 
     /**
      * Initialize date-related hooks & shortcodes.
@@ -34,7 +34,7 @@ class WPSG_Date_Formatter {
         if ( empty( $date ) ) {
             $dt = new DateTime();
         } else {
-            $dt = WPSG_Locales_Base::parse_date( $date );
+            $dt = WPSG_LocalesBase::parse_date( $date );
             if ( ! $dt ) {
                 // fallback: return original input sanitized
                 return esc_html( (string) $date );
@@ -105,4 +105,4 @@ class WPSG_Date_Formatter {
 }
 
 // Auto init
-add_action( 'init', array( 'WPSG_Date_Formatter', 'init' ) );
+add_action( 'init', array( 'WPSG_DateFormatter', 'init' ) );
