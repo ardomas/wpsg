@@ -26,7 +26,7 @@ class WPSG_MembershipsRepository {
 
     public function __construct() {
         global $wpdb;
-        $this->table_site_user  = $wpdb->base_prefix . 'wpsg_site_user';
+        $this->table_site_user   = $wpdb->base_prefix . 'wpsg_site_user';
         $this->table_user_person = $wpdb->base_prefix . 'wpsg_user_person';
     }
 

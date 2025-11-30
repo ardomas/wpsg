@@ -5,9 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  * WPSG Memberships Module
  *
  * Admin-only module to list and manage membership links:
- * person <-> site <-> user
+ * site <-> user <-> person
  *
- * Table shown here: person-site memberships.
+ * Table shown here: site-user memberships.
  */
 
 class WPSG_Memberships {
