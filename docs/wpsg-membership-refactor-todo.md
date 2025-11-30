@@ -7,7 +7,7 @@
 ### 1.1 WPSG_PersonsData (wpsg/includes/data/class-wpsg-persons-data.php)
 
 -   [x] Rapikan struktur class.
--   [-] Normalisasi nama properti agar konsisten (snake_case). kami menggunakan hybrid, sample: WPSG_PersonData
+-   [-] Normalisasi nama properti agar konsisten (snake_case). We used both (hybrid) - sample: WPSG_PersonsData
 -   [-] Pastikan semua metode memiliki PHPDoc.
 -   [ ] Review logic parsing data --- pastikan tidak ada pemrosesan
     berlebihan.
@@ -17,10 +17,10 @@
 
 ### 1.2 WPSG_PersonsRepository (wpsg/includes/repository/class-wpsg-persons-repository.php)
 
--   [ ] Periksa konsistensi nama metode (get_list, find, insert, update,
+-   [x] Periksa konsistensi nama metode (get_list, find, insert, update,
     delete).
--   [ ] Rapikan query dan pemanggilan `$wpdb`.
--   [ ] Pastikan properti tabel didefinisikan dalam satu tempat.
+-   [x] Rapikan query dan pemanggilan `$wpdb`.
+-   [x] Pastikan properti tabel didefinisikan dalam satu tempat.
 -   [ ] Buat standar response (array/object) agar service mudah
     menggunakannya.
 -   [ ] Periksa apakah semua CRUD sudah dipakai oleh MembershipService
@@ -32,7 +32,7 @@
 
 ### 2.1 WPSG_MembershipsRepository (wpsg/includes/repository/class-wpsg-memberships-repository.php)
 
--   [ ] Samakan pola coding dengan PersonsRepository.
+-   [x] Samakan pola coding dengan PersonsRepository.
 -   [ ] Normalisasi seluruh nama kolom & property.
 -   [ ] Pastikan mapping DB → object konsisten.
 -   [ ] Tambahkan PHPDoc pada setiap method.
