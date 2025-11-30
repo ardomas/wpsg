@@ -6,9 +6,9 @@
 
 ### 1.1 WPSG_PersonsData (wpsg/includes/data/class-wpsg-persons-data.php)
 
--   [ ] Rapikan struktur class.
--   [ ] Normalisasi nama properti agar konsisten (snake_case).
--   [ ] Pastikan semua metode memiliki PHPDoc.
+-   [x] Rapikan struktur class.
+-   [-] Normalisasi nama properti agar konsisten (snake_case). kami menggunakan hybrid, sample: WPSG_PersonData
+-   [-] Pastikan semua metode memiliki PHPDoc.
 -   [ ] Review logic parsing data --- pastikan tidak ada pemrosesan
     berlebihan.
 -   [ ] Pastikan tidak ada kode mati (unused code).
