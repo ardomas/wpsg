@@ -46,7 +46,7 @@ class WPSG_Memberships {
 
         // Fetch memberships (person-site)
         $items = [];
-        $items = $this->membership_service->get_all_person_site_links();
+        $items = $this->membership_service->list_memberships();
 
         if ( empty( $items ) ) {
             echo '<p>No memberships found.</p>';
@@ -64,12 +64,13 @@ class WPSG_Memberships {
      */
     private function render_table( $items ) {
 
-        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<table class="wpsg-full-width hover bordered striped">';
         echo '<thead>
                 <tr>
-                    <th width="60">ID</th>
+                    <th width="30">#</th>
+                    <th width="30">ID</th>
+                    <th colspan="2">Site</th>
                     <th>Person</th>
-                    <th>Site</th>
                     <th>User(s)</th>
                     <th>Role</th>
                     <th>Status</th>
@@ -77,23 +78,23 @@ class WPSG_Memberships {
             </thead>';
         echo '<tbody>';
 
+        $num_order=0;
         foreach ( $items as $row ) {
+            $num_order++;
 
-            $person_id = intval($row['person_id']);
-            $site_id   = intval($row['site_id']);
-
-            // Person data
-            $person = $this->membership_service
-                           ->persons_repo
-                           ->get_person($person_id);
+            $person_id = intval($row['person_id'] ?? '');
+            $site_id   = intval($row['site_id'  ] ?? '');
 
             // Site data
             $site = get_blog_details($site_id);
 
+            // Person data
+            $person = $this->membership_service
+                           ->get_person($person_id);
+
             // Users linked to this person
             $users = $this->membership_service
-                          ->membership_repo
-                          ->get_person_users($person_id);
+                          ->get_person_user($person_id);
 
             $user_list = empty($users)
                 ? '<em>-</em>'
@@ -102,9 +103,11 @@ class WPSG_Memberships {
                     }, $users));
 
             echo '<tr>';
-            echo '<td>' . intval($row['id']) . '</td>';
-            echo '<td>' . esc_html($person['name'] ?? '(no name)') . '</td>';
+            echo '<td style="text-align: right;">' . intval($num_order) . '</td>';
+            echo '<td>' . intval($row['site_id']) . '</td>';
             echo '<td>' . esc_html($site->blogname ?? '(unknown site)') . '</td>';
+            echo '<td style="width: 30px; white-space: nowrap;">' . 'edit | remove' . '</td>';
+            echo '<td>' . esc_html($person['name'] ?? '(no name)') . '</td>';
             echo '<td>' . $user_list . '</td>';
             echo '<td>' . esc_html($row['role'] ?? '-') . '</td>';
             echo '<td>' . esc_html($row['status'] ?? 'active') . '</td>';

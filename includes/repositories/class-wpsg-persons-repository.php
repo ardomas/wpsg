@@ -32,6 +32,10 @@ class WPSG_PersonsRepository {
         return $this->data->get( $id );
     }
 
+    public function get_user($id){
+        return $this->data->get_user($id);
+    }
+
     public function get_person_by_email( $email ) {
         return $this->data->get_by_email( $email );
     }

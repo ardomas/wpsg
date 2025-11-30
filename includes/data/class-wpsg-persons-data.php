@@ -6,13 +6,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPSG_PersonsData {
 
     private static $instance = null;
+    private $users;
     private $table;
     private $meta_table;
+    private $user_person_key;
 
     private function __construct() {
         global $wpdb;
-        $this->table       = $wpdb->prefix . 'wpsg_persons';
-        $this->meta_table  = $wpdb->prefix . 'wpsg_personmeta';
+        //
+        $this->table       = $wpdb->base_prefix . 'wpsg_persons';
+        $this->meta_table  = $wpdb->base_prefix . 'wpsg_personmeta';
+        $this->users       = $wpdb->base_prefix . 'users';
+        //
+        $this->user_person_key = 'wpsg_user_person_link_key';
     }
 
     /**
@@ -38,8 +44,8 @@ class WPSG_PersonsData {
     public static function create_tables() {
         global $wpdb;
         $charset = $wpdb->get_charset_collate();
-        $person_table = $wpdb->prefix . 'wpsg_persons';
-        $meta_table   = $wpdb->prefix . 'wpsg_personmeta';
+        $person_table = $wpdb->base_prefix . 'wpsg_persons';
+        $meta_table   = $wpdb->base_prefix . 'wpsg_personmeta';
 
         $sql_person = "CREATE TABLE $person_table (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -342,6 +348,19 @@ class WPSG_PersonsData {
     public function delete_all_meta($person_id) {
         global $wpdb;
         return $wpdb->delete($this->meta_table, ['person_id' => $person_id]);
+    }
+
+    /* -----------------------------------------
+     * USER - PERSON HANDLING
+     * ----------------------------------------- */
+    public function get_user( $person_id ){
+        return $this->get_meta( $person_id, $this->user_person_key, true );
+    }
+    public function set_user( $person_id, $user_id ){
+        return $this->update_meta( $person_id, $this->user_person_key, $user_id );
+    }
+    public function unset_user( $person_id ){
+        return $this->delete_meta( $person_id, $this->user_person_key );
     }
 
     /* -----------------------------------------

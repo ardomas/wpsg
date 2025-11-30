@@ -11,7 +11,7 @@ class WPSG_ApplicantsData {
 
     private function __construct() {
         global $wpdb;
-        self::$table = $wpdb->prefix . 'wpsg_applicants';
+        self::$table = $wpdb->base_prefix . 'wpsg_applicants';
     }
 
     public static function instance() {
@@ -34,7 +34,7 @@ class WPSG_ApplicantsData {
     public static function create_table() {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'wpsg_applicants';
+        $table = $wpdb->base_prefix . 'wpsg_applicants';
         $charset = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE $table (

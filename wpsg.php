@@ -28,7 +28,6 @@ $mapping_class_files = [
 
     /* handling - admin.json */
     WPSG_DIR . '/includes/data/class-wpsg-admin-data.php',               // class WPSG_AdminData
-
     /* handling - wpsg tables => wp_wpsg_posts, wp_wpsg_postmeta, wp_wpsg_cmments */
     WPSG_DIR . '/includes/data/class-wpsg-posts-data.php',          // class WPSG_PostsData
 

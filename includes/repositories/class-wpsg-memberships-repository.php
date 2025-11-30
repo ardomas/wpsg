@@ -1,48 +1,65 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 /**
- * Membership repository - DB operations for person<->site and user<->person relations
+ * WPSG_MembershipsRepository
+ *
+ * Responsible for DB operations related to:
+ * - wp_wpsg_site_user    (site <-> wp_user)
+ * - wp_wpsg_user_person  (wp_user <-> wpsg_person)
+ *
+ * Also contains table-creation helpers (to be called on plugin activation).
  */
 class WPSG_MembershipsRepository {
 
-    private $person_site_table;
-    private $user_person_table;
+    /**
+     * @var string
+     */
+    private $table_site_user;
+
+    /**
+     * @var string
+     */
+    private $table_user_person;
 
     public function __construct() {
         global $wpdb;
-        $this->person_site_table = $wpdb->prefix . 'wpsg_person_site';
-        $this->user_person_table = $wpdb->prefix . 'wpsg_user_person';
+        $this->table_site_user  = $wpdb->base_prefix . 'wpsg_site_user';
+        $this->table_user_person = $wpdb->base_prefix . 'wpsg_user_person';
     }
 
-    /** create tables (call on plugin activate) */
+    /**
+     * Create necessary tables (call on plugin activation)
+     */
     public static function create_tables() {
         global $wpdb;
         $charset = $wpdb->get_charset_collate();
-        $ps_table = $wpdb->prefix . 'wpsg_person_site';
-        $up_table = $wpdb->prefix . 'wpsg_user_person';
+        $table_site_user = $wpdb->base_prefix . 'wpsg_site_user';
+        $table_user_person = $wpdb->base_prefix . 'wpsg_user_person';
 
-        $sql1 = "CREATE TABLE $ps_table (
+        $sql1 = "CREATE TABLE {$table_site_user} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            person_id BIGINT UNSIGNED NOT NULL,
             site_id BIGINT UNSIGNED NOT NULL,
-            role VARCHAR(50) DEFAULT NULL,
-            status VARCHAR(20) DEFAULT 'active',
+            user_id BIGINT UNSIGNED NOT NULL,
+            role VARCHAR(100) DEFAULT NULL,
+            status VARCHAR(50) DEFAULT 'active',
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id),
-            KEY person_id_idx (person_id),
             KEY site_id_idx (site_id),
-            UNIQUE KEY person_site_unique (person_id, site_id)
-        ) ENGINE=InnoDB $charset;";
+            KEY user_id_idx (user_id),
+            UNIQUE KEY site_user_unique (site_id, user_id)
+        ) ENGINE=InnoDB {$charset};";
 
-        $sql2 = "CREATE TABLE $up_table (
+        $sql2 = "CREATE TABLE {$table_user_person} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT UNSIGNED NOT NULL,
             person_id BIGINT UNSIGNED NOT NULL,
             site_id BIGINT UNSIGNED DEFAULT NULL,
-            role VARCHAR(50) DEFAULT NULL,
-            status VARCHAR(20) DEFAULT 'active',
+            role VARCHAR(100) DEFAULT NULL,
+            status VARCHAR(50) DEFAULT 'active',
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id),
@@ -50,7 +67,7 @@ class WPSG_MembershipsRepository {
             KEY person_id_idx (person_id),
             KEY site_id_idx (site_id),
             UNIQUE KEY user_person_unique (user_id, person_id, site_id)
-        ) ENGINE=InnoDB $charset;";
+        ) ENGINE=InnoDB {$charset};";
 
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
         dbDelta( $sql1 );
@@ -58,18 +75,30 @@ class WPSG_MembershipsRepository {
     }
 
     /* ---------------------------
-     * Person <-> Site ops
+     * Site <-> User operations
      * --------------------------- */
 
-    public function assign_person_to_site( $person_id, $site_id, $role = null, $status = 'active' ) {
+    /**
+     * Assign a WP user to a site (idempotent)
+     *
+     * @param int $site_id
+     * @param int $user_id
+     * @param string|null $role
+     * @param string $status
+     * @return int|bool Insert id on new row, true on updated, false on error
+     */
+    public function link_site_user( $site_id, $user_id, $role = null, $status = 'active' ) {
         global $wpdb;
-        $now = current_time('mysql');
 
-        // if exists update, else insert. Use replace style: try update first.
+        $now = current_time( 'mysql' );
+
+        // try update first
         $updated = $wpdb->update(
-            $this->person_site_table,
+            $this->table_site_user,
             [ 'role' => $role, 'status' => $status, 'updated_at' => $now ],
-            [ 'person_id' => $person_id, 'site_id' => $site_id ]
+            [ 'site_id' => $site_id, 'user_id' => $user_id ],
+            [ '%s', '%s', '%s' ],
+            [ '%d', '%d' ]
         );
 
         if ( $updated === false ) {
@@ -77,205 +106,171 @@ class WPSG_MembershipsRepository {
         }
 
         if ( $updated === 0 ) {
-            // no row updated => insert new
-            $wpdb->insert( $this->person_site_table, [
-                'person_id'  => $person_id,
-                'site_id'    => $site_id,
-                'role'       => $role,
-                'status'     => $status,
-                'created_at' => $now,
-                'updated_at' => $now
-            ] );
+            $inserted = $wpdb->insert(
+                $this->table_site_user,
+                [
+                    'site_id'    => intval( $site_id ),
+                    'user_id'    => intval( $user_id ),
+                    'role'       => $role,
+                    'status'     => $status,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
+                [ '%d', '%d', '%s', '%s', '%s', '%s' ]
+            );
+
+            if ( $inserted === false ) return false;
             return $wpdb->insert_id;
         }
 
-        // updated >0 -> return true
         return true;
     }
 
-    public function remove_person_from_site( $person_id, $site_id ) {
+    /**
+     * Unlink (remove) mapping site -> user
+     *
+     * @param int $site_id
+     * @param int $user_id
+     * @return int|false number of rows deleted or false
+     */
+    public function unlink_site_user( $site_id, $user_id ) {
         global $wpdb;
-        return $wpdb->delete( $this->person_site_table, [
-            'person_id' => $person_id,
-            'site_id'   => $site_id
-        ] );
+        return $wpdb->delete( $this->table_site_user, [ 'site_id' => $site_id, 'user_id' => $user_id ], [ '%d', '%d' ] );
     }
 
-    public function get_person_sites( $person_id ) {
+    /**
+     * Get users mapped to a site
+     *
+     * @param int $site_id
+     * @return array
+     */
+    public function get_site_users( $site_id ) {
         global $wpdb;
-        return $wpdb->get_results(
-            $wpdb->prepare( "SELECT * FROM {$this->person_site_table} WHERE person_id = %d", $person_id ),
-            ARRAY_A
-        );
+        $sql = $wpdb->prepare( "SELECT * FROM {$this->table_site_user} WHERE site_id = %d", $site_id );
+        return $wpdb->get_results( $sql, ARRAY_A ) ?: [];
     }
 
-    public function get_site_persons( $site_id ) {
+    /**
+     * Count users (members) by site
+     *
+     * @param int $site_id
+     * @return int
+     */
+    public function count_users_by_site( $site_id ) {
         global $wpdb;
-        return $wpdb->get_results(
-            $wpdb->prepare( "SELECT * FROM {$this->person_site_table} WHERE site_id = %d", $site_id ),
-            ARRAY_A
-        );
+        $c = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table_site_user} WHERE site_id = %d AND status = %s", $site_id, 'active' ) );
+        return intval( $c );
     }
 
-    public function person_site_exists( $person_id, $site_id ) {
+    /**
+     * Check if a mapping exists
+     *
+     * @param int $site_id
+     * @param int $user_id
+     * @return bool
+     */
+    public function site_user_exists( $site_id, $user_id ) {
         global $wpdb;
-        $c = $wpdb->get_var(
-            $wpdb->prepare( "SELECT COUNT(*) FROM {$this->person_site_table} WHERE person_id=%d AND site_id=%d", $person_id, $site_id )
-        );
-        return ($c > 0);
+        $c = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table_site_user} WHERE site_id=%d AND user_id=%d", $site_id, $user_id ) );
+        return intval( $c ) > 0;
     }
 
     /* ---------------------------
-     * User <-> Person ops
+     * User <-> Person operations
      * --------------------------- */
 
-    public function link_user_to_person( $user_id, $person_id, $site_id = null, $role = null, $status = 'active' ) {
+    /**
+     * Link WP user to person (idempotent). site_id optional.
+     *
+     * @param int $user_id
+     * @param int $person_id
+     * @param int|null $site_id
+     * @param string|null $role
+     * @param string $status
+     * @return int|bool insert id or true on update or false
+     */
+    public function link_user_person( $user_id, $person_id, $site_id = null, $role = null, $status = 'active' ) {
         global $wpdb;
-        $now = current_time('mysql');
+        $now = current_time( 'mysql' );
 
         $updated = $wpdb->update(
-            $this->user_person_table,
+            $this->table_user_person,
             [ 'role' => $role, 'status' => $status, 'updated_at' => $now ],
-            [ 'user_id' => $user_id, 'person_id' => $person_id, 'site_id' => $site_id ]
+            [ 'user_id' => $user_id, 'person_id' => $person_id, 'site_id' => $site_id ],
+            [ '%s', '%s', '%s' ],
+            [ '%d', '%d', '%d' ]
         );
 
         if ( $updated === false ) return false;
 
         if ( $updated === 0 ) {
-            $wpdb->insert( $this->user_person_table, [
-                'user_id'    => $user_id,
-                'person_id'  => $person_id,
-                'site_id'    => $site_id,
-                'role'       => $role,
-                'status'     => $status,
-                'created_at' => $now,
-                'updated_at' => $now
-            ] );
+            $wpdb->insert(
+                $this->table_user_person,
+                [
+                    'user_id'    => intval( $user_id ),
+                    'person_id'  => intval( $person_id ),
+                    'site_id'    => $site_id !== null ? intval($site_id) : null,
+                    'role'       => $role,
+                    'status'     => $status,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ],
+                [ '%d', '%d', '%d', '%s', '%s', '%s', '%s' ]
+            );
             return $wpdb->insert_id;
         }
 
         return true;
     }
 
-    public function unlink_user_from_person( $user_id, $person_id, $site_id = null ) {
+    /**
+     * Unlink user-person mapping
+     *
+     * @param int $user_id
+     * @param int $person_id
+     * @param int|null $site_id
+     * @return int|false
+     */
+    public function unlink_user_person( $user_id, $person_id, $site_id = null ) {
         global $wpdb;
-        return $wpdb->delete( $this->user_person_table, [
-            'user_id'   => $user_id,
-            'person_id' => $person_id,
-            'site_id'   => $site_id
-        ] );
-    }
-
-    public function get_person_users( $person_id ) {
-        global $wpdb;
-        return $wpdb->get_results(
-            $wpdb->prepare( "SELECT * FROM {$this->user_person_table} WHERE person_id = %d", $person_id ),
-            ARRAY_A
-        );
-    }
-
-    public function get_user_persons( $user_id ) {
-        global $wpdb;
-        return $wpdb->get_results(
-            $wpdb->prepare( "SELECT * FROM {$this->user_person_table} WHERE user_id = %d", $user_id ),
-            ARRAY_A
-        );
-    }
-
-    public function user_person_exists( $user_id, $person_id, $site_id = null ) {
-        global $wpdb;
-        $sql = "SELECT COUNT(*) FROM {$this->user_person_table} WHERE user_id = %d AND person_id = %d";
-        $params = [ $user_id, $person_id ];
+        $where = [ 'user_id' => $user_id, 'person_id' => $person_id ];
+        $where_formats = [ '%d', '%d' ];
         if ( $site_id !== null ) {
-            $sql .= " AND site_id = %d";
-            $params[] = $site_id;
-        } else {
-            $sql .= " AND site_id IS NULL";
+            $where['site_id'] = $site_id;
+            $where_formats[] = '%d';
         }
-        $prepared = $wpdb->prepare( $sql, $params );
-        $c = $wpdb->get_var( $prepared );
-        return ($c > 0);
+        return $wpdb->delete( $this->table_user_person, $where, $where_formats );
     }
 
     /**
-     * Get all person<->site link records.
+     * Get persons linked to a WP user
      *
-     * $args optional keys:
-     *  - 'status'    => string, filter by status
-     *  - 'site_id'   => int,   filter by site_id
-     *  - 'person_id' => int,   filter by person_id
-     *  - 'orderby'   => string, one of allowed columns (default: id)
-     *  - 'order'     => string, 'ASC' or 'DESC' (default: ASC)
-     *  - 'limit'     => int,   0 = no limit
-     *  - 'offset'    => int
-     *
-     * @param array $args
-     * @return array list of associative arrays (ARRAY_A)
+     * @param int $user_id
+     * @param bool $only_active
+     * @return array
      */
-    public function get_all_person_site_links( $args = [] ) {
+    public function get_user_persons( $user_id, $only_active = true ) {
         global $wpdb;
-
-        $defaults = [
-            'status'    => '',
-            'site_id'   => null,
-            'person_id' => null,
-            'orderby'   => 'id',
-            'order'     => 'ASC',
-            'limit'     => 0,
-            'offset'    => 0,
-        ];
-
-        $args = wp_parse_args( $args, $defaults );
-
-        // Validate orderby & order to avoid SQL injection on identifiers
-        $allowed_orderby = [ 'id', 'person_id', 'site_id', 'role', 'status', 'created_at', 'updated_at' ];
-        if ( ! in_array( $args['orderby'], $allowed_orderby, true ) ) {
-            $args['orderby'] = 'id';
+        $sql = "SELECT * FROM {$this->table_user_person} WHERE user_id = %d";
+        $params = [ $user_id ];
+        if ( $only_active ) {
+            $sql .= " AND status = %s";
+            $params[] = 'active';
         }
+        $prepared = $wpdb->prepare( $sql, $params );
+        return $wpdb->get_results( $prepared, ARRAY_A ) ?: [];
+    }
 
-        $args['order'] = strtoupper( $args['order'] ) === 'DESC' ? 'DESC' : 'ASC';
-
-        // Build WHERE clause and parameters
-        $where = '1=1';
-        $params = [];
-
-        if ( $args['status'] !== '' ) {
-            $where .= " AND `status` = %s";
-            $params[] = $args['status'];
-        }
-
-        if ( $args['site_id'] !== null ) {
-            $where .= " AND `site_id` = %d";
-            $params[] = intval( $args['site_id'] );
-        }
-
-        if ( $args['person_id'] !== null ) {
-            $where .= " AND `person_id` = %d";
-            $params[] = intval( $args['person_id'] );
-        }
-
-        // Base query
-        $query = "SELECT * FROM {$this->person_site_table} WHERE {$where} ORDER BY {$args['orderby']} {$args['order']}";
-
-        // Add limit if requested
-        if ( intval( $args['limit'] ) > 0 ) {
-            $query .= " LIMIT %d OFFSET %d";
-            $params[] = intval( $args['limit'] );
-            $params[] = intval( $args['offset'] );
-        }
-
-        // Prepare query with dynamic params (if any)
-        if ( ! empty( $params ) ) {
-            // call_user_func_array to pass variable args to $wpdb->prepare
-            $prepare_args = array_merge( [ $query ], $params );
-            $prepared = call_user_func_array( [ $wpdb, 'prepare' ], $prepare_args );
-        } else {
-            $prepared = $query;
-        }
-
-        $results = $wpdb->get_results( $prepared, ARRAY_A );
-
-        return $results ?: [];
+    /**
+     * Get sites that a person is associated with (via user_person mapping)
+     *
+     * @param int $person_id
+     * @return array
+     */
+    public function get_sites_of_person( $person_id ) {
+        global $wpdb;
+        $sql = $wpdb->prepare( "SELECT DISTINCT site_id FROM {$this->table_user_person} WHERE person_id = %d", $person_id );
+        return $wpdb->get_col( $sql );
     }
 
 }
