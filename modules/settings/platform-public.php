@@ -7,8 +7,8 @@ class WPSG_SettingsPlatformPublic {
     private $data = [];
 
     public function __construct() {
-        // Load data dari WPSG_AdminData
-        $this->data = WPSG_AdminData::get_platform_public();
+        // Load data dari WPSG_SettingsData
+        $this->data = WPSG_SettingsData::get_platform_public();
 
         // Simpan jika ada POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wpsg_platform_public_nonce'])) {
@@ -41,8 +41,8 @@ class WPSG_SettingsPlatformPublic {
             ];
         }
 
-        // Simpan via WPSG_AdminData
-        WPSG_AdminData::set_platform_public($new_data);
+        // Simpan via WPSG_SettingsData
+        WPSG_SettingsData::set_platform_public($new_data);
         $this->data = $new_data;
 
         echo '<div class="notice notice-success"><p>Public platforms saved successfully!</p></div>';

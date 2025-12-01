@@ -190,8 +190,8 @@ jQuery(document).ready(function($){
             }
         }
 
-        // Save using WPSG_AdminData
-        WPSG_AdminData::set_data($this->option_key, $clean);
+        // Save using WPSG_ProfilesData
+        WPSG_ProfilesData::set_data($this->option_key, $clean);
 
         add_action('admin_notices', function(){
             echo '<div class="updated"><p>Branding updated successfully.</p></div>';
@@ -200,6 +200,6 @@ jQuery(document).ready(function($){
 
     /** GET DATA **/
     private function get_data(){
-        return WPSG_AdminData::get_data($this->option_key);
+        return WPSG_ProfilesData::get_data($this->option_key);
     }
 }

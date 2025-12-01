@@ -7,7 +7,7 @@ class WPSG_ProfileContact {
     private $data = [];
 
     public function __construct() {
-        $this->data = WPSG_AdminData::get_data($this->data_key);
+        $this->data = WPSG_ProfilesData::get_data($this->data_key);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wpsg_profile_contact_nonce'])) {
             $this->save();
@@ -42,7 +42,7 @@ class WPSG_ProfileContact {
         }
 
         // Save to DB
-        WPSG_AdminData::set_data($this->data_key, $new);
+        WPSG_ProfilesData::set_data($this->data_key, $new);
         $this->data = $new;
 
         echo '<div class="notice notice-success"><p>Contact updated successfully.</p></div>';
@@ -74,7 +74,7 @@ class WPSG_ProfileContact {
      */
     public function render() {
 
-        $platforms = WPSG_AdminData::get_platform_private(); // dynamic platforms
+        $platforms = WPSG_ProfilesData::get_platform_private(); // dynamic platforms
         
         $saved_email = $this->data['email'] ?? '';
         $saved_phone = $this->data['phone'] ?? '';

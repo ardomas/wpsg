@@ -97,7 +97,7 @@ class WPSG_ProfileValues {
             'goal'    => wp_kses_post($_POST['goal'] ?? ''),
         ];
 
-        WPSG_AdminData::set_data($this->option_key, $clean);
+        WPSG_ProfilesData::set_data($this->option_key, $clean);
 
         add_action('admin_notices', function() {
             echo '<div class="updated"><p>Values updated successfully.</p></div>';
@@ -106,6 +106,6 @@ class WPSG_ProfileValues {
 
     /** GET DATA **/
     private function get_data() {
-        return WPSG_AdminData::get_data($this->option_key);
+        return WPSG_ProfilesData::get_data($this->option_key);
     }
 }

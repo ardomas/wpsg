@@ -161,30 +161,6 @@ class WPSG_PostsData {
     // ========================
     // POSTMETA
     // ========================
-    public function add_meta($post_id, $key, $value) {
-        $time = current_time('mysql');
-        return $this->wpdb->insert($this->table_postmeta, [
-            'post_id' => $post_id,
-            'meta_key' => $key,
-            'meta_value' => maybe_serialize($value),
-            'created_at' => $time,
-            'updated_at' => $time,
-        ]);
-    }
-    protected function _get_raw_meta($post_id){
-        $results = $this->wpdb->get_results(
-            $this->wpdb->prepare(
-                "SELECT meta_key, meta_value FROM {$this->table_postmeta} WHERE post_id = %d",
-                $post_id
-            ),
-            OBJECT_K
-        );
-        foreach ($results as $k => $v) {
-            $results[$k] = maybe_unserialize($v->meta_value);
-        }
-        return $results;
-    }
-
     public function get_meta($post_id, $key = null) {
         if ($key) {
             return maybe_unserialize($this->wpdb->get_var(
@@ -211,7 +187,7 @@ class WPSG_PostsData {
 
     public function set_meta($post_id, $key, $value) {
         //
-        $this->delete_duplicate_meta($post_id, $key);
+        $this->_delete_duplicate_meta($post_id, $key);
         //
         $existing = $this->get_meta($post_id, $key);
         if ($existing !== null) {
@@ -221,11 +197,44 @@ class WPSG_PostsData {
                 ['post_id' => $post_id, 'meta_key' => $key]
             );
         } else {
-            return $this->add_meta($post_id, $key, $value);
+            return $this->_add_meta($post_id, $key, $value);
         }
     }
 
-    protected function delete_duplicate_meta($post_id, $key)
+    public function del_meta($post_id, $key = null) {
+        if ($key) {
+            return $this->wpdb->delete($this->table_postmeta, ['post_id' => $post_id, 'meta_key' => $key]);
+        } else {
+            return $this->wpdb->delete($this->table_postmeta, ['post_id' => $post_id]);
+        }
+    }
+
+    protected function _add_meta($post_id, $key, $value) {
+        $time = current_time('mysql');
+        return $this->wpdb->insert($this->table_postmeta, [
+            'post_id' => $post_id,
+            'meta_key' => $key,
+            'meta_value' => maybe_serialize($value),
+            'created_at' => $time,
+            'updated_at' => $time,
+        ]);
+    }
+
+    protected function _get_raw_meta($post_id){
+        $results = $this->wpdb->get_results(
+            $this->wpdb->prepare(
+                "SELECT meta_key, meta_value FROM {$this->table_postmeta} WHERE post_id = %d",
+                $post_id
+            ),
+            OBJECT_K
+        );
+        foreach ($results as $k => $v) {
+            $results[$k] = maybe_unserialize($v->meta_value);
+        }
+        return $results;
+    }
+
+    protected function _delete_duplicate_meta($post_id, $key)
     {
         // Ambil semua meta_key yang sama
         $rows = $this->wpdb->get_results(
@@ -261,14 +270,6 @@ class WPSG_PostsData {
                 DELETE FROM {$this->table_postmeta}
                 WHERE id IN ($ids_in)
             ");
-        }
-    }
-
-    public function del_meta($post_id, $key = null) {
-        if ($key) {
-            return $this->wpdb->delete($this->table_postmeta, ['post_id' => $post_id, 'meta_key' => $key]);
-        } else {
-            return $this->wpdb->delete($this->table_postmeta, ['post_id' => $post_id]);
         }
     }
 

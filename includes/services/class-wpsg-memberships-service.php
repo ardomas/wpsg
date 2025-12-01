@@ -257,7 +257,7 @@ class WPSG_MembershipsService {
     }
 
     public function get_person( $person_id ){
-        return $this->persons_repo->get_person($person_id);
+        return $this->persons_repo->get($person_id);
     }
 
     /* -----------------------------------------

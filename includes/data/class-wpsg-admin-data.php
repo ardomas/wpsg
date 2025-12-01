@@ -1,19 +1,25 @@
 <?php
-// wpsg/includes/data/class-wpsg-admin-data.php
 if (!defined('ABSPATH')) exit;
 
 class WPSG_AdminData {
 
+    /**
+     * Singleton instance
+     */
     private static $instance = null;
-    private static $type = 'data';
-    private static $data = [];
 
-    private static $business_types = [];
+    /**
+     * Data dari JSON
+     */
+    private static $data = [];
 
     private function __construct() {
         self::load_json();
     }
 
+    /**
+     * Ambil instance singleton
+     */
     public static function get_instance() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -22,47 +28,9 @@ class WPSG_AdminData {
     }
 
     /**
-     * -------------------------------
-     * Generate SQL untuk semua tabel WPSG
-     * -------------------------------
+     * Load JSON admin
      */
-    protected static function generate_create_table() {
-        global $wpdb;
-
-        // Charset dan collate
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $tables = [
-            // 1. Tabel settings global
-            'wpsg_settings' => "CREATE TABLE IF NOT EXISTS {$wpdb->base_prefix}wpsg_settings (
-                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                option_key VARCHAR(191) NOT NULL,
-                option_value LONGTEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                deleted_at DATETIME NULL DEFAULT NULL,
-                PRIMARY KEY (id),
-                UNIQUE KEY option_key_unique (option_key)
-            ) $charset_collate;",
-
-            // 2. Tabel data multi-site
-            'wpsg_data' => "CREATE TABLE IF NOT EXISTS {$wpdb->base_prefix}wpsg_data (
-                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                site_id BIGINT UNSIGNED NOT NULL,
-                data_key VARCHAR(191) NOT NULL,
-                data_value LONGTEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                deleted_at DATETIME NULL DEFAULT NULL,
-                PRIMARY KEY (id),
-                UNIQUE KEY site_key_unique (site_id, data_key)
-            ) $charset_collate;"
-        ];
-
-        return $tables;
-    }
-
-    private function load_json() {
+    private static function load_json() {
         $json_file = WPSG_DIR . 'assets/json/admin.json';
         if (file_exists($json_file)) {
             $content = file_get_contents($json_file);
@@ -70,218 +38,45 @@ class WPSG_AdminData {
         }
     }
 
-    // Ambil semua data
+    /**
+     * Ambil semua data JSON
+     */
     public static function get_all() {
         return self::$data;
     }
 
-    // Ambil value berdasarkan key
+    /**
+     * Ambil value berdasarkan key
+     */
     public static function get($key, $default = null) {
         return isset(self::$data[$key]) ? self::$data[$key] : $default;
     }
 
-    private static function cast_as_menu( $raw_data ){
-
+    /**
+     * Proses data menjadi menu (internal)
+     */
+    private static function cast_as_menu($raw_data) {
         $clean_data = [];
 
-        foreach( $raw_data as $key=>$item ){
+        foreach ($raw_data as $key => $item) {
+            if (!isset($item['dashboard'])) $item['dashboard'] = true;
+            if (!isset($item['view'])) $item['view'] = true;
+            if (!isset($item['site'])) $item['site'] = 'main';
 
-            if( !isset( $item['dashboard'] ) ) $item['dashboard'] = true;
-            if( !isset( $item['view']      ) ) $item['view'] = true;
-            if( !isset( $item['site']      ) ) $item['site'] = 'main';
-
-            if( ( $item['dashboard'] || $item['view'] ) && ( $item['site']==='all' || is_super_admin() ) ){
+            if (($item['dashboard'] || $item['view']) && ($item['site'] === 'all' || is_super_admin())) {
                 $clean_data[$key] = $item;
             }
-
         }
+
         return $clean_data;
     }
 
-    // Shortcut untuk sidebar menu
+    /**
+     * Ambil menu sidebar
+     */
     public static function get_sidebar_menu() {
         $raw_sidebar = self::get('sidebar', []);
-        return self::cast_as_menu( $raw_sidebar['data'] );
-    }
-
-    /**
-     * -------------------------------
-     * Method baru: Create settings tables
-     * -------------------------------
-     */
-    public static function create_settings_table() {
-        global $wpdb;
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-        // Ambil semua SQL create table dari method generate_create_table
-        $sqls = self::generate_create_table();
-
-        foreach ($sqls as $table_name => $sql) {
-            dbDelta($sql);
-        }
-    }
-
-    // Ambil value settings berdasarkan option_key
-    public static function get_setting($key, $default = '') {
-        global $wpdb;
-        $table = $wpdb->base_prefix . 'wpsg_settings';
-        $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT option_value FROM $table WHERE option_key = %s LIMIT 1", 
-            $key
-        ));
-        return $row ? maybe_unserialize($row->option_value) : $default;
-    }
-
-    // Simpan/update value settings
-    public static function set_setting($key, $value) {
-        global $wpdb;
-
-        $table = $wpdb->base_prefix . 'wpsg_settings';
-        $serialized_value = maybe_serialize($value);
-
-        // Cek apakah key sudah ada
-        $exists = $wpdb->get_var(
-            $wpdb->prepare("SELECT id FROM $table WHERE option_key = %s", $key)
-        );
-
-        if ($exists) {
-            $wpdb->update(
-                $table,
-                ['option_value' => $serialized_value, 'updated_at' => current_time('mysql')],
-                ['id' => $exists],
-                ['%s', '%s'],
-                ['%d']
-            );
-        } else {
-            $wpdb->insert(
-                $table,
-                ['option_key' => $key, 'option_value' => $serialized_value, 'created_at' => current_time('mysql')],
-                ['%s', '%s', '%s']
-            );
-        }
-    }
-
-    // Ambil semua business types
-    public static function get_business_types() {
-        return self::get_setting('wpsg_business_types', []);
-    }
-
-    // Simpan/update business types
-    public static function set_business_types(array $data) {
-        self::set_setting('wpsg_business_types', $data);
-    }
-
-    // Ambil data platform-public, pakai default jika belum ada
-    public static function get_platform_public() {
-        $option_key = 'wpsg_platform_public';
-        $data = self::get_setting($option_key, null);
-
-        if ($data === null) {
-            $data = self::get('platform-public-default', []);
-            self::set_setting($option_key, $data);
-        }
-
-        return $data;
-    }
-
-    // Simpan data platform-public, pakai default jika belum ada
-    public static function set_platform_public($data) {
-        if (!is_array($data)) return false;
-        return self::set_setting('wpsg_platform_public', $data);
-    }
-
-    // Ambil data platform-private, pakai default jika belum ada
-    public static function get_platform_private() {
-        $option_key = 'wpsg_platform_private';
-        $data = self::get_setting($option_key, null);
-
-        if ($data === null) {
-            $data = self::get('platform-private-default', []);
-            self::set_setting($option_key, $data);
-        }
-
-        return $data;
-    }
-
-    // Simpan data platform-private, pakai default jika belum ada
-    public static function set_platform_private($data) {
-        if (!is_array($data)) return false;
-        return self::set_setting('wpsg_platform_private', $data);
-    }
-
-    public static function get_data($key, $default = null, $site_id = null) {
-        global $wpdb;
-
-        if ($site_id === null) {
-            $site_id = get_current_blog_id();
-        }
-
-        if ($site_id === "*") {
-            // Ambil data untuk seluruh site
-            $rows = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT site_id, data_value FROM {$wpdb->base_prefix}wpsg_data WHERE data_key = %s AND deleted_at IS NULL",
-                    $key
-                ),
-                ARRAY_A
-            );
-            $result = [];
-            foreach ($rows as $row) {
-                $result[$row['site_id']] = maybe_unserialize($row['data_value']);
-            }
-            return $result;
-        }
-
-        // Ambil data untuk site tunggal
-        $row = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT data_value FROM {$wpdb->base_prefix}wpsg_data WHERE site_id = %d AND data_key = %s AND deleted_at IS NULL",
-                $site_id, $key
-            )
-        );
-
-        return $row ? maybe_unserialize($row->data_value) : $default;
-    }
-
-    public static function set_data($key, $value, $site_id = null) {
-        global $wpdb;
-
-        if ($site_id === null) {
-            $site_id = get_current_blog_id();
-        }
-
-        $value = maybe_serialize($value);
-
-        if ($site_id === "*") {
-            // Untuk semua site: lakukan loop update untuk setiap site
-            $sites = get_sites(['fields' => 'ids']);
-            foreach ($sites as $id) {
-                $wpdb->replace(
-                    "{$wpdb->base_prefix}wpsg_data",
-                    [
-                        'site_id'    => $id,
-                        'data_key'   => $key,
-                        'data_value' => $value,
-                        'deleted_at' => null,
-                    ],
-                    ['%d', '%s', '%s', '%s']
-                );
-            }
-            return true;
-        }
-
-        // Untuk site tunggal
-        $wpdb->replace(
-            "{$wpdb->base_prefix}wpsg_data",
-            [
-                'site_id'    => $site_id,
-                'data_key'   => $key,
-                'data_value' => $value,
-                'deleted_at' => null,
-            ],
-            ['%d', '%s', '%s', '%s']
-        );
+        return isset($raw_sidebar['data']) ? self::cast_as_menu($raw_sidebar['data']) : [];
     }
 
 }

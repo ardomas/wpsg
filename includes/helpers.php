@@ -107,3 +107,34 @@ function wpsg_enqueue_fontawesome() {
     wpsg_enqueue_cdn_script( 'wpsg-fontawesome-js', $attr_script, false );
 
 }
+
+function wpsg_get_networks($args = []) {
+    $defaults = [
+        'fields' => 'objects', // objects|ids|domains|custom
+    ];
+    $args = wp_parse_args($args, $defaults);
+
+    $nets = get_networks();
+
+    switch ($args['fields']) {
+        case 'ids':
+            return wp_list_pluck($nets, 'id');
+
+        case 'domains':
+            return wp_list_pluck($nets, 'domain');
+
+        case 'objects':
+        default:
+            return $nets;
+    }
+}
+
+function wpsg_get_network_id() {
+    if ( function_exists( 'get_current_network_id' ) ) {
+        return get_current_network_id();
+    }
+
+    // fallback (WordPress 4.6 ke bawah)
+    $network = get_network();
+    return $network ? $network::id : 1;
+}

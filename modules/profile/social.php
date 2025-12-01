@@ -10,7 +10,7 @@ class WPSG_ProfileSocial {
 
     public function __construct() {
         // Load user data
-        $this->data = WPSG_AdminData::get_data($this->option_key) ?? [];
+        $this->data = WPSG_ProfilesData::get_data($this->option_key) ?? [];
 
         // Load platform list
         $this->platforms = $this->load_platforms();
@@ -23,7 +23,7 @@ class WPSG_ProfileSocial {
 
     private function load_platforms() {
         // Ambil dari wp_wpsg_settings
-        $platforms = WPSG_AdminData::get_platform_public();
+        $platforms = WPSG_ProfilesData::get_platform_public();
 
         // Jika kosong, fallback ke admin.json
         if (empty($platforms)) {
@@ -53,8 +53,8 @@ class WPSG_ProfileSocial {
             $new_data[$key] = sanitize_text_field($values[$index] ?? '');
         }
 
-        // Save via WPSG_AdminData
-        WPSG_AdminData::set_data($this->option_key, $new_data);
+        // Save via WPSG_ProfilesData
+        WPSG_ProfilesData::set_data($this->option_key, $new_data);
         $this->data = $new_data;
 
         echo '<div class="notice notice-success"><p>Social platforms saved successfully!</p></div>';

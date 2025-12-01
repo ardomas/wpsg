@@ -7,11 +7,11 @@ class WPSG_SettingsGeneral {
     private $data = [];
 
     public function __construct() {
-        // Load data dari WPSG_AdminData
+        // Load data dari WPSG_SettingsData
         $this->data = [
-            'default_timezone'       => WPSG_AdminData::get_setting($this->option_key . '_timezone', 'Asia/Jakarta'),
-            'default_country'        => WPSG_AdminData::get_setting($this->option_key . '_country', ''),
-            'default_city'           => WPSG_AdminData::get_setting($this->option_key . '_city', '')
+            'default_timezone'       => WPSG_SettingsData::get($this->option_key . '_timezone', 'Asia/Jakarta'),
+            'default_country'        => WPSG_SettingsData::get($this->option_key . '_country', ''),
+            'default_city'           => WPSG_SettingsData::get($this->option_key . '_city', '')
         ];
 
         // Simpan jika ada POST
@@ -29,10 +29,10 @@ class WPSG_SettingsGeneral {
         $this->data['default_country']  = sanitize_text_field($_POST['default_country'] ?? '');
         $this->data['default_city']     = sanitize_text_field($_POST['default_city'] ?? '');
 
-        // Simpan ke wp_wpsg_settings via WPSG_AdminData
-        WPSG_AdminData::set_setting($this->option_key . '_timezone', $this->data['default_timezone']);
-        WPSG_AdminData::set_setting($this->option_key . '_country', $this->data['default_country']);
-        WPSG_AdminData::set_setting($this->option_key . '_city', $this->data['default_city']);
+        // Simpan ke wp_wpsg_settings via WPSG_SettingsData
+        WPSG_SettingsData::set($this->option_key . '_timezone', $this->data['default_timezone']);
+        WPSG_SettingsData::set($this->option_key . '_country', $this->data['default_country']);
+        WPSG_SettingsData::set($this->option_key . '_city', $this->data['default_city']);
 
         echo '<div class="notice notice-success"><p>General settings saved successfully!</p></div>';
     }

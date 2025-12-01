@@ -2,36 +2,24 @@
 
 class WPSG_ProfileAddress {
 
+    private $option_key = 'profile_address';
+    private $def_fields = [
+        'address'=>'', 
+        'address_line_2'=>'', 
+        'city'=>'', 
+        'state'=>'', 
+        'postal_code'=>'',
+        'country'=>'',
+        'maps_link'=>'' ];
+
+    public function __construct() {
+        $this->form_handler();
+    }
+
     public function render() {
 
-        $wpsg_address = get_option('wpsg_profile_address', [
-            'address'        => '',
-            'address_line_2' => '',
-            'city'           => '',
-            'state'          => '',
-            'postal_code'    => '',
-            'country'        => '',
-            'maps_link'      => '',
-        ]);
+        $wpsg_address = $this->get_data();
 
-        // SAVE HANDLER
-        if (isset($_POST['wpsg_address'])) {
-
-            $clean = [
-                'address'        => sanitize_textarea_field($_POST['wpsg_address']['address'] ?? ''),
-                'address_line_2' => sanitize_textarea_field($_POST['wpsg_address']['address_line_2'] ?? ''),
-                'city'           => sanitize_text_field($_POST['wpsg_address']['city'] ?? ''),
-                'state'          => sanitize_text_field($_POST['wpsg_address']['state'] ?? ''),
-                'postal_code'    => sanitize_text_field($_POST['wpsg_address']['postal_code'] ?? ''),
-                'country'        => sanitize_text_field($_POST['wpsg_address']['country'] ?? ''),
-                'maps_link'      => esc_url_raw($_POST['wpsg_address']['maps_link'] ?? ''),
-            ];
-
-            update_option('wpsg_profile_address', $clean);
-
-            echo '<div class="updated"><p>Address saved.</p></div>';
-            $wpsg_address = $clean;
-        }
 ?>
 
 <form method="post">
@@ -41,6 +29,7 @@ class WPSG_ProfileAddress {
         <div class="wrap">
         <!-- <h1>Address</h1> -->
             <h3>Manage your organization’s Address.</h3>
+            <?php wp_nonce_field('wpsg_address_save', 'wpsg_address_nonce'); ?>
 
             <!-- Address -->
             <div class="wpsg-form-field">
@@ -111,4 +100,42 @@ class WPSG_ProfileAddress {
 
 <?php
     }
+
+    /** PROCESS FORM **/
+    private function form_handler() {
+
+        if (!isset($_POST['wpsg_address_nonce'])) return;
+        if (!wp_verify_nonce($_POST['wpsg_address_nonce'], 'wpsg_address_save')) return;
+
+        $wpsg_address = $this->def_fields;
+
+        // SAVE HANDLER
+        if (isset($_POST['wpsg_address'])) {
+
+            $clean = [
+                'address'        => sanitize_textarea_field($_POST['wpsg_address']['address'] ?? ''),
+                'address_line_2' => sanitize_textarea_field($_POST['wpsg_address']['address_line_2'] ?? ''),
+                'city'           => sanitize_text_field($_POST['wpsg_address']['city'] ?? ''),
+                'state'          => sanitize_text_field($_POST['wpsg_address']['state'] ?? ''),
+                'postal_code'    => sanitize_text_field($_POST['wpsg_address']['postal_code'] ?? ''),
+                'country'        => sanitize_text_field($_POST['wpsg_address']['country'] ?? ''),
+                'maps_link'      => esc_url_raw($_POST['wpsg_address']['maps_link'] ?? ''),
+            ];
+
+            echo '<div class="updated"><p>Address saved.</p></div>';
+            $wpsg_address = $clean;
+        }
+
+        WPSG_ProfilesData::set_data( $this->option_key, $wpsg_address );
+
+        add_action('admin_notices', function() {
+            echo '<div class="updated"><p>Identity updated successfully.</p></div>';
+        });
+    }
+
+    /** GET DATA **/
+    private function get_data() {
+        return WPSG_ProfilesData::get_data($this->option_key);
+    }
+
 }

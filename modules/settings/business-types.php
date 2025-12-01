@@ -7,8 +7,8 @@ class WPSG_SettingsBusinessTypes {
     private $data = [];
 
     public function __construct() {
-        // Load data dari WPSG_AdminData
-        $this->data = WPSG_AdminData::get_business_types();
+        // Load data dari WPSG_SettingsData
+        $this->data = WPSG_SettingsData::get_business_types();
 
         // Simpan jika ada POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wpsg_business_types_nonce'])) {
@@ -37,8 +37,8 @@ class WPSG_SettingsBusinessTypes {
             ];
         }
 
-        // Simpan via WPSG_AdminData
-        WPSG_AdminData::set_business_types($new_data);
+        // Simpan via WPSG_SettingsData
+        WPSG_SettingsData::set_business_types($new_data);
         $this->data = $new_data;
 
         echo '<div class="notice notice-success"><p>Business Types saved successfully!</p></div>';

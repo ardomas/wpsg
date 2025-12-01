@@ -16,7 +16,7 @@ class WPSG_PersonsRepository {
      * Constructor
      */
     public function __construct() {
-        $this->data = WPSG_PersonsData::get_instance();
+        $this->data = WPSG_PersonsData::instance();
     }
 
     /* ---------------------------------------------------------
@@ -24,32 +24,43 @@ class WPSG_PersonsRepository {
      * (Forward calls to Data layer, but this is the extension point)
      * --------------------------------------------------------- */
 
-    public function create_person( $data ) {
-        return $this->data->create( $data );
-    }
-
-    public function get_person( $id ) {
+    public function get( $id ) {
         return $this->data->get( $id );
     }
 
-    public function get_user($id){
-        return $this->data->get_user($id);
+    public function get_by_user_id( $user_id ) {
+        return $this->data->get_by_user_id( $user_id );
     }
 
-    public function get_person_by_email( $email ) {
+    public function get_by_email( $email ) {
         return $this->data->get_by_email( $email );
     }
 
-    public function update_person( $id, $data ) {
-        return $this->data->update( $id, $data );
+    public function get_user_id($id){
+        $values = $this->data->get( $id );
+        return $values['user_id'] ?? null;
     }
 
-    public function delete_person( $id ) {
-        return $this->data->delete( $id );
+    public function get_user($person_id) {
+        $user_id = $this->get_user_id($person_id);
+        return $user_id ? get_userdata($user_id) : null;
     }
 
-    public function list_persons( $args = [] ) {
-        return $this->data->list( $args );
+    public function get_email($person_id){
+        $person = $this->data->get($person_id);
+        return $person['email'] ?? null;
+    }
+
+    public function set( $data ) {
+        return $this->data->set( $data );
+    }
+
+    public function delete( $id ) {
+        return $this->data->soft_delete( $id );
+    }
+
+    public function list( $args = [] ) {
+        return $this->data->get_all( $args );
     }
 
     /* ---------------------------------------------------------
@@ -60,12 +71,16 @@ class WPSG_PersonsRepository {
         return $this->data->add_meta( $person_id, $key, $value );
     }
 
-    public function get_meta( $person_id, $key, $single = true ) {
-        return $this->data->get_meta( $person_id, $key, $single );
-    }
-
     public function update_meta( $person_id, $key, $value ) {
         return $this->data->update_meta( $person_id, $key, $value );
+    }
+/*
+    public function set_meta( $person_id, $key, value ){
+        return $this->data->set_meta( $person_id, $key, value );
+    }
+*/
+    public function get_meta( $person_id, $key, $single = true ) {
+        return $this->data->get_meta( $person_id, $key, $single );
     }
 
     public function delete_meta( $person_id, $key ) {
@@ -82,7 +97,7 @@ class WPSG_PersonsRepository {
      */
     public function find_or_create_by_email( $email, $data = [] ) {
 
-        $person = $this->get_person_by_email( $email );
+        $person = $this->get_by_email( $email );
 
         if ( $person ) {
             return $person['id'];
@@ -91,14 +106,14 @@ class WPSG_PersonsRepository {
         // Ensure email included in creation data
         $data['email'] = $email;
 
-        return $this->create_person( $data );
+        return $this->set( $data );
     }
 
     /**
      * Check if a person exists (by ID)
      */
     public function exists( $person_id ) : bool {
-        return (bool) $this->get_person( $person_id );
+        return (bool) $this->get( $person_id );
     }
 
     /**

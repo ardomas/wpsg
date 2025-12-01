@@ -13,11 +13,13 @@ class WPSG_ProfileIdentity {
 
     /** Load business types dari Settings -> General */
     private function load_data_references() {
-        $this->business_types = WPSG_AdminData::get_setting('wpsg_business_types', '*'); // Ambil semua site
+        $this->business_types = WPSG_SettingsData::get_setting('wpsg_business_types', '*'); // Ambil semua site
     }
 
     public function render() {
+
         $data = $this->get_data();
+
         ?>
         <form method="post">
 
@@ -170,7 +172,7 @@ class WPSG_ProfileIdentity {
             'year_established' => intval($_POST['year_established'] ?? 0),
         ];
 
-        WPSG_AdminData::set_data($this->option_key, $clean);
+        WPSG_ProfilesData::set_data($this->option_key, $clean);
 
         add_action('admin_notices', function() {
             echo '<div class="updated"><p>Identity updated successfully.</p></div>';
@@ -179,6 +181,6 @@ class WPSG_ProfileIdentity {
 
     /** GET DATA **/
     private function get_data() {
-        return WPSG_AdminData::get_data($this->option_key);
+        return WPSG_ProfilesData::get_data($this->option_key);
     }
 }
