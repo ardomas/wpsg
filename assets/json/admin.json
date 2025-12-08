@@ -50,20 +50,20 @@
             "announcements": {
                 "title": "Announcements",
                 "icon": "dashicons-megaphone",
-                "path": "modules/announcements/list.php",
+                "path": "modules/announcements.php",
                 "class": "WPSG_AnnouncementsList",
-                "method": "render",
+                "method": "render_list",
                 "description": "Manage all announcements",
                 "dashboard": true,
                 "site": "all",
                 "view": true
             },
-            "membership": {
+            "memberships": {
                 "title": "Membership",
                 "icon": "dashicons-groups",
                 "path": "modules/memberships.php",
                 "class": "WPSG_Memberships",
-                "method": "render_page",
+                "method": "render_list",
                 "description": "Manage membership data",
                 "dashboard": true,
                 "site": "main",
@@ -161,6 +161,52 @@
         }
     },
 
+    "memberships": {
+        "type": "action",
+        "data": {
+            "list": {
+                "page": "wpsg-admin",
+                "view": "memberships",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "render_list",
+                "default": true
+            },
+            "add": {
+                "page": "wpsg-admin",
+                "view": "memberships",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "render_form",
+                "default": false
+            },
+            "edit": {
+                "page": "wpsg-admin",
+                "view": "memberships",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "render_form",
+                "default": false
+            },
+            "save": {
+                "page": "wpsg-admin",
+                "view": "memberships",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "handle_save_membership",
+                "default": false
+            },
+            "delete": {
+                "page": "wpsg-admin",
+                "view": "memberships",
+                "path": "modules/memberships.php",
+                "class": "WPSG_Memberships",
+                "method": "handle_delete_membership",
+                "default": true
+            }
+        }
+    },
+
     "announcements": {
         "type": "action",
         "data": {
@@ -169,7 +215,7 @@
                 "view": "announcements",
                 "path": "modules/announcements.php",
                 "class": "WPSG_Announcements",
-                "method": "list",
+                "method": "render_list",
                 "default": true
             },
             "add": {
@@ -177,7 +223,7 @@
                 "view": "announcements",
                 "path": "modules/announcements.php",
                 "class": "WPSG_Announcements",
-                "method": "form",
+                "method": "render_form",
                 "default": false
             },
             "edit": {
@@ -185,7 +231,7 @@
                 "view": "announcements",
                 "path": "modules/announcements.php",
                 "class": "WPSG_Announcements",
-                "method": "form",
+                "method": "render_form",
                 "default": false
             },
             "save": {

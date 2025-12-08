@@ -108,6 +108,31 @@ function wpsg_enqueue_fontawesome() {
 
 }
 
+function wpsg_dbDelta($args = []){
+    global $wpdb;
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    if( is_array( $args ) ){
+        foreach ($arg as $tbkey => $sql) {
+            dbDelta($sql);
+        }
+    }
+
+}
+
+function wpsg_safe_redirect( $new_url ){
+    $validated = wp_validate_redirect($new_url, false);
+    if( $validated === $new_url ){
+        wp_safe_redirect( $new_url );
+        // exit;
+    } else {
+        return new WP_Error(
+            'wpsg_redirect_blocked',
+            'Redirect blocked. Domain not in allowed hosts: ' . esc_url( $new_url )
+        );
+    }
+}
+
 function wpsg_get_networks($args = []) {
     $defaults = [
         'fields' => 'objects', // objects|ids|domains|custom
@@ -137,4 +162,10 @@ function wpsg_get_network_id() {
     // fallback (WordPress 4.6 ke bawah)
     $network = get_network();
     return $network ? $network::id : 1;
+}
+
+function wpsg_get_profile_data( $site_id=null ){
+    if( $site_id==null ) $site_id = wpsg_get_network_id();
+    $init = WPSG_ProfilesRepository::init();
+    return $init::data;
 }

@@ -59,13 +59,15 @@ class WPSG_AdminData {
         $clean_data = [];
 
         foreach ($raw_data as $key => $item) {
+
             if (!isset($item['dashboard'])) $item['dashboard'] = true;
             if (!isset($item['view'])) $item['view'] = true;
             if (!isset($item['site'])) $item['site'] = 'main';
 
-            if (($item['dashboard'] || $item['view']) && ($item['site'] === 'all' || is_super_admin())) {
+            if (($item['dashboard'] || $item['view']) && ($item['site'] === 'all' || ( is_main_network() && is_admin() ) )) {
                 $clean_data[$key] = $item;
             }
+
         }
 
         return $clean_data;

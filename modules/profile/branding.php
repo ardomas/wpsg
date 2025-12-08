@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_ProfileBranding {
 
-    private $option_key = 'profile-branding';
+    private $option_key = 'profile_branding';
 
     public function __construct() {
         $this->form_handler();
@@ -27,12 +27,12 @@ class WPSG_ProfileBranding {
                     <div class="wpsg-boxed wpsg-form-field">
                         <label for="core_purpose"><strong>Brand Core Purpose</strong></label>
                         <?php
-                        $core_purpose = $data['core-purpose'] ?? '';
+                        $core_purpose = $data['core_purpose'] ?? '';
                         wp_editor(
                             $core_purpose,
                             'wpsg_core_purpose',
                             [
-                                'textarea_name' => 'core-purpose',
+                                'textarea_name' => 'core_purpose',
                                 'textarea_rows' => 6,
                                 'media_buttons' => false,
                                 'teeny' => true
@@ -172,7 +172,7 @@ jQuery(document).ready(function($){
         $clean = [];
 
         // Core Purpose
-        $clean['core-purpose'] = wp_kses_post($_POST['core-purpose'] ?? '');
+        $clean['core_purpose'] = wp_kses_post($_POST['core_purpose'] ?? '');
 
         // Logos
         $clean['logo'] = [];
@@ -191,7 +191,7 @@ jQuery(document).ready(function($){
         }
 
         // Save using WPSG_ProfilesData
-        WPSG_ProfilesData::set_data($this->option_key, $clean);
+        WPSG_ProfilesRepository::set($this->option_key, $clean);
 
         add_action('admin_notices', function(){
             echo '<div class="updated"><p>Branding updated successfully.</p></div>';
@@ -200,6 +200,6 @@ jQuery(document).ready(function($){
 
     /** GET DATA **/
     private function get_data(){
-        return WPSG_ProfilesData::get_data($this->option_key);
+        return WPSG_ProfilesRepository::get($this->option_key);
     }
 }

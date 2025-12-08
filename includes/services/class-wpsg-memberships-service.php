@@ -6,271 +6,542 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * WPSG_MembershipsService
  *
- * Business layer for membership operations.
- * Modules/UI should interact with this class only.
+ * Business/service layer for memberships.
+ * - wp_wpsg_sites is the MAIN table (via repository)
+ * - wp_site (network) is optional info (LEFT JOIN style)
+ * - wp_wpsg_sitemeta is plugin meta (managed by repo)
+ * - wp_sitemeta / network options are updated only if site/network exists
+ *
+ * Responsibilities:
+ * - validation and normalization
+ * - composition of membership + site info for UI/API
+ * - managing writes across plugin tables and network options (if applicable)
+ * - event triggers (actions)
  */
 class WPSG_MembershipsService {
 
     /** @var WPSG_MembershipsRepository */
-    private $membership_repo;
+    protected $repo;
 
-    /** @var WPSG_PersonsRepository */
-    private $persons_repo;
+    /** @var wpdb (for optional site queries) */
+    protected $wpdb;
 
     public function __construct() {
-        $this->membership_repo = new WPSG_MembershipsRepository();
-        // Persons repo is optional; used when we need to show person details or create person
-        if ( class_exists( 'WPSG_PersonsRepository' ) ) {
-            $this->persons_repo = new WPSG_PersonsRepository();
-        } else {
-            $this->persons_repo = null;
-        }
+        $this->repo  = new WPSG_MembershipsRepository();
+        global $wpdb;
+        $this->wpdb = $wpdb;
     }
 
-    /* ---------------------------------------------
-     * Listing / Index
-     * --------------------------------------------- */
+    /* ------------------------------------------------------------------
+     * LIST / GET
+     * ------------------------------------------------------------------ */
 
     /**
-     * Return flattened list of "memberships" where membership is represented by wp_site entry.
+     * List memberships with optional filters.
+     * Attach optional wp_site info (LEFT JOIN style) and plugin meta.
      *
-     * Each item:
-     *  - site_id
-     *  - domain
-     *  - path
-     *  - members_count (active)
-     *
-     * @param array $args (reserved for future: limit/offset/order)
-     * @return array
+     * $args forwarded to repo->get_all()
+     * Returns array of items:
+     * [
+     *   'membership' => array|object (row from wp_wpsg_sites),
+     *   'meta'       => [ meta_key => meta_value, ... ],
+     *   'site'       => object|null  (row from wp_site table if exists),
+     * ]
      */
     public function list_memberships( $args = [] ) {
-        global $wpdb;
+        // get raw memberships from repo (wp_wpsg_sites)
+        $memberships = $this->repo->get_all( $args );
 
-        $defaults = [
-            'limit' => 0,
-            'offset' => 0,
-            'orderby' => 'site_id',
-            'order' => 'ASC',
-        ];
-        $args = wp_parse_args( $args, $defaults );
-
-        // Note: wp_site table has columns: id, domain, path (depending on WP version)
-        $site_table = $wpdb->base_prefix . 'site'; // use base_prefix for multisite site table
-
-        $order = ( strtoupper($args['order']) === 'DESC' ) ? 'DESC' : 'ASC';
-        $orderby = in_array( $args['orderby'], ['site_id','domain','path'], true ) ? $args['orderby'] : 'id';
-
-        // Build base query
-        $query = "SELECT s.id AS site_id, s.domain, s.path
-                  FROM {$site_table} s
-                  ORDER BY {$orderby} {$order}";
-
-        if ( intval( $args['limit'] ) > 0 ) {
-            $query .= $wpdb->prepare( " LIMIT %d OFFSET %d", intval($args['limit']), intval($args['offset']) );
-        }
-
-        $sites = $wpdb->get_results( $query, ARRAY_A );
-
-        if ( ! $sites ) {
+        if ( empty( $memberships ) ) {
             return [];
         }
 
-        // attach members_count
-        foreach ( $sites as &$row ) {
-            $row['members_count'] = $this->membership_repo->count_users_by_site( $row['site_id'] );
+        // Collect site_ids to fetch wp_site info (many in one query)
+        $site_ids = [];
+        $metas    = [];
+        foreach ( $memberships as $m ) {
+            $sid = intval( $m['site_id'] ?? 0 );
+            if ( $sid > 0 ) $site_ids[ $sid ] = $sid;
+            $metas[$sid] = [];
         }
 
-        return $sites;
+        // Fetch site rows (if any) using wp_site table (multi-network)
+        // $sites_indexed = $this->fetch_sites_indexed( array_values( $site_ids ) );
+        $sites_indexed = $this->fetch_site_all_metas( $site_ids );
+
+        // Prepare result: membership with meta + site info
+        $result = [];
+        foreach ( $memberships as $m ) {
+            $site_id = intval( $m['site_id'] ?? 0 );
+            // $metas[$site_id] = $this->get_all_site_m
+
+            // plugin meta for this membership (wp_wpsg_sitemeta)
+            $meta_rows = $this->repo->get_all_meta( $site_id ); // returns [] if site_id <=0
+            $meta = $this->meta_rows_to_kv( $meta_rows );
+
+            $result[] = [
+                'membership' => $m,
+                'meta'       => $meta,
+                'site'       => $sites_indexed[ $site_id ] ?? null,
+            ];
+        }
+
+        return $result;
     }
 
-    /* ---------------------------------------------
-     * Detail / Site users
-     * --------------------------------------------- */
+    /**
+     * Get single membership by primary id (id in wp_wpsg_sites).
+     * Returns array with membership, meta, site.
+     */
+    public function get_membership( $id ) {
+        $id = intval( $id );
+        if ( $id <= 0 ) return null;
+
+        $m = $this->repo->get( $id );
+        if ( ! $m ) return null;
+
+        $site_id = intval( $m['site_id'] ?? 0 );
+        $meta_rows = $this->repo->get_all_meta( $site_id );
+        $meta = $this->meta_rows_to_kv( $meta_rows );
+        $site = $site_id > 0 ? $this->fetch_site_row( $site_id ) : null;
+
+        return [
+            'membership' => $m,
+            'meta'       => $meta,
+            'site'       => $site,
+        ];
+    }
+
+    /* ------------------------------------------------------------------
+     * SAVE (create / update)
+     * ------------------------------------------------------------------ */
 
     /**
-     * Get users assigned to a particular site (with optional person mapping info)
+     * Save membership (create or update).
      *
-     * @param int $site_id
-     * @param array $opts  ['with_person' => true]
-     * @return array|WP_Error
+     * $full_data is an array that may include:
+     * - 'membership' => main membership fields for wp_wpsg_sites (id optional)
+     * - 'meta'       => associative array meta_key => meta_value for wp_wpsg_sitemeta
+     * - 'site_meta'  => associative array meta_key => meta_value for network (wp_sitemeta) — only saved if site_id exists
+     * - 'network'    => optional network payload (domain,path,title) — used to ensure network exists (if you want to auto create)
+     *
+     * Behavior:
+     * - normalize membership via normalize_membership_data()
+     * - save membership via repo->set() (returns insert_id or rows affected)
+     * - save plugin meta via repo->set_meta()
+     * - if site_id exists and 'site_meta' present, save via update_network_option()
+     *
+     * Returns: insert_id | rows affected | WP_Error on fatal failure
      */
-    public function get_site_users( $site_id, $opts = [] ) {
-        $site_id = intval( $site_id );
-        if ( $site_id <= 0 ) {
-            return new WP_Error( 'invalid_site', 'Invalid site id' );
+    public function save_membership( $full_data = [] ) {
+        if ( empty( $full_data ) || ! is_array( $full_data ) ) {
+            return new WP_Error( 'missing_data', 'Data required.' );
         }
 
-        $users = $this->membership_repo->get_site_users( $site_id );
+        echo '<xmp>Test';
+        print_r( $full_data );
+        echo '</xmp>';
 
-        if ( empty( $users ) ) {
-            return [];
-        }
+        $membership  = $full_data['membership'] ?? [];
+        $meta        = $full_data['meta'] ?? [];
+        $site_meta   = $full_data['site_meta'] ?? []; // network options
+        $network_in  = $full_data['network'] ?? [];
 
-        $with_person = isset($opts['with_person']) && $opts['with_person'];
+        // If network info provided and site_id empty -> ensure/create network (optional)
+        // network_in keys: domain, path, title
+        if ( ! empty( $network_in ) && empty( $membership['site_id'] ) ) {
+            $domain = strtolower( trim( $network_in['domain'] ?? '' ) );
+            $path   = ! empty( $network_in['path'] ) ? $network_in['path'] : '/';
+            $title  = $network_in['site_name'] ?? 'New Network';
 
-        // optionally attach person info (via user_person mapping)
-        if ( $with_person && $this->persons_repo ) {
-            foreach ( $users as &$u ) {
-                $persons = $this->membership_repo->get_user_persons( $u['user_id'], true );
-                $u['persons'] = [];
-                foreach ( $persons as $p ) {
-                    // fetch base person record if persons_repo available
-                    if ( $this->persons_repo ) {
-                        $person = $this->persons_repo->get( $p['person_id'] );
-                        if ( $person ) {
-                            $u['persons'][] = $person;
-                        }
-                    } else {
-                        $u['persons'][] = $p;
+            if ( $domain !== '' ) {
+                try {
+                    $network_id = $this->ensure_network_exists( $domain, $path, $title );
+                    if ( $network_id ) {
+                        $membership['site_id'] = intval( $network_id );
                     }
+                } catch ( Exception $e ) {
+                    return new WP_Error( 'network_creation_failed', 'Failed creating or retrieving network: ' . $e->getMessage() );
                 }
             }
         }
 
-        return $users;
+        // Normalize membership payload
+        $membership = $this->normalize_membership_data( $membership );
+
+        // Before save hook
+        do_action( 'wpsg_membership_before_save', $membership, $meta, $site_meta );
+
+        // Persist main membership via repository
+        // echo '<xmp>';
+        // print_r( $membership );
+        // echo '</xmp>';
+        /*
+        if( $membership['id']==0 ){
+            $tmp = [];
+            foreach( $membership as $k=>$v ){
+                if( $k!=='id' ){
+                    $tmp[$k] = $v;
+                }
+            }
+            $membership = $tmp;
+        }
+        */
+        // echo '<xmp>';
+        // print_r( $membership );
+        // echo '</xmp>';
+        // die('lihat hasil');
+        $res = $this->repo->set( $membership );
+        // repo->set returns insert_id (int) on insert, or number of rows affected on update, or false
+        if ( $res === false ) {
+            return new WP_Error( 'db_error', 'Failed saving membership.' );
+        }
+
+        // If new insert, ensure we have primary id
+        $insert_id = is_int( $res ) && intval( $res ) > 0 ? intval( $res ) : ( intval( $membership['id'] ?? 0 ) > 0 ? intval( $membership['id'] ) : null );
+
+        // If there is a site_id, use it as "site identifier" for meta operations
+        $site_id = intval( $membership['site_id'] ?? 0 );
+
+        // Save plugin meta (wp_wpsg_sitemeta) — iterate through $meta
+        if ( ! empty( $meta ) && $site_id > 0 ) {
+            foreach ( $meta as $k => $v ) {
+                $this->repo->set_meta( $site_id, $k, $v );
+            }
+        }
+
+        // Save network/site meta (wp_sitemeta) if provided and network function available
+        if ( $site_id > 0 && ! empty( $site_meta ) ) {
+            foreach ( $site_meta as $k => $v ) {
+                $update = $this->update_network_option_safe( $site_id, $k, $v );
+                if ( is_wp_error( $update ) ) {
+                    // Log but do not fail entire save; continue
+                    do_action( 'wpsg_membership_network_meta_error', $site_id, $k, $v, $update );
+                }
+            }
+        }
+
+        // After save hook
+        do_action( 'wpsg_membership_after_save', $membership, $res );
+
+        return $res;
     }
 
-    /* ---------------------------------------------
-     * Assign / Remove
-     * --------------------------------------------- */
+    /* ------------------------------------------------------------------
+     * DELETE
+     * ------------------------------------------------------------------ */
 
     /**
-     * Assign a WP user to a site (and optionally link to a person)
+     * Delete membership.
      *
-     * @param int $site_id
-     * @param int $user_id
-     * @param array $opts ['role'=>..., 'status'=>..., 'person_id' => int (optional), 'person_link_role' => ...]
-     * @return array|WP_Error  ['site_user_id'=>..., 'user_person_id'=>...]
+     * $id is primary id of wp_wpsg_sites.
+     * Options:
+     *  - 'remove_network_meta' => bool (default false) — if true, attempt to remove keys from network options
+     *
+     * Returns: boolean | WP_Error
      */
-    public function assign_user_to_site( $site_id, $user_id, $opts = [] ) {
-        $site_id = intval( $site_id );
-        $user_id = intval( $user_id );
+    public function delete_membership( $id, $options = [] ) {
+        $id = intval( $id );
+        if ( $id <= 0 ) return new WP_Error( 'invalid_id', 'Invalid membership id' );
 
-        if ( $site_id <= 0 ) return new WP_Error( 'invalid_site', 'Invalid site id' );
-        if ( $user_id <= 0 ) return new WP_Error( 'invalid_user', 'Invalid user id' );
+        // fetch membership to know site_id
+        $membership = $this->repo->get( $id );
+        if ( ! $membership ) return new WP_Error( 'not_found', 'Membership not found' );
 
-        $role = isset($opts['role']) ? sanitize_text_field( $opts['role'] ) : null;
-        $status = isset($opts['status']) ? sanitize_text_field( $opts['status'] ) : 'active';
+        $site_id = intval( $membership['site_id'] ?? 0 );
 
-        // link site <-> user (idempotent)
-        $su_result = $this->membership_repo->link_site_user( $site_id, $user_id, $role, $status );
-        if ( $su_result === false ) {
-            return new WP_Error( 'db_error', 'Failed to link user to site' );
+        // Before delete hook
+        do_action( 'wpsg_membership_before_delete', $id, $membership );
+
+        // Delete plugin meta first (safe)
+        if ( $site_id > 0 ) {
+            $this->repo->delete_all_meta( $site_id );
         }
 
-        $out = [
-            'site_user' => $su_result,
-        ];
-
-        // optionally link user -> person
-        if ( isset($opts['person_id']) && intval($opts['person_id']) > 0 ) {
-            $person_id = intval( $opts['person_id'] );
-            $person_link_role = isset($opts['person_link_role']) ? sanitize_text_field($opts['person_link_role']) : null;
-
-            $up_result = $this->membership_repo->link_user_person( $user_id, $person_id, $site_id, $person_link_role, 'active' );
-            if ( $up_result === false ) {
-                // rollback site-user link? for now, we return error and leave site-user mapping as-is.
-                return new WP_Error( 'db_error', 'Failed to link user to person' );
+        // Optionally remove specified network meta keys (caller must supply meta keys)
+        if ( ! empty( $options['remove_network_meta_keys'] ) && is_array( $options['remove_network_meta_keys'] ) && $site_id > 0 ) {
+            foreach ( $options['remove_network_meta_keys'] as $k ) {
+                if ( function_exists( 'delete_network_option' ) ) {
+                    delete_network_option( $site_id, $k );
+                } else {
+                    // no-op if function missing; log
+                    do_action( 'wpsg_membership_delete_network_option_missing', $site_id, $k );
+                }
             }
-            $out['user_person'] = $up_result;
         }
 
+        // Delete main membership row (soft delete via repo->delete expects id)
+        $deleted = $this->repo->delete( $id );
+
+        // After delete hook
+        do_action( 'wpsg_membership_after_delete', $id, $membership, $deleted );
+
+        return (bool) $deleted;
+    }
+
+    /* ------------------------------------------------------------------
+     * META HANDLERS (wrap repo)
+     * ------------------------------------------------------------------ */
+
+    public function get_meta( $site_id, $meta_key ) {
+        return $this->repo->get_meta( $site_id, $meta_key );
+    }
+
+    public function set_meta( $site_id, $meta_key, $meta_value ) {
+        return $this->repo->set_meta( $site_id, $meta_key, $meta_value );
+    }
+
+    public function delete_meta( $site_id, $meta_key ) {
+        return $this->repo->delete_meta( $site_id, $meta_key );
+    }
+
+    /* ------------------------------------------------------------------
+     * HELPERS
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Convert meta rows (array of [meta_key, meta_value]) to kv array.
+     */
+    protected function meta_rows_to_kv( $rows ) {
+        $out = [];
+        if ( empty( $rows ) ) return $out;
+        if( is_array( $rows ) ){
+            foreach ( $rows as $r ) {
+                if( isset( $r['meta_key'] ) && isset($r['meta_value']) ){
+                    $out[ $r['meta_key'] ] = $r['meta_value'];
+                }
+            }
+        }
         return $out;
     }
 
     /**
-     * Remove/unassign a user from a site (and optionally unlink user->person)
-     *
-     * @param int $site_id
-     * @param int $user_id
-     * @param array $opts ['unlink_person' => bool, 'person_id' => int|null]
-     * @return bool|WP_Error
+     * Fetch wp_site rows for given array of site_ids and return indexed by id.
+     * Uses $wpdb and base_prefix . 'site' table (multi-network).
+     * If no site table or zero ids, returns [].
      */
-    public function remove_user_from_site( $site_id, $user_id, $opts = [] ) {
-        $site_id = intval( $site_id );
-        $user_id = intval( $user_id );
+    protected function fetch_sites_indexed( $site_ids = [] ) {
+        $out = [];
+        if ( empty( $site_ids ) ) return $out;
 
-        if ( $site_id <= 0 ) return new WP_Error( 'invalid_site', 'Invalid site id' );
-        if ( $user_id <= 0 ) return new WP_Error( 'invalid_user', 'Invalid user id' );
+        $site_table = $this->wpdb->base_prefix . 'site';
 
-        $deleted = $this->membership_repo->unlink_site_user( $site_id, $user_id );
-        if ( $deleted === false ) {
-            return new WP_Error( 'db_error', 'Failed to unlink user from site' );
+        // guard: if table doesn't exist, return empty
+        if ( $this->table_exists( $site_table ) === false ) return $out;
+
+        $placeholders = implode( ',', array_fill(0, count($site_ids), '%d') );
+        $sql = "SELECT * FROM {$site_table} WHERE id IN ({$placeholders})";
+        $rows = $this->wpdb->get_results( $this->wpdb->prepare( $sql, $site_ids ), ARRAY_A );
+
+        if ( empty( $rows ) ) return $out;
+
+        foreach ( $rows as $r ) {
+            $out[ intval( $r['id'] ) ] = $r;
         }
+        return $out;
+    }
 
-        if ( isset( $opts['unlink_person'] ) && $opts['unlink_person'] ) {
-            $person_id = isset($opts['person_id']) ? intval($opts['person_id']) : null;
-            // if person_id provided, we unlink specific mapping; otherwise attempt to unlink all person links for user+site
-            if ( $person_id ) {
-                $this->membership_repo->unlink_user_person( $user_id, $person_id, $site_id );
-            } else {
-                // unlink all user-person mappings for that site
-                $persons = $this->membership_repo->get_user_persons( $user_id, true );
-                foreach ( $persons as $p ) {
-                    if ( isset($p['site_id']) && intval($p['site_id']) === intval($site_id) ) {
-                        $this->membership_repo->unlink_user_person( $user_id, $p['person_id'], $site_id );
-                    }
+    protected function fetch_site_all_metas( $ids ){
+        $rows = [];
+        foreach( $ids as $site_id ){
+            $meta_table = $this->wpdb->base_prefix . 'sitemeta';
+            $meta_sql = $this->wpdb->prepare(
+                "SELECT meta_key, meta_value FROM {$meta_table}
+                WHERE site_id = %d",
+                $site_id
+            );
+            if( $site_id!=0 ){
+                $row = $this->fetch_site_all_meta( $site_id );
+                if( !$row!=null ){
+                    $rows[ $site_id ] = $row;
                 }
             }
         }
+        return $rows;
+    }
+    /**
+     * Fetch a single wp_site row by id.
+     */
+    /*
+    protected function fetch_site_row( $site_id ) {
+        $site_table = $this->wpdb->base_prefix . 'site';
+        if ( $this->table_exists( $site_table ) === false ) return null;
 
-        return true;
+        $sql = $this->wpdb->prepare( "SELECT * FROM {$site_table} WHERE id = %d", intval( $site_id ) );
+        $row = $this->wpdb->get_row( $sql, ARRAY_A );
+        return $row ? $row : null;
+    }
+    */
+    protected function fetch_site_all_meta( $site_id ){
+        $meta_table = $this->wpdb->base_prefix . 'sitemeta';
+        $meta_sql = $this->wpdb->prepare(
+            "SELECT meta_key, meta_value FROM {$meta_table}
+            WHERE site_id = %d",
+            $site_id
+        );
+        $rows = [];
+
+        $msrc = $this->wpdb->get_var( $meta_sql );
+
+        $rows = $this->meta_rows_to_kv( array($msrc) );
+
+        return $rows;
+
     }
 
-    /* ---------------------------------------------
-     * Helpers
-     * --------------------------------------------- */
+    protected function fetch_site_row( $site_id ) {
+        $site_table = $this->wpdb->base_prefix . 'site';
+        /*
+        $meta_table = $this->wpdb->base_prefix . 'sitemeta';
+        */
+
+        if ( $this->table_exists( $site_table ) === false ) {
+            return null;
+        }
+
+        $site_id = intval( $site_id );
+
+        // Fetch row from wp_site
+        $sql = $this->wpdb->prepare(
+            "SELECT * FROM {$site_table} WHERE id = %d",
+            $site_id
+        );
+        $row = $this->wpdb->get_row( $sql, ARRAY_A );
+
+        if ( ! $row ) {
+            return null;
+        }
+
+        // ======================================================
+        // Fetch site_name meta
+        // ======================================================
+        $meta_rows = $this->fetch_site_all_meta( $site_id );
+        $site_name = $meta_rows['site_name'] ?? 'New Network';
+        /*
+        $meta_sql = $this->wpdb->prepare(
+            "SELECT meta_value FROM {$meta_table}
+            WHERE site_id = %d AND meta_key = %s
+            LIMIT 1",
+            $site_id,
+            'site_name'
+        );
+
+        $site_name = $this->wpdb->get_var( $meta_sql );
+        */
+
+        // Tambahkan ke hasil
+        $row['meta']['site_name'] = $site_name ? $site_name : '';
+
+        return $row;
+    }
 
     /**
-     * Get membership summary for a single site (site info + counts + owner candidate)
-     *
-     * @param int $site_id
-     * @return array|WP_Error
+     * Safe wrapper for update_network_option (network/site meta).
+     * Returns true on success, WP_Error on fatal.
      */
-    public function get_membership_summary( $site_id ) {
-        global $wpdb;
-        $site_id = intval( $site_id );
-        if ( $site_id <= 0 ) return new WP_Error( 'invalid_site', 'Invalid site id' );
+    protected function update_network_option_safe( $site_id, $key, $value ) {
+        if ( ! function_exists( 'update_network_option' ) ) {
+            return new WP_Error( 'no_network_api', 'Network API not available' );
+        }
 
-        $site_table = $wpdb->base_prefix . 'site';
-        $site = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$site_table} WHERE id = %d", $site_id ), ARRAY_A );
-        if ( ! $site ) return new WP_Error( 'not_found', 'Site not found' );
+        // use update_network_option which manages sitemeta for networks
+        $ok = update_network_option( intval($site_id), $key, $value );
+        return $ok;
+    }
 
-        $count = $this->membership_repo->count_users_by_site( $site_id );
-        $users = $this->membership_repo->get_site_users( $site_id );
+    /**
+     * Check table exists
+     */
+    protected function table_exists( $table_name ) {
+        $q = $this->wpdb->prepare( "SHOW TABLES LIKE %s", $table_name );
+        $res = $this->wpdb->get_var( $q );
+        return ! empty( $res );
+    }
 
-        // try find an "owner" role
-        $owner = null;
-        foreach ( $users as $u ) {
-            if ( isset($u['role']) && in_array( strtolower($u['role']), ['owner','admin','primary'], true ) ) {
-                $owner = $u;
-                break;
+    /* ------------------------------------------------------------------
+     * NETWORK HELPERS (keberadaan multi-network)
+     * ------------------------------------------------------------------ */
+
+    /**
+     * Ensure network exists: try to find network by domain+path, otherwise create.
+     * Returns network id (int) or throws Exception.
+     */
+    private function ensure_network_exists( string $domain, string $path = '/', string $title = 'New Network' ) : int {
+
+        $domain = strtolower( trim( $domain ) );
+        $path   = '/' . trim( $path, '/' ) . '/';
+
+        // try to find network via get_networks (if available)
+        if ( function_exists( 'get_networks' ) ) {
+            $existing = get_networks([
+                'domain' => $domain,
+                'path'   => $path,
+                'number' => 1,
+            ]);
+
+            if ( ! empty( $existing ) ) {
+                // ensure name updated
+                if ( function_exists( 'update_network_option' ) ) {
+                    update_network_option( intval( $existing[0]->id ), 'site_name', $title );
+                }
+                return intval( $existing[0]->id );
             }
         }
 
-        return [
-            'site' => $site,
-            'members_count' => intval( $count ),
-            'members' => $users,
-            'owner' => $owner
+        // not found -> create if possible
+        return $this->auto_create_network( $domain, $path, $title );
+    }
+
+    /**
+     * Auto-create network (requires multi-network capability / add_network).
+     * Throws Exception on failure.
+     */
+    private function auto_create_network( string $domain, string $path, string $title='New Network' ) : int {
+        if ( ! function_exists( 'add_network' ) ) {
+            throw new Exception('WP Multi Network is required to create a new network.');
+        }
+
+        $network_id = add_network([
+            'domain'=> $domain,
+            'path'  => $path,
+            'title' => $title,
+        ]);
+
+        if ( is_wp_error( $network_id ) ) {
+            throw new Exception( 'Failed to create network: ' . $network_id->get_error_message() );
+        }
+
+        // update name if possible
+        if ( function_exists( 'update_network_option' ) ) {
+            update_network_option( intval($network_id), 'site_name', $title );
+        }
+
+        return intval( $network_id );
+    }
+
+    /* ------------------------------------------------------------------
+     * UTILITY: normalize membership data
+     * ------------------------------------------------------------------ */
+
+    protected function normalize_membership_data( $data ) {
+        if ( ! is_array( $data ) ) $data = [];
+
+        // Ensure allowed keys exist and default values
+        $normalized = [
+            'id'               => isset($data['id']) ? intval($data['id']) : 0,
+            'site_id'          => isset($data['site_id']) && $data['site_id'] !== '' ? intval($data['site_id']) : 0,
+            'person_id'        => isset($data['person_id']) && $data['person_id'] !== '' ? intval($data['person_id']) : null,
+            'name'             => isset($data['name']) ? (string)$data['name'] : '',
+            'member_number'    => isset($data['member_number']) ? (string)$data['member_number'] : null,
+            'member_type'      => isset($data['member_type']) ? (string)$data['member_type'] : '',
+            'membership_level' => isset($data['membership_level']) ? (string)$data['membership_level'] : '',
+            'status'           => isset($data['status']) ? (string)$data['status'] : 'active',
+            'start_date'       => isset($data['start_date']) ? (string)$data['start_date'] : current_time('mysql'),
+            'end_date'         => isset($data['end_date']) && $data['end_date'] !== '' ? (string)$data['end_date'] : null,
+            'address'          => isset($data['address']) ? (string)$data['address'] : '',
         ];
-    }
 
-    public function get_person( $person_id ){
-        return $this->persons_repo->get($person_id);
-    }
-
-    /* -----------------------------------------
-     * USER - PERSON HANDLING
-     * ----------------------------------------- */
-    public function get_person_user( $person_id ){
-        return $this->persons_repo->get_user( $person_id );
-    }
-    public function set_person_user( $person_id, $user_id ){
-        return $this->persons_repo->set_user( $person_id, $user_id );
-    }
-    public function unset_person_user( $person_id ){
-        return $this->persons_repo->unset_person_user( $person_id );
+        return $normalized;
     }
 
 }

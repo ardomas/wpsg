@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: WPSG — Wonder Pieces in Simple Gear
+ * Plugin Name: WPSG Core — Wonder Pieces in Simple Gear
  * Plugin URI:  https://ardomas.com/
  * Description: Modular utility plugin containing small tools for WordPress. Developed by Sam & Gepeto.
- * Version:     0.1.0
+ * Version:     0.9.1
  * Author:      Samodra & Gepeto
  * Text Domain: wpsg
  * Domain Path: /languages
@@ -11,11 +11,26 @@
 
 if (!defined('ABSPATH')) exit;
 
-// Constants
+// --------------------------------------------------
+// Core Constants
+// --------------------------------------------------
 define('WPSG_VERSION', '0.1.0');
 define('WPSG_DIR', plugin_dir_path(__FILE__));
 define('WPSG_URL', plugin_dir_url(__FILE__));
+define('WPSG_CORE_LOADED', true);            // <-- Add-on detector
+define('WPSG_CORE_MIN_VERSION', '0.1.0');    // <-- Add-on version check
 
+// --------------------------------------------------
+// Load Core Class
+// --------------------------------------------------
+require_once WPSG_DIR . 'includes/class-wpsg-core.php';
+
+// Boot Core
+WPSG_Core::instance();
+
+// --------------------------------------------------
+// Old Autoloader + Includes (untouched)
+// --------------------------------------------------
 $mapping_class_files = [
 
     /* Helpers */
@@ -25,30 +40,17 @@ $mapping_class_files = [
     WPSG_DIR . '/includes/tools/locales/class-locale-base.php',
     WPSG_DIR . '/includes/tools/locales/class-locale-date.php',
     WPSG_DIR . '/includes/tools/locales/class-locale-currency.php',
-
-    /* Handling - admin.json */
-    WPSG_DIR . '/includes/data/class-wpsg-admin-data.php',    // class WPSG_AdminData
-    WPSG_DIR . '/includes/data/class-wpsg-settings-data.php', // class WPSG_SettingsData
-    WPSG_DIR . '/includes/data/class-wpsg-profiles-data.php', // class WPSG_ProfilesData
-
-    /* Handling - wpsg tables => wp_wpsg_posts, wp_wpsg_postmeta, wp_wpsg_comments */
-    WPSG_DIR . '/includes/data/class-wpsg-posts-data.php',
-    WPSG_DIR . '/includes/data/class-wpsg-persons-data.php',
-
-    /* Repositories */
-    WPSG_DIR . '/includes/repositories/class-wpsg-persons-repository.php',
-    WPSG_DIR . '/includes/repositories/class-wpsg-memberships-repository.php',
-
-    /* Services */
-    WPSG_DIR . '/includes/services/class-wpsg-memberships-service.php',
 ];
 
-// Load all mapped class files
+// Load mapped class files
 foreach ($mapping_class_files as $file) {
     if (file_exists($file)) {
         require_once $file;
     }
 }
+
+require_once WPSG_DIR . 'includes/autoloader.php';
+WPSG_Autoloader::register();
 
 // Initialize locales module
 add_action('plugins_loaded', function() {
@@ -57,28 +59,32 @@ add_action('plugins_loaded', function() {
     }
 }, 20);
 
-// Activation hook
+// --------------------------------------------------
+// Activation Hook (unchanged)
+// --------------------------------------------------
+WPSG_AdminData::get_instance();
 register_activation_hook(__FILE__, function() {
-    // Pastikan instance dan tabel settings dibuat
-    WPSG_AdminData::get_instance();
-    // WPSG_AdminData::create_settings_table();
 
-    WPSG_SettingsData::get_instance(); // pastikan WPSG_SettingsData terload
+//    WPSG_AdminData::get_instance();
+    WPSG_PostsData::get_instance();
+
+    WPSG_SettingsData::get_instance();
     WPSG_SettingsData::create_tables();
 
-    WPSG_ProfilesData::get_instance(); // pastikan WPSG_ProfilesData terload
-    WPSG_ProfilesData::create_tables();
+    WPSG_PersonsData::get_instance();
+    WPSG_PersonsData::create_tables();
 
-    // WPSG_PostsData::get_instance(); // bila diperlukan
+    WPSG_ProfilesRepository::init();
+
+    $rep_memberships = new WPSG_MembershipsRepository();
+    $rep_memberships->create_tables();
 });
 
 // Load singleton instances
-WPSG_AdminData::get_instance();
-WPSG_PostsData::get_instance();
-// WPSG_SettingsData::get_instance();
-// WPSG_ProfilesData::get_instance();
 
-// Admin frontend
+// --------------------------------------------------
+// Admin Frontend
+// --------------------------------------------------
 if (is_admin()) {
     require_once WPSG_DIR . 'modules/admin-frontend.php';
     add_action('plugins_loaded', function () {
@@ -88,7 +94,9 @@ if (is_admin()) {
     });
 }
 
-// Announcements module
+// --------------------------------------------------
+// Announcements
+// --------------------------------------------------
 require_once WPSG_DIR . 'modules/announcements.php';
 add_action('wp_ajax_wpsg_save_announcement', function() {
     $form = new WPSG_Announcements();
@@ -100,3 +108,61 @@ add_action('wp_ajax_wpsg_save_announcement', function() {
         wp_send_json_error(['message' => 'Unable to save announcement.']);
     }
 });
+
+/*
+add_filter('template_include', function($template) {
+    if (is_front_page()) {
+        return WPSG_DIR . '/modules/frontend/front-page.php';
+    }
+    return $template;
+});
+*/
+
+add_filter('template_include', 'wpsg_load_front_page_template');
+
+function wpsg_load_front_page_template($template) {
+
+    if (is_front_page()) {
+
+        // Tetap pakai template theme (front-page.php atau page.php)
+        // tetapi kita ganti bagian content-nya nanti.
+        add_action('wp', function() {
+            remove_all_actions('the_content');
+            add_filter('the_content', function() {
+                ob_start();
+                // include WPSG_DIR . 'modules/frontend/front-page.php';
+                return ob_get_clean();
+            });
+        }, 20);
+    }
+
+    return $template;
+}
+
+function wpsg_enqueue_frontend_styles() {
+    $css_files = [
+        'wpsg-core_layout' => 'assets/css/core-layout.css',
+        'wpsg-frontend'    => 'modules/frontend/assets/css/frontend.css',
+    ];
+    foreach( $css_files as $css_key => $css_file ){
+        wp_enqueue_style(
+            $css_key, // handle
+            plugins_url( $css_file, __FILE__), // path ke file CSS
+            [],     // dependencies
+            filemtime( plugin_dir_path(__FILE__) . $css_file ), // versi cache-busting
+            'all'   // media
+        );
+
+    }
+}
+
+add_action('wp_enqueue_scripts', 'wpsg_enqueue_frontend_styles');
+
+// load frontend module
+$frontend_loader = WPSG_DIR . 'modules/frontend/frontend-loader.php';
+if ( file_exists($frontend_loader) ) {
+    require_once $frontend_loader;
+}
+
+// Load shortcode module
+require_once WPSG_DIR . 'modules/shortcodes/shortcodes-loader.php';

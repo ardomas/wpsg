@@ -24,12 +24,12 @@ class WPSG_PersonsData {
     /**
      * @var string Database table for persons
      */
-    private $table_name;
+    private static $table_name;
 
     /**
      * @var string Database table for personmeta (optional)
      */
-    private $table_meta;
+    private static $table_meta;
 
     /**
      * Singleton instance
@@ -54,8 +54,8 @@ class WPSG_PersonsData {
         global $wpdb;
         $this->wp_error     = new WP_Error();
         $this->is_wp_error  = false;
-        $this->table_name   = $wpdb->base_prefix . 'wpsg_persons';
-        $this->table_meta   = $wpdb->base_prefix . 'wpsg_personmeta';
+        self::$table_name = $wpdb->base_prefix . 'wpsg_persons';
+        self::$table_meta = $wpdb->base_prefix . 'wpsg_personmeta';
     }
 
     /**
@@ -63,7 +63,7 @@ class WPSG_PersonsData {
      *
      * @return WPSG_PersonsData
      */
-    public static function instance() {
+    public static function get_instance() {
         if ( self::$instance === null ) {
             self::$instance = new self();
         }
@@ -76,6 +76,7 @@ class WPSG_PersonsData {
      * @return void
      */
     public static function activate() {
+        self::get_instance();
         self::create_tables();
     }
 
@@ -84,13 +85,13 @@ class WPSG_PersonsData {
      *
      * @return void
      */
-    public static function create_tables() {
+    private static function create_tables_() {
         global $wpdb;
         $charset = $wpdb->get_charset_collate();
 
-        $table_name = $this->table_name;
+        $table_name = self::$table_name;
         // $wpdb->base_prefix . 'wpsg_persons';
-        $table_meta = $this->table_meta;
+        $table_meta = self::$table_meta;
         // $wpdb->base_prefix . 'wpsg_personmeta';
 
         $sql_person = "CREATE TABLE {$table_name} (
@@ -101,7 +102,6 @@ class WPSG_PersonsData {
             slug VARCHAR(191) NOT NULL,
             status VARCHAR(50) NOT NULL DEFAULT 'active',
             description TEXT NULL,
-            meta LONGTEXT NULL,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id),
@@ -120,12 +120,26 @@ class WPSG_PersonsData {
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id),
             KEY person_id_idx (person_id),
-            KEY meta_key_idx (meta_key)
+            KEY meta_key_idx (meta_key),
+            UNIQUE KEY person_meta_unique (person_id, meta_key)
         ) ENGINE=InnoDB {$charset};";
 
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta( $sql_person );
-        dbDelta( $sql_meta );
+        return [ $sql_person, $sql_meta ];
+
+    }
+
+    public static function create_tables(){
+        global $wpdb;
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        // Ambil semua SQL create table dari method create_table
+        $sqls = self::create_tables_();
+
+        foreach ($sqls as $sql) {
+            dbDelta($sql);
+        }
+
     }
 
     /* -------------------------
@@ -141,10 +155,11 @@ class WPSG_PersonsData {
     private function filter_fields( $data ) {
         $allowed = [
             'name',
+            'user_id',
             'slug',
+            'email',
             'status',
             'description',
-            'meta',
         ];
 
         $out = [];
@@ -159,9 +174,15 @@ class WPSG_PersonsData {
                     case 'name':
                         $out['name'] = sanitize_text_field( $data['name'] );
                         break;
+                    case 'user_id':
+                        $out['user_id'] = sanitize_text_field( $data['user_id'] );
+                        break;
                     case 'slug':
                         // allow user provided slug but sanitize to safe title
                         $out['slug'] = sanitize_title( $data['slug'] );
+                        break;
+                    case 'email':
+                        $out['email'] = sanitize_text_field( $data['email'] );
                         break;
                     case 'status':
                         $out['status'] = sanitize_text_field( $data['status'] );
@@ -169,15 +190,6 @@ class WPSG_PersonsData {
                     case 'description':
                         // description may contain HTML — sanitize minimally or use wp_kses_post
                         $out['description'] = wp_kses_post( $data['description'] );
-                        break;
-                    case 'meta':
-                        // meta can be array or JSONable structure
-                        if ( is_array( $data['meta'] ) || is_object( $data['meta'] ) ) {
-                            $out['meta'] = wp_json_encode( $data['meta'] );
-                        } else {
-                            // try sanitize if it's a JSON string or scalar
-                            $out['meta'] = is_string( $data['meta'] ) ? wp_json_encode( json_decode( wp_unslash( $data['meta'] ), true ) ?: $data['meta'] ) : wp_json_encode( $data['meta'] );
-                        }
                         break;
                 }
             }
@@ -200,34 +212,16 @@ class WPSG_PersonsData {
         // Accept both stdClass (wpdb) or associative array
         $r = ( is_array( $row ) ) ? $row : (array) $row;
 
-        $meta = null;
-        if ( ! empty( $r['meta'] ) ) {
-            $decoded = json_decode( $r['meta'], true );
-            $meta = ( $decoded === null ) ? $r['meta'] : $decoded;
-        }
-
         return [
             'id'          => isset( $r['id'] ) ? intval( $r['id'] ) : 0,
             'name'        => isset( $r['name'] ) ? $r['name'] : '',
             'slug'        => isset( $r['slug'] ) ? $r['slug'] : '',
+            'email'       => isset( $r['email'] ) ? $r['email'] : '',
             'status'      => isset( $r['status'] ) ? $r['status'] : '',
             'description' => isset( $r['description'] ) ? $r['description'] : '',
-            'meta'        => $meta,
             'created_at'  => isset( $r['created_at'] ) ? $r['created_at'] : null,
             'updated_at'  => isset( $r['updated_at'] ) ? $r['updated_at'] : null,
         ];
-    }
-
-    /**
-     * Decode JSON meta value safely
-     *
-     * @param string|null $value
-     * @return mixed
-     */
-    private function decode_meta( $value ) {
-        if ( empty( $value ) ) return null;
-        $decoded = json_decode( $value, true );
-        return is_null( $decoded ) ? $value : $decoded;
     }
 
     /* -------------------------
@@ -241,10 +235,10 @@ class WPSG_PersonsData {
      * @param int|null $exclude_id optional ID to exclude (useful on update)
      * @return bool
      */
-    public function slug_exists( $slug, $exclude_id = null ) {
+    public static function slug_exists( $slug, $exclude_id = null ) {
         global $wpdb;
         $slug = sanitize_title( $slug );
-        $table_name = $this->table_name;
+        $table_name = self::$table_name;
 
         if ( $exclude_id ) {
             $count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table_name} WHERE slug = %s AND id != %d", $slug, intval( $exclude_id ) ) );
@@ -265,7 +259,7 @@ class WPSG_PersonsData {
         $base = sanitize_title( $name );
         $slug = $base;
         $i = 2;
-        while ( $this->slug_exists( $slug ) ) {
+        while ( self::slug_exists( $slug ) ) {
             $slug = $base . '-' . $i;
             $i++;
         }
@@ -305,13 +299,12 @@ class WPSG_PersonsData {
             'slug'        => $data['slug'],
             'status'      => $data['status'] ?? 'active',
             'description' => $data['description'] ?? null,
-            'meta'        => $data['meta'] ?? null,
             'created_at'  => $now,
             'updated_at'  => $now,
         ];
 
-        $formats = [ '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s' ];
-        $res = $wpdb->insert( $this->table, $insert, $formats );
+        $formats = [ '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s' ];
+        $res = $wpdb->insert( $this->table_name, $insert, $formats );
 
         if ( $res === false ) {
             $this->is_wp_error = true;
@@ -359,7 +352,7 @@ class WPSG_PersonsData {
         $data['updated_at'] = current_time( 'mysql' );
 
         $formats = array_fill( 0, count( $data ), '%s' );
-        $res = $wpdb->update( $this->table, $data, [ 'id' => $id ], $formats, ['%d'] );
+        $res = $wpdb->update( $this->table_name, $data, [ 'id' => $id ], $formats, ['%d'] );
 
         if ( $res === false ) {
             $this->is_wp_error = true;
@@ -400,7 +393,7 @@ class WPSG_PersonsData {
         $id = intval( $id );
         if ( $id <= 0 ) return null;
 
-        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE id = %d", $id ), ARRAY_A );
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE id = %d", $id ), ARRAY_A );
         return $this->normalize( $row );
     }
 
@@ -449,7 +442,7 @@ class WPSG_PersonsData {
     public function get_by_slug( $slug ) {
         global $wpdb;
         $slug = sanitize_title( $slug );
-        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table} WHERE slug = %s", $slug ), ARRAY_A );
+        $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE slug = %s", $slug ), ARRAY_A );
         return $this->normalize( $row );
     }
 
@@ -471,10 +464,10 @@ class WPSG_PersonsData {
         $args = wp_parse_args( $args, $defaults );
 
         $order = ( strtoupper( $args['order'] ) === 'DESC' ) ? 'DESC' : 'ASC';
-        $allowed_orderby = [ 'id', 'name', 'slug', 'created_at', 'updated_at' ];
+        $allowed_orderby = [ 'id', 'name', 'user_id', 'slug', 'created_at', 'updated_at' ];
         $orderby = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'id';
 
-        $sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        $sql = "SELECT * FROM {$this->table_name} WHERE 1=1";
         $params = [];
 
         if ( ! empty( $args['status'] ) ) {
@@ -528,7 +521,7 @@ class WPSG_PersonsData {
         ];
         $args = wp_parse_args( $args, $defaults );
 
-        $sql = "SELECT * FROM {$this->table} WHERE (name LIKE %s OR description LIKE %s) ORDER BY name ASC LIMIT %d OFFSET %d";
+        $sql = "SELECT * FROM {$this->table_name} WHERE (name LIKE %s OR description LIKE %s) ORDER BY name ASC LIMIT %d OFFSET %d";
         $prepared = $wpdb->prepare( $sql, $keyword, $keyword, intval( $args['limit'] ), intval( $args['offset'] ) );
         $rows = $wpdb->get_results( $prepared, ARRAY_A );
 
@@ -548,9 +541,9 @@ class WPSG_PersonsData {
     public function count( $status = '' ) {
         global $wpdb;
         if ( empty( $status ) ) {
-            $c = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table}" );
+            $c = $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name}" );
         } else {
-            $c = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table} WHERE status = %s", $status ) );
+            $c = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$this->table_name} WHERE status = %s", $status ) );
         }
         return intval( $c );
     }
@@ -576,6 +569,60 @@ class WPSG_PersonsData {
      * ------------------------- */
 
     /**
+     * Set person meta
+     *
+     * @param int $person_id
+     * @param string $meta_key
+     * @param mixed $meta_value
+     * @return int|false insert id or false
+     */
+    public function set_meta( $person_id, $meta_key, $meta_value ){
+        global $wpdb;
+        $table_name = $this->table_meta;
+        $now = current_time( 'mysql' );
+        $inserted_id = null;
+
+        $data = array(
+            'person_id'  => sanitize_text_field( $person_id ),
+            'meta_key'   => sanitize_text_field( $meta_key  ),
+            'meta_value' => maybe_serialize( $meta_value )
+        );
+
+        $where = array(
+            'person_id'  => sanitize_text_field( $person_id ), // Use a unique identifier for checking
+            'meta_key'   => maybe_serialize( $meta_key  )
+        );
+
+        // Check if the record exists
+        $existing_record = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM $table_name WHERE person_id = %d AND meta_key = %s",
+            $where['person_id'], $where['meta_key']
+        ) );
+
+        if ( $existing_record ) {
+            // Record exists, perform update
+            $data['updated_at'] = $now;
+            $inserted_id = $existing_record->id;
+            $wpdb->update( $table_name, $data, $where );
+            // echo "Record updated successfully.";
+        } else {
+            // Record does not exist, perform insert
+            $data['created_at'] = $now;
+            $data['updated_at'] = $now;
+            $wpdb->insert( $table_name, $data );
+            // echo "Record inserted successfully.";
+        }
+
+        // You can also get the ID of the inserted record if needed
+        if ( ! $existing_record ) {
+            $inserted_id = $wpdb->insert_id;
+            // echo " New record ID: " . $inserted_id;
+        }
+        return $inserted_id;
+
+    }
+
+    /**
      * Add person meta
      *
      * @param int $person_id
@@ -590,7 +637,7 @@ class WPSG_PersonsData {
         $insert = [
             'person_id'  => intval( $person_id ),
             'meta_key'   => sanitize_text_field( $meta_key ),
-            'meta_value' => is_scalar( $meta_value ) ? maybe_serialize( $meta_value ) : wp_json_encode( $meta_value ),
+            'meta_value' => maybe_serialize( $meta_value ),     // is_scalar( $meta_value ) ? maybe_serialize( $meta_value ) : wp_json_encode( $meta_value ),
             'created_at' => $now,
             'updated_at' => $now,
         ];
@@ -610,7 +657,7 @@ class WPSG_PersonsData {
         global $wpdb;
         $values = [];
         $person_id = intval( $_person_id );
-        $sql  = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$this->table_meta} WHERE person_id = %d", $p_id );
+        $sql  = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$this->table_meta} WHERE person_id = %d", $_person_id );
         $rows = $wpdb->get_results( $sql );
         if( !empty( $rows ) ){
             foreach( $rows as $row ){
@@ -652,14 +699,35 @@ class WPSG_PersonsData {
         return ( $dec === null ) ? $un : $dec;
     }
 
+    public function delete_meta( $person_id, $meta_key ){
+        global $wpdb;
+        return $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$this->table_meta} WHERE person_id = %d AND meta_key = %s", 
+                intval( $person_id ),
+                sanitize_text_field( $meta_key )
+            )
+        );
+    }
+
+    public function delete_all_meta( $person_id ){
+        global $wpdb;
+        return $wpdb->query(
+            $wpdb->prepare(
+                "DELETE FROM {$this->table_meta} WHERE person_id = %d", 
+                intval( $person_id )
+            )
+        );
+    }
+
     protected function delete_duplicate_meta($person_id, $key)
     {
         // Ambil semua meta_key yang sama
         $rows = $this->wpdb->get_results(
             $this->wpdb->prepare(
                 "SELECT id 
-                FROM {$this->table_postmeta}
-                WHERE post_id = %d AND meta_key = %s
+                FROM {$this->table_meta}
+                WHERE person_id = %d AND meta_key = %s
                 ORDER BY id DESC",
                 $post_id, 
                 $key
@@ -685,7 +753,7 @@ class WPSG_PersonsData {
 
             // Hapus baris-baris duplikat lama
             $this->wpdb->query("
-                DELETE FROM {$this->table_postmeta}
+                DELETE FROM {$this->table_meta}
                 WHERE id IN ($ids_in)
             ");
         }

@@ -74,7 +74,9 @@ class WPSG_PostsData {
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id)
         ) $charset_collate;";
+
         $this->wpdb->query($sql_comments);
+
     }
 
     // ========================
@@ -110,6 +112,7 @@ class WPSG_PostsData {
         return $this->wpdb->get_results($query);
     }
 
+/*
     public function get_all_posts($args = []) {
         $defaults = [
             'post_type' => 'post',
@@ -124,6 +127,59 @@ class WPSG_PostsData {
              ORDER BY published_at DESC",
             $args['post_type'], $args['status']
         );
+        return $this->wpdb->get_results($query);
+    }
+*/
+
+    public function get_all_posts($args = []) {
+        $defaults = [
+            'post_type' => 'post',
+            'status'    => 'published',
+            'site_id'   => null, // null = auto detect rules multisite
+            'limit'     => null,
+        ];
+        $args = wp_parse_args($args, $defaults);
+
+        $current_site = wpsg_get_network_id();
+        $main_site_id = 1;
+
+        // Tentukan site filter
+        if ($args['site_id'] === null) {
+            if ($current_site == $main_site_id) {
+                // Main site → baca semua
+                $site_sql = "1=1";
+                $site_params = [];
+            } else {
+                // Sub-site → baca main + site ini
+                $site_sql = "site_id IN (%d, %d)";
+                $site_params = [ $main_site_id, $current_site ];
+            }
+        } else {
+            // Developer menentukan secara manual
+            $site_sql = "site_id = %d";
+            $site_params = [ $args['site_id'] ];
+        }
+
+        // Limit query jika diperlukan
+        $limit_sql = "";
+        if (! empty($args['limit'])) {
+            $limit_sql = $this->wpdb->prepare(" LIMIT %d", $args['limit']);
+        }
+
+        // Buat query final
+        $query = $this->wpdb->prepare(
+            "SELECT * FROM {$this->table_posts}
+            WHERE {$site_sql}
+            AND post_type = %s
+            AND status = %s
+            ORDER BY published_at DESC
+            {$limit_sql}",
+            array_merge($site_params, [
+                $args['post_type'],
+                $args['status']
+            ])
+        );
+
         return $this->wpdb->get_results($query);
     }
 

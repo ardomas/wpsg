@@ -1,0 +1,52 @@
+/* Basic WPSG Frontend styles - adjust to your theme later */
+
+#wpsg-front-page { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color: #222; }
+.wpsg-container { max-width: 1080px; margin: 0 auto; padding: 24px; }
+.wpsg-hero { padding: 40px 0; text-align: center; background: linear-gradient(180deg,#f7fbff,#ffffff); border-bottom: 1px solid #eee; }
+.wpsg-title { font-size: 32px; margin: 0 0 8px; }
+.wpsg-subtitle { color: #666; margin: 0 0 16px; }
+.wpsg-ctas { margin-top: 16px; }
+.wpsg-btn { display: inline-block; padding: 10px 16px; background: #2d6cdf; color:#fff; text-decoration:none; border-radius:6px; margin-right:8px; }
+.wpsg-btn-outline { background: transparent; color:#2d6cdf; border:1px solid #2d6cdf; }
+
+.wpsg-main { padding: 28px 0; }
+.wpsg-grid { display:flex; gap:20px; align-items:flex-start; }
+.wpsg-panel { flex:1; background:#fff; padding:16px; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.03); }
+.wpsg-aside { width:320px; background:#fafafa; padding:16px; border-radius:8px; }
+
+.wpsg-list { list-style:none; padding:0; margin:0; }
+.wpsg-list li { padding:6px 0; border-bottom:1px dashed #eee; }
+
+.wp-block-cloudcatch-tab {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: 3px 12px 0 0;
+    background-color: rgba(0,0,0,0.05);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.wp-block-cloudcatch-tab-content {
+    padding: 10px 20px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.25);
+}
+
+.wp-block-cloudcatch-tab:hover,
+.wp-block-cloudcatch-tab:hover * {
+    cursor: pointer;
+    top: 1px;
+    z-index: 11;
+    border-color: rgba(0,0,0,0.25);
+    background-color: rgba(255,255,255,0.35);
+}
+
+.wp-block-cloudcatch-tab.active {
+    font-weight: bold;
+    border-color: rgba(0,0,0,0.25);
+    border-bottom-color: rgba(255,255,0,0.25);
+    background-color: rgba(255,255,0,0.25);
+}

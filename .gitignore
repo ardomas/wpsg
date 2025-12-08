@@ -1,2 +1,16 @@
 # ignore all files with extenstion name: unused
+*.log
+*.backup
 *.unused
+
+wp-content/uploads/
+wp-content/cache/
+
+# Vendor or build files (if any)
+node_modules/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db

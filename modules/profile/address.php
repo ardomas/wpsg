@@ -14,6 +14,7 @@ class WPSG_ProfileAddress {
 
     public function __construct() {
         $this->form_handler();
+        // WPSG_ProfilesRepository::init();
     }
 
     public function render() {
@@ -126,7 +127,7 @@ class WPSG_ProfileAddress {
             $wpsg_address = $clean;
         }
 
-        WPSG_ProfilesData::set_data( $this->option_key, $wpsg_address );
+        WPSG_ProfilesRepository::set( $this->option_key, $wpsg_address );
 
         add_action('admin_notices', function() {
             echo '<div class="updated"><p>Identity updated successfully.</p></div>';
@@ -135,7 +136,7 @@ class WPSG_ProfileAddress {
 
     /** GET DATA **/
     private function get_data() {
-        return WPSG_ProfilesData::get_data($this->option_key);
+        return WPSG_ProfilesRepository::get($this->option_key);
     }
 
 }

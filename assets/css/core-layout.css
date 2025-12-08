@@ -21,16 +21,30 @@ body {
     background: #f0f0f1;
 }
 
+th div::before, td div::before {
+    white-space: pre;
+}
+
 table { padding: 0px; border-spacing: 0 !important; border-collapse: collapse !important;}
 table th, table td { 
     cursor: default; 
     border-spacing: 0 !important; 
     border-collapse: collapse !important;
 }
-table th { padding: 0.3em 0.8em 0; height: 2.25em; text-align: center; font-weight: 600; font-size: 1.25em; background-color: rgba(222,228,232,1); }
-table td { padding: 0.5em 0.6em;   height: 1.20em; text-align: left;   vertical-align: top; }
+
+table th { padding: 0.5em 0.8em 0.4em; font-size: 1.05em; height: 2.50em; text-align: center; font-weight: 600; background-color: rgba(222,228,232,1); }
+table td { padding: 0.5em 0.6em;       font-size: 1.00em; height: 1.25em; text-align: left;   vertical-align: top; }
 
 table.wpsg-full-width { width: 100%; }
+
+select.regular-text,
+input.regular-text {
+    line-height: 1.6em;
+    height: 3.0em;
+}
+
+table.v-align-top tr td { vertical-align: top; }
+table.base-line tr td { vertical-align: baseline; }
 
 table.outer-border {
     border-width: 1px; border-style: solid; border-color: var(--table-border);
@@ -44,6 +58,24 @@ table.hover tr:hover td { background-color: rgba(248,248,168,0.35); }
 
 table.striped tr:nth-child(odd) td { background-color: rgba(255,255,255,0.25); }
 table.striped tr:nth-child(even) td { background-color: rgba(0,0,0,0.025); }
+
+.row-actions {
+    font-size: 12px;
+    line-height: 1;
+    color: #666;
+    display: inline-block;
+    margin-top: 2px;
+}
+.row-actions {
+    display: block;
+}
+.row-actions span + span:before {
+    content: " | ";
+}
+
+.text-center {
+    text-align: center;
+}
 
 .btn {
     border: none;
@@ -278,12 +310,9 @@ a.wpsg-card-link {
     margin-bottom: 0.5rem;
 }
 
-.wpsg-form-field label {
-    display: block;
-    width: 100%;
-}
-
-.wpsg-form-field input {
+.wpsg-form-field input, 
+.wpsg-form-field select,
+.wpsg-form-field textarea {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #ccc;
@@ -291,6 +320,8 @@ a.wpsg-card-link {
     box-sizing: border-box;
 }
 .wpsg-form-field label {
+    display: block;
+    width: 100%;
     font-weight: 600;
     margin-bottom: 0.25rem;
 }

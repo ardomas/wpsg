@@ -172,7 +172,7 @@ class WPSG_ProfileIdentity {
             'year_established' => intval($_POST['year_established'] ?? 0),
         ];
 
-        WPSG_ProfilesData::set_data($this->option_key, $clean);
+        WPSG_ProfilesRepository::set($this->option_key, $clean);
 
         add_action('admin_notices', function() {
             echo '<div class="updated"><p>Identity updated successfully.</p></div>';
@@ -181,6 +181,6 @@ class WPSG_ProfileIdentity {
 
     /** GET DATA **/
     private function get_data() {
-        return WPSG_ProfilesData::get_data($this->option_key);
+        return WPSG_ProfilesRepository::get($this->option_key);
     }
 }

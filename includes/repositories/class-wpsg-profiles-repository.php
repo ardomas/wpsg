@@ -1,53 +1,82 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
+
+if (!defined('ABSPATH')) exit;
 
 /**
- * Repository layer for Profiles (Company).
- * Acts as an abstraction between business logic and data access.
+ * Repository minimalis untuk WPSG_ProfilesData.
+ * Memisahkan data-layer dari logic agar mudah dikembangkan.
  */
-
 class WPSG_ProfilesRepository {
 
     /** @var WPSG_ProfilesData */
-    private $data;
+    protected static $data;
 
     /**
-     * Constructor
+     * Inisialisasi dependency.
+     * Agar tidak mengikat class secara hard-coded.
      */
-    private function __construct() {
-        // $this->data = WPSG_ProfilesData::get_instance();
-    }
-
-    /**
-     * Get singleton instance
-     *
-     * @return WPSG_PersonsData
-     */
-    public static function get_instance() {
-        if ( self::$instance === null ) {
-            self::$instance = new self();
+    public static function init() {
+        if (self::$data === null) {
+            if (!class_exists('WPSG_ProfilesData')) {
+                throw new Exception("WPSG_ProfilesData not found.");
+            }
+            WPSG_ProfilesData::create_tables();
+            self::$data = WPSG_ProfilesData::get_instance();
         }
-        return self::$instance;
     }
 
-    public function create_tables() {
-        $this->data->create_tables();
+    /**
+     * Ambil profil berdasarkan key.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @param int|null $site_id
+     * @return mixed
+     */
+    public static function get($key, $default = null, $site_id = null) {
+        self::init();
+        return self::$data::get_data($key, $default, $site_id);
     }
 
-    /* ---------------------------------------------------------
-     * BASIC WRAPPERS
-     * (Forward calls to Data layer, but this is the extension point)
-     * --------------------------------------------------------- */
-
-    public static function get( $key, $default=null, $site_id=null ) {
-        return $this->data->get_data( $key, $default, $site_id );
+    public static function get_all_data( $site_id = null ){
+        self::init();
+        return self::$data::get_all_data( $site_id );
     }
 
-    public function set( $key, $values, $site_id=null ) {
-        return $this->data->set( $key, $values, $site_id=null );
+    /**
+     * Simpan data profil.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int|null $site_id
+     * @return bool
+     */
+    public static function set($key, $value, $site_id = null) {
+        self::init();
+        return self::$data::set_data($key, $value, $site_id);
     }
 
-   
+    /**
+     * Hapus data profil.
+     *
+     * @param string $key
+     * @param int|null $site_id
+     * @return bool
+     */
+    public static function delete($key, $site_id = null) {
+        self::init();
+        return self::$data::delete_data($key, $site_id);
+    }
+
+    /**
+     * Ambil semua profil untuk *seluruh site*.
+     *
+     * @param string $key
+     * @return array
+     */
+    public static function get_all_sites($key) {
+        self::init();
+        return self::$data::get_data($key, null, "*");
+    }
+
 }

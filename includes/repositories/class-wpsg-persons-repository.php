@@ -16,7 +16,11 @@ class WPSG_PersonsRepository {
      * Constructor
      */
     public function __construct() {
-        $this->data = WPSG_PersonsData::instance();
+        $this->data = WPSG_PersonsData::get_instance();
+    }
+
+    public function activate() {
+        $this->data->activate();
     }
 
     /* ---------------------------------------------------------
@@ -67,18 +71,18 @@ class WPSG_PersonsRepository {
      * META WRAPPERS
      * --------------------------------------------------------- */
 
-    public function add_meta( $person_id, $key, $value ) {
-        return $this->data->add_meta( $person_id, $key, $value );
+    // public function add_meta( $person_id, $key, $value ) {
+    //     return $this->data->add_meta( $person_id, $key, $value );
+    // }
+
+    // public function update_meta( $person_id, $key, $value ) {
+    //     return $this->data->update_meta( $person_id, $key, $value );
+    // }
+
+    public function set_meta( $person_id, $key, $value ){
+        return $this->data->set_meta( $person_id, $key, $value );
     }
 
-    public function update_meta( $person_id, $key, $value ) {
-        return $this->data->update_meta( $person_id, $key, $value );
-    }
-/*
-    public function set_meta( $person_id, $key, value ){
-        return $this->data->set_meta( $person_id, $key, value );
-    }
-*/
     public function get_meta( $person_id, $key, $single = true ) {
         return $this->data->get_meta( $person_id, $key, $single );
     }

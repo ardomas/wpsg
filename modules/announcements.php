@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) exit;
 class WPSG_Announcements {
 
     protected $posts_handler;
-    protected $url_base;
+    protected $base_url;
 
     public function __construct() {
 
@@ -14,17 +14,18 @@ class WPSG_Announcements {
         require_once WPSG_DIR . '/includes/data/class-wpsg-posts-data.php';
 
         $this->posts_handler = WPSG_PostsData::get_instance();
-        $this->url_base      = 'admin.php?page=wpsg-admin&view=announcements';
+        $this->base_url      = 'admin.php?page=wpsg-admin&view=announcements';
 
     }
 
-    public function list(){
+    public function render_list(){
 
-        add_action('admin_menu', [$this, 'register_menu']);
+        // add_action('admin_menu', [$this, 'register_menu']);
         $this->generate_list();
 
     }
 
+/*
     protected function list_register_menu() {
         add_menu_page(
             'Announcements',
@@ -36,6 +37,7 @@ class WPSG_Announcements {
             6
         );
     }
+*/
 
     protected function generate_list(){
 
@@ -48,15 +50,14 @@ class WPSG_Announcements {
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline">Announcements</h1>
-            <a href="<?php echo admin_url( $this->url_base . '&action=add' ); ?>" class="page-title-action">Add New</a>
+            <a href="<?php echo admin_url( $this->base_url . '&action=add' ); ?>" class="page-title-action">Add New</a>
             <hr class="wp-header-end">
-            <!-- <table class="wp-list-table widefat fixed striped posts"> -->
+            <table class="wp-list-table wpsg-full-width fixed striped posts">
 
-            <table class="wpsg-full-width outer-border bordered hover stripped">
                 <thead>
                     <tr>
                         <th></th>
-                        <th class="manage-column" colspan="2">Title</th>
+                        <th class="manage-column" colspan="2" style="text-align: center;">Title</th>
                         <th class="manage-column">Tags</th>
                         <th class="manage-column">Author</th>
                         <th class="manage-column">Date</th>
@@ -66,6 +67,7 @@ class WPSG_Announcements {
         <?php
 
                 if (!empty($announcements)) {
+
                     foreach ($announcements as $ann) {
 
                         $meta = [];
@@ -74,37 +76,11 @@ class WPSG_Announcements {
                             // $ann = array_merge((array) $ann, $meta);
                         }
 
-                        $edit_link = admin_url( $this->url_base . '&action=edit&id=' . $ann->id);
-                        $delete_link = wp_nonce_url(admin_url( $this->url_base .  '&action=delete&id=' . $ann->id), 'wpsg_ann_delete_' . $ann->id);
+                        $edit_link = admin_url( $this->base_url . '&action=edit&id=' . $ann->id);
+                        $delete_link = wp_nonce_url(admin_url( $this->base_url .  '&action=delete&id=' . $ann->id), 'wpsg_ann_delete_' . $ann->id);
 
                         ?><tr>
-                            <td>&nbsp;</td>
-                            <td style="min-width: 250px;">
-                                <strong></strong><a href="<?php echo esc_url($edit_link); ?>"><?php echo esc_html($ann->title); ?></a></strong><br/>
-                                <div class="wpsg-flex">
-                                    <div><?php echo ucfirst( $meta['locations']['city'] ); ?></div> |
-                                    <div><?php 
-                                        echo $meta['date_start'];
-                                        if( $meta['date_start'] != $meta['date_end'] ){
-                                            echo ' to ' . $meta['date_end'];
-                                        }
-                                    ?></div>
-                                    <?php
-
-                                        if( !is_null( $meta['time_start'] ) &&
-                                            !is_null( $meta['time_end'  ] ) && 
-                                            ( $meta['time_start']!=$meta['time_end'] ) ){
-                                            ?><div><?php echo $meta['time_start'] . ' - ' . $meta['time_end']; ?></div><?php
-                                        }
-
-                                    ?>
-                                    
-                                </div>
-                                <div class="row-actions">
-                                    <span class="edit"><a href="<?php echo esc_url($edit_link); ?>">Edit</a> | </span>
-                                    <span class="trash"><a href="<?php echo esc_url($delete_link); ?>">Trash</a></span>
-                                </div>
-                            </td><td class="column-thumbnail" style="width:70px;"><?php
+                            <td style="text-align: center; padding-left: 10px; padding-right: 10px;"><?php
 
                                 // default placeholder box (abu-abu)
                                 $placeholder_style = 'display:inline-block;width:60px;height:60px;background:#ddd;border:1px solid #ccc;border-radius:4px;';
@@ -116,6 +92,31 @@ class WPSG_Announcements {
                                     echo '<span style="'.$placeholder_style.'"></span>';
                                 }
 
+                            ?><div class="row-actions">
+                                    <span class="edit"><a href="<?php echo esc_url($edit_link); ?>">Edit</a> | </span>
+                                    <span class="trash"><a href="<?php echo esc_url($delete_link); ?>">Trash</a></span>
+                                </div>
+                            </td><td style="width: 50%; min-width: 250px; max-width: 500px;">
+                                <strong></strong><a href="<?php echo esc_url($edit_link); ?>"><?php echo esc_html($ann->title); ?></a></strong><br/>
+                                <div class="wpsg-flex">
+                                    <div><p><?php echo ucfirst( $meta['locations']['city'] ); ?></p>
+                                    <p><?php 
+                                        echo $meta['date_start'];
+                                        if( $meta['date_start'] != $meta['date_end'] ){
+                                            echo ' to ' . $meta['date_end'];
+                                        }
+                                    ?></p><p style="white-space: text-nowrap;"><?php
+
+                                        if( !is_null( $meta['time_start'] ) &&
+                                            !is_null( $meta['time_end'  ] ) && 
+                                            ( $meta['time_start']!=$meta['time_end'] ) ){
+                                            ?><div><?php echo $meta['time_start'] . ' - ' . $meta['time_end']; ?></div><?php
+                                        }
+
+                                    ?></p></div>
+                                    
+                                </div>
+                            </td><td class="column-thumbnail" style="width:70px;"><?php
                             ?></td><td><?php
                                 echo $meta['tagline'] ?? '-';
                             ?></td><td><?php
@@ -150,7 +151,7 @@ class WPSG_Announcements {
 
     }
 
-    public function form(){
+    public function render_form(){
 
         $this->data = [
             'id' => 0,
@@ -253,7 +254,7 @@ class WPSG_Announcements {
                 <div class="wrap">
                     <h1><?php 
                         echo empty($this->data['id']) ? 'Add New Announcement' : 'Edit Announcement'; ?>
-                        <a href="<?php echo admin_url( $this->url_base ); ?>" class="page-title-action">Back to List (All Announcements)</a>
+                        <a href="<?php echo admin_url( $this->base_url ); ?>" class="page-title-action">Back to List (All Announcements)</a>
                     </h1>
 
                     <div id="poststuff">

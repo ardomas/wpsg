@@ -55,6 +55,24 @@ class WPSG_ProfilesData {
         return $tables;
     }
 
+    /**
+     * -------------------------------
+     * Executing Create Tables
+     * -------------------------------
+     */
+    public static function create_tables() {
+        global $wpdb;
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        // Ambil semua SQL create table dari method create_table
+        $sqls = self::_create_tables();
+
+        foreach ($sqls as $table_name => $sql) {
+            dbDelta($sql);
+        }
+    }
+
     // Ambil data platform-private, pakai default jika belum ada
     public static function get_platform_private() {
         $option_key = 'wpsg_platform_private';
@@ -91,6 +109,32 @@ class WPSG_ProfilesData {
     public static function set_platform_public($data) {
         if (!is_array($data)) return false;
         return WPSG_SettingsData::set_setting('wpsg_platform_public', $data);
+    }
+
+    /**
+     * Ambil data dari wp_wpsg_data
+     *
+     * @param int|null $site_id
+     * @return mixed
+     */
+    public static function get_all_data($site_id = nll){
+        global $wpdb;
+        $result = [];
+
+        if ($site_id === null) {
+            $site_id = wpsg_get_network_id();
+            $rows = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT data_key, data_value FROM {$wpdb->base_prefix}wpsg_data WHERE site_id = '%d' AND deleted_at IS NULL",
+                    $site_id
+                ),
+                ARRAY_A
+            );
+            foreach( $rows as $row ){
+                $result[$row['data_key']] = maybe_unserialize( $row['data_value'] );
+            }
+        }
+        return $result;
     }
 
     /**
@@ -178,24 +222,6 @@ class WPSG_ProfilesData {
             ],
             ['%d', '%s', '%s', '%s']
         );
-    }
-
-    /**
-     * -------------------------------
-     * Method baru: Create settings tables
-     * -------------------------------
-     */
-    public static function create_tables() {
-        global $wpdb;
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-        // Ambil semua SQL create table dari method create_table
-        $sqls = self::_create_tables();
-
-        foreach ($sqls as $table_name => $sql) {
-            dbDelta($sql);
-        }
     }
 
 }

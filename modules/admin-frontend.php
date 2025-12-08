@@ -47,8 +47,8 @@ class WPSG_AdminFrontend {
      */
     public function register_admin_menu() {
         add_menu_page(
-            'WPSG Dashboard',
-            'WPSG Admin',
+            'WPSG Admin\'s Dashboard',
+            'WPSG',
             'manage_options',
             'wpsg-admin',
             [$this, 'load_admin_page'],
@@ -102,12 +102,6 @@ class WPSG_AdminFrontend {
 
                 $module = new $class();
                 $module->$method();
-
-/*
-                if( method_exists( $module, 'enqueue_assets' ) ){
-                    $module->enqueue_assets();
-                }
-*/
 
             } else {
 
@@ -174,7 +168,7 @@ class WPSG_AdminFrontend {
      */
     public function load_admin_page() {
 
-        $view_with_actions = ['announcements'];
+        $view_with_actions = ['announcements','memberships'];
         $is_action = false;
 
         $page   = $_GET['page']   ?? 'wpsg-admin';
