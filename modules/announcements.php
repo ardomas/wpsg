@@ -121,7 +121,7 @@ class WPSG_Announcements {
                             </div><?php
                         }
                     } else {
-                        //
+                        ?><div class="wpsg-boxed">There are no announcements</div><?php
                     }
                 ?></div>
             </div>
