@@ -58,17 +58,6 @@
                 "site": "all",
                 "view": true
             },
-            "galleries": {
-                "title": "Galleries",
-                "icon": "dashicons-format-gallery",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "render_page",
-                "description": "Manage Media Gallery",
-                "dashboard": true,
-                "site": "all",
-                "view": true
-            },
             "memberships": {
                 "title": "Membership",
                 "icon": "dashicons-groups",
@@ -256,73 +245,6 @@
         }
     },
 
-    "galleries": {
-        "type": "action",
-        "data": {
-            "list": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "render_page",
-                "default": true
-            },
-            "add": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "render_form",
-                "default": false
-            },
-            "edit": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "render_form",
-                "default": false
-            },
-            "save": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "handle_save",
-                "default": false
-            },
-            "delete": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "delete_data",
-                "default": false
-            },
-            "item": {
-                "page": "wpsg-admin",
-                "view": "galleries",
-                "path": "modules/galleries/main.php",
-                "class": "WPSG_Galleries",
-                "method": "render_page",
-                "default": false
-            }
-        }
-    },
-    "gallery_items": {
-        "type": "action",
-        "data": {
-            "list": {
-                "page": "wpsg-admin",
-                "view": "gallery_items",
-                "path": "modules/galleries/items.php",
-                "class": "WPSG_GalleryItems",
-                "method": "render_page",
-                "default": true
-            }
-        }
-    },
-
     "settings": {
         "type": "menu",
         "data": {
@@ -473,24 +395,6 @@
                 "active": 1,
                 "url": "https://www.pinterest.com",
                 "description": "Visual discovery and inspiration platform, ideal for lifestyle and design branding."
-            }
-        }
-    },
-
-    "site_status": {
-        "type": "option",
-        "data": {
-            "active": {
-                "name": "Active",
-                "code": "A"
-            },
-            "inactive": {
-                "name": "Inactive",
-                "code": "I"
-            },
-            "suspended": {
-                "name": "Suspended",
-                "code": "S"
             }
         }
     }

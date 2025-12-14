@@ -22,7 +22,7 @@
     padding-right: 10px;
     border-width: 1px;
     border-style: solid;
-    border-color: transparent;
+    border-color: rgba(0,0,0,0.125);
     border-radius: 3px 12px 0 0;
     background-color: rgba(0,0,0,0.05);
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -40,13 +40,12 @@
     cursor: pointer;
     top: 1px;
     z-index: 11;
-    border-color: rgba(0,0,0,0.25);
+    border-color: rgba(127,156,292,0.75);
     background-color: rgba(255,255,255,0.35);
 }
 
 .wp-block-cloudcatch-tab.active {
     font-weight: bold;
-    border-color: rgba(0,0,0,0.25);
-    border-bottom-color: rgba(255,255,0,0.25);
-    background-color: rgba(255,255,0,0.25);
+    border-color: rgba(127,156,292,0.5) rgba(127,156,292,0.5) rgba(255,255,255,0.75);
+    background-color: rgba(192,242,252,0.75);
 }

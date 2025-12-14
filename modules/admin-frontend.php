@@ -81,16 +81,77 @@ class WPSG_AdminFrontend {
         add_action('admin_enqueue_scripts', ['WPSG_Dashboard', 'enqueue_assets']);
     }
 
+    private function render_sidebar(){
+
+        $sidebar_main = WPSG_AdminData::get_sidebar_menu();
+
+        // Ambil page aktif
+        $current_page = isset($GLOBALS['wpsg_current_page']) ? $GLOBALS['wpsg_current_page'] : 'wpsg-admin';
+        $current_view = isset($GLOBALS['wpsg_current_view']) ? $GLOBALS['wpsg_current_view'] : 'dashboard';
+
+        ?>
+
+        <div id="wpsg-sidebar" class="wpsg-admin-sidebar">
+
+            <div class="wpsg-sidebar-header">
+                <h2>WPSG</h2>
+                <span class="version">v<?php echo WPSG_VERSION; ?></span>
+            </div>
+
+            <ul class="wpsg-menu">
+
+                <li class="<?php echo $current_page === '' ? 'active' : ''; ?>">
+                    <a href="<?php echo site_url('/'); ?>">
+                        <span class="dashicons dashicons-admin-home"></span>
+                        Back to Home
+                    </a>
+                </li>
+
+                <?php
+                foreach ($sidebar_main as $key => $item_menu) {
+                    // Default link
+
+                    // if( $item_menu['site']==='all' || is_super_admin() ) {
+
+                        $link = '/wp-admin';
+                        if ($key !== 'wp-admin') {
+                            $link = esc_url('admin.php?page=wpsg-admin&view=' . $key);
+                        }
+                        ?>
+                        <li class="<?php echo ($current_view === $key) ? 'active' : ''; ?>">
+                            <a href="<?php echo $link; ?>">
+                                <span class="dashicons <?php echo esc_attr($item_menu['icon']); ?>"></span>
+                                <?php echo esc_html($item_menu['title']); ?>
+                            </a>
+                        </li>
+
+                    <?php
+
+                    // }
+
+                } 
+                ?>
+
+                <!-- Placeholder menu lain -->
+                <li class="disabled">
+                    <a href="#">
+                        <span class="dashicons dashicons-ellipsis"></span>
+                        More Modules Coming...
+                    </a>
+                </li>
+
+            </ul>
+
+        </div><?php
+
+    }
+
     private function render_display( $view_data ){
 
         $view   = $GLOBALS['wpsg_current_view'];
         $file   = WPSG_DIR . $view_data['path'];
         $class  = $view_data['class'];
         $method = $view_data['method'] ?? 'render';
-
-        // print_r( $view_data );
-        // ?><br/><?php
-        // print_r( $method );
 
         wpsg_enqueue_fontawesome();
 
@@ -153,11 +214,6 @@ class WPSG_AdminFrontend {
             if( isset( $admin_config[$view] ) ){
                 $result = $admin_config[$view];
             }
-            // $view_with_actions = ['announcements'];
-            // if( in_array( $view, $view_with_actions ) ){
-            //     $action = $GLOBALS['wpsg_current_action'];
-            //     $result = $result['data'][$action];
-            // }
         }
 
         return $result;
@@ -168,7 +224,7 @@ class WPSG_AdminFrontend {
      */
     public function load_admin_page() {
 
-        $view_with_actions = ['announcements','memberships'];
+        $view_with_actions = ['announcements', 'galleries', 'memberships'];
         $is_action = false;
 
         $page   = $_GET['page']   ?? 'wpsg-admin';
@@ -185,28 +241,22 @@ class WPSG_AdminFrontend {
             $GLOBALS['wpsg_current_action'] = $action;
         }
 
-        $raw_sidebar_menu = self::get_admin_menu();
-        if( isset( $raw_sidebar_menu['data'] ) ){
-            $sidebar_menu = $raw_sidebar_menu['data'];
-        } else {
-            $sidebar_menu = $raw_sidebar_menu;
-        }
-
-        // echo '<xmp>';
-        // print_r( $sidebar_menu );
-        // echo '</xmp>';
+        $sidebar_menu = WPSG_AdminData::get_sidebar_menu();
 
         ?>
+
         <div id="wpsg-admin-container" style="display:flex; align-items:flex-start;">
 
             <!-- SIDEBAR -->
-            <?php require WPSG_DIR . 'modules/sidebar.php'; ?>
+            <?php $this->render_sidebar(); ?>
 
             <!-- MAIN CONTENT -->
             <div id="wpsg-admin-main" style="flex:1; padding:20px;">
                 <div class="wrap">
                     <?php
+
                     if (!isset($sidebar_menu[$view])) {
+
                         echo '<h2>404: View Not Found</h2>';
                         // return;
                     } else {

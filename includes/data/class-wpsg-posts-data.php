@@ -105,10 +105,8 @@ class WPSG_PostsData {
     }
 
     private function _get_raw_posts(){
-        $query = $this->wpdb->prepare(
-            "SELECT * FROM {$this->table_posts} 
-             ORDER BY published_at DESC"
-        );
+        $query = "SELECT * FROM {$this->table_posts} 
+             ORDER BY published_at DESC";
         return $this->wpdb->get_results($query);
     }
 
@@ -160,25 +158,21 @@ class WPSG_PostsData {
             $site_params = [ $args['site_id'] ];
         }
 
-        // Limit query jika diperlukan
-        $limit_sql = "";
-        if (! empty($args['limit'])) {
-            $limit_sql = $this->wpdb->prepare(" LIMIT %d", $args['limit']);
-        }
-
-        // Buat query final
-        $query = $this->wpdb->prepare(
-            "SELECT * FROM {$this->table_posts}
+        $sql = "SELECT * FROM {$this->table_posts}
             WHERE {$site_sql}
             AND post_type = %s
             AND status = %s
-            ORDER BY published_at DESC
-            {$limit_sql}",
-            array_merge($site_params, [
-                $args['post_type'],
-                $args['status']
-            ])
-        );
+            ORDER BY published_at DESC";
+
+        // Limit query jika diperlukan
+        $limit_sql = "";
+        if (! empty($args['limit'])) {
+            $sql .= " LIMIT %d";
+            $site_params[] = $args['limit'];
+        }
+
+        // Buat query final
+        $query = $this->wpdb->prepare( $sql, array_merge( $site_params, [$args['post_type'], $args['status']] ) );
 
         return $this->wpdb->get_results($query);
     }

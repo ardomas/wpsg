@@ -65,7 +65,8 @@ add_action('plugins_loaded', function() {
 WPSG_AdminData::get_instance();
 register_activation_hook(__FILE__, function() {
 
-//    WPSG_AdminData::get_instance();
+    ob_start();
+
     WPSG_PostsData::get_instance();
 
     WPSG_SettingsData::get_instance();
@@ -76,8 +77,15 @@ register_activation_hook(__FILE__, function() {
 
     WPSG_ProfilesRepository::init();
 
+    WPSG_GalleriesData::init();
+    WPSG_GalleriesData::create_tables();
+
     $rep_memberships = new WPSG_MembershipsRepository();
     $rep_memberships->create_tables();
+
+    $leak = ob_get_clean();
+    file_put_contents(WPSG_DIR . 'activation_output.log', $leak);
+
 });
 
 // Load singleton instances
@@ -109,6 +117,18 @@ add_action('wp_ajax_wpsg_save_announcement', function() {
     }
 });
 
+// --------------------------------------------------
+// Galleries
+// --------------------------------------------------
+// add_action('plugins_loaded', function() {
+//     $albummedia = new WPSG_AlbumMediaRepository();
+// });
+
+require_once WPSG_DIR . 'modules/galleries/main.php';
+add_action('plugins_loaded', function(){
+    do_action('wp_wpsg_galleries');
+});
+
 /*
 add_filter('template_include', function($template) {
     if (is_front_page()) {
@@ -130,7 +150,7 @@ function wpsg_load_front_page_template($template) {
             remove_all_actions('the_content');
             add_filter('the_content', function() {
                 ob_start();
-                // include WPSG_DIR . 'modules/frontend/front-page.php';
+                include WPSG_DIR . 'modules/frontend/front-page.php';
                 return ob_get_clean();
             });
         }, 20);

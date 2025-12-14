@@ -227,11 +227,6 @@ class WPSG_Memberships {
 
                     <?php 
                     $num_order = 0;
-                    /*
-                    ?><xmp>Test:<br/><?php
-                    print_r( $memberships )
-                    ?></xmp><?php
-                    */
 
                     foreach ( $memberships as $row ) :
                         $num_order++;
@@ -375,78 +370,106 @@ class WPSG_Memberships {
                 <input type="hidden" name="wpsg_membership_submit" value="1" />
                 <input type="hidden" name="membership[id]" value="<?php echo esc_attr( $mdata['id'] ); ?>" />
 
-                <h2><?php esc_html_e( 'Network / Site', 'wpsg' ); ?></h2>
-                <table class="form-table" role="presentation">
-                    <tbody>
-                        <tr>
-                            <th scope="row"><label><?php esc_html_e( 'Select existing network', 'wpsg' ); ?></label></th>
-                            <td>
-                                <select name="membership[site_id]" id="membership_site_id">
-                                    <option value="0"><?php esc_html_e( '-- Select --', 'wpsg' ); ?></option>
-                                    <?php foreach ( $networks as $nid => $n ) : ?>
-                                        <option value="<?php echo esc_attr( $nid ); ?>" <?php selected( $mdata['site_id'], $nid ); ?>>
-                                            <?php echo esc_html( $n->site_name . ' (' . $n->domain . $n->path . ')' ); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <p class="description"><?php esc_html_e( 'Choose an existing network/site to link with this membership. If left empty, you may provide domain & site name to auto-create network (if enabled).', 'wpsg' ); ?></p>
-                            </td>
-                        </tr>
+                <div class="wpsg">
+                    <h2><?php esc_html_e( 'Membership Data', 'wpsg' ); ?></h2>
+                    <div class="wpsg-form wpsg-boxed">
+                        <div class="wpsg-form-field">
+                            <label for="membership_name"><?php esc_html_e( 'Name', 'wpsg' ); ?>
+                            <input name="membership[name]" id="membership_name" class="regular-text" value="<?php echo esc_attr( $mdata['name'] ); ?>" />
+                        </div>
+                        <div class="wpsg-row">
+                            <div class="col-4">
+                                <div class="wpsg-form-field">
+                                    <label for="membership_type"><?php esc_html_e( 'Type', 'wpsg' ); ?>
+                                    <input name="membership[member_type]" id="membership_type" class="regular-text" value="<?php echo esc_attr( $mdata['member_type'] ); ?>" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="wpsg-form-field">
+                                    <label for="membership_level"><?php esc_html_e( 'Level', 'wpsg' ); ?></label>
+                                    <input name="membership[membership_level]" id="membership_level" class="regular-text" value="<?php echo esc_attr( $mdata['membership_level'] ); ?>" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wpsg-row">
+                            <div class="col-4">
+                                <?php $site_status = WPSG_AdminData::get('site_status')['data']; ?>
+                                <div class="wpsg-form-field">
+                                    <label for="membership_status"><?php esc_html_e( 'Status', 'wpsg' ); ?></label>
+                                    <select name="membership[status]" id="membership_status"><?php
+                                        foreach( $site_status as $key=>$values ):
+                                            ?><option value="<?php echo $key; ?>" <?php selected( $mdata['status'], $key ); ?>><?php 
+                                                esc_html_e( $values['name'], 'wpsg' ); 
+                                            ?></option><?php
+                                        endforeach;
+                                    ?></select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="wpsg-form-field">
+                                    <label><?php esc_html_e( 'Start Date', 'wpsg' ); ?></label>
+                                    <input name="membership[start_date]" type="datetime-local" value="<?php echo esc_attr( date( 'Y-m-d\TH:i', strtotime( $mdata['start_date'] ) ) ); ?>" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="wpsg-form-field">
+                                    <label><?php esc_html_e( 'End Date', 'wpsg' ); ?></label>
+                                    <input name="membership[end_date]" type="datetime-local" value="<?php echo esc_attr( $mdata['end_date'] ? date( 'Y-m-d\TH:i', strtotime( $mdata['end_date'] ) ) : '' ); ?>" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wpsg-form-field">
+                            <label><?php esc_html_e( 'Address', 'wpsg' ); ?></label>
+                            <textarea name="membership[address]"><?php echo esc_textarea( $mdata['address'] ); ?></textarea>
+                        </div>
+                    </div>
 
-                        <tr>
-                            <th scope="row"><label><?php esc_html_e( 'Or create new network', 'wpsg' ); ?></label></th>
-                            <td>
-                                <input type="text" name="network[domain]" placeholder="<?php esc_attr_e( 'domain.tld', 'wpsg' ); ?>" value="<?php echo esc_attr( $site['domain'] ?? '' ); ?>" />
-                                <input type="text" name="network[site_name]" placeholder="<?php esc_attr_e( 'Site Name', 'wpsg' ); ?>" value="<?php echo esc_attr( $site['site_name'] ?? '' ); ?>" />
-                                <p class="description"><?php esc_html_e( 'If you provide domain + site name and no existing network is selected, service may attempt to ensure/create the network.', 'wpsg' ); ?></p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <h2><?php esc_html_e( 'Network / Site', 'wpsg' ); ?></h2>
+                    <div class="wpsg-row">
 
-                <h2><?php esc_html_e( 'Membership Data', 'wpsg' ); ?></h2>
-                <table class="form-table" role="presentation">
-                    <tbody>
-                        <tr>
-                            <th><label for="membership_name"><?php esc_html_e( 'Name', 'wpsg' ); ?></label></th>
-                            <td><input name="membership[name]" id="membership_name" class="regular-text" value="<?php echo esc_attr( $mdata['name'] ); ?>" /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="membership_type"><?php esc_html_e( 'Type', 'wpsg' ); ?></label></th>
-                            <td><input name="membership[member_type]" id="membership_type" class="regular-text" value="<?php echo esc_attr( $mdata['member_type'] ); ?>" /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="membership_level"><?php esc_html_e( 'Level', 'wpsg' ); ?></label></th>
-                            <td><input name="membership[membership_level]" id="membership_level" class="regular-text" value="<?php echo esc_attr( $mdata['membership_level'] ); ?>" /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="membership_status"><?php esc_html_e( 'Status', 'wpsg' ); ?></label></th>
-                            <td>
-                                <select name="membership[status]" id="membership_status">
-                                    <option value="active" <?php selected( $mdata['status'], 'active' ); ?>><?php esc_html_e( 'Active', 'wpsg' ); ?></option>
-                                    <option value="inactive" <?php selected( $mdata['status'], 'inactive' ); ?>><?php esc_html_e( 'Inactive', 'wpsg' ); ?></option>
-                                    <option value="suspended" <?php selected( $mdata['status'], 'suspended' ); ?>><?php esc_html_e( 'Suspended', 'wpsg' ); ?></option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label><?php esc_html_e( 'Start Date', 'wpsg' ); ?></label></th>
-                            <td><input name="membership[start_date]" type="datetime-local" value="<?php echo esc_attr( date( 'Y-m-d\TH:i', strtotime( $mdata['start_date'] ) ) ); ?>" /></td>
-                        </tr>
-                        <tr>
-                            <th><label><?php esc_html_e( 'End Date', 'wpsg' ); ?></label></th>
-                            <td><input name="membership[end_date]" type="datetime-local" value="<?php echo esc_attr( $mdata['end_date'] ? date( 'Y-m-d\TH:i', strtotime( $mdata['end_date'] ) ) : '' ); ?>" /></td>
-                        </tr>
-                        <tr>
-                            <th><label><?php esc_html_e( 'Address', 'wpsg' ); ?></label></th>
-                            <td><textarea name="membership[address]" class="large-text"><?php echo esc_textarea( $mdata['address'] ); ?></textarea></td>
-                        </tr>
-                    </tbody>
-                </table>
+                        <div class="col-6">
+                            <div class="wpsg-form wpsg-boxed">
+                                <h3>Create new site.</h3>
+                                <div class="wpsg-form-field">
+                                    <label>network/domain name</label>
+                                    <input type="text" name="network[domain]" placeholder="<?php esc_attr_e( 'domain.tld', 'wpsg' ); ?>" value="<?php echo esc_attr( $site['domain'] ?? '' ); ?>" />
+                                </div>
+                                <div class="wpsg-form-field">
+                                    <input type="text" name="network[site_name]" placeholder="<?php esc_attr_e( 'Site Name', 'wpsg' ); ?>" value="<?php echo esc_attr( $site['site_name'] ?? '' ); ?>" />
+                                    <p class="description"><?php esc_html_e( 'If you provide domain + site name and no existing network is selected, service may attempt to ensure/create the network.', 'wpsg' ); ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="wpsg-form wpsg-boxed">
+                                <h3>Select Site (Site is already exist)</h3>
+                                <div class="wpsg-form-field">
+                                    <label><?php esc_html_e( 'Select existing network', 'wpsg' ); ?></label>
+                                    <select name="membership[site_id]" id="membership_site_id">
+                                        <option value="0"><?php esc_html_e( '-- Select --', 'wpsg' ); ?></option>
+                                        <?php foreach ( $networks as $nid => $n ) : ?>
+                                            <option value="<?php echo esc_attr( $nid ); ?>" <?php selected( $mdata['site_id'], $nid ); ?>>
+                                                <?php echo esc_html( $n->site_name . ' (' . $n->domain . $n->path . ')' ); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <p class="description"><?php esc_html_e( 'Choose an existing network/site to link with this membership. If left empty, you may provide domain & site name to auto-create network (if enabled).', 'wpsg' ); ?></p>
+                                </div>
+                            </div>
+                        </div>
 
-                <p class="submit">
-                    <button type="submit" name="wpsg_membership_submit" class="button button-primary"><?php echo $action === 'edit' ? esc_html__( 'Update Membership', 'wpsg' ) : esc_html__( 'Add Membership', 'wpsg' ); ?></button>
-                </p>
+                    </div>
+
+                    <br/>
+                    <div class="wpsg-form wpsg-boxed">
+                        <p class="submit">
+                            <button type="submit" name="wpsg_membership_submit" class="button button-primary"><?php echo $action === 'edit' ? esc_html__( 'Update Membership', 'wpsg' ) : esc_html__( 'Add Membership', 'wpsg' ); ?></button>
+                        </p>
+                    </div>
+
+
+                </div>
+
             </form>
         </div>
         <?php

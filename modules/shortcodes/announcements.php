@@ -3,6 +3,44 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+function wpsg_load_active_announcements($atts){
+    $posts = [];
+    $status    = false;
+    $init_data = [];
+    $date_0 = Date('Y-m-d');
+
+    $atts = shortcode_atts([
+        'post_type' => 'announcement',
+        'status'    => 'published',
+        'limit'     => 5,
+        'site_id'   => null, // biarkan null untuk aturan multisite otomatis
+    ], $atts, 'wpsg_announcements');
+
+    // Pastikan class data tersedia
+    if (class_exists('WPSG_PostsData')) {
+        $data = WPSG_PostsData::get_instance();
+        $temp = $data->get_all_posts([
+            'post_type' => $atts['post_type'],
+            'status'    => $atts['status'],
+            'limit'     => intval($atts['limit']),
+            'site_id'   => $atts['site_id'],
+        ]);
+        if( $temp!=[] ){
+            foreach( $temp as $temp_data ){
+                $temp_meta   = $data->get_meta( $temp_data['id'] );
+                $init_data[] = $temp_data;
+            }
+        }
+    }
+
+    return ['status'=>$status, 'data'=>$init_data];
+
+}
+
+function wpsg_load_all_announcements($atts){
+
+}
+
 function wpsg_shortcode_announcements($atts) {
 
     $date_0 = Date('Y-m-d');
@@ -35,7 +73,7 @@ function wpsg_shortcode_announcements($atts) {
     ob_start();
     ?>
     <div class="wpsg-short-announcements">
-        <h1>Pengumuman PTPAI</h1>
+        <!-- <h1>Pengumuman PTPAI</h1> -->
 
         <?php if( $posts!=[] ): ?>
             <?php

@@ -15,7 +15,7 @@ function wpsg_shortcode_memberships() {
     if( $list != [] ) {
 
         ?><div class="wpsg-short-memberships">
-            <h1>Daftar Anggota PTPAI</h1>
+            <!-- <h1>Daftar Anggota PTPAI</h1> -->
             <table class="wpsg-full-width outer-border bordered hover striped" style="width: 100%;">
                 <thead>
                     <tr>

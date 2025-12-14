@@ -77,5 +77,19 @@
         }
       }
     }
+  },
+  "site_status": {
+    "active": {
+      "name": "Active",
+      "code": "A"
+    },
+    "inactive": {
+      "name": "Inactive",
+      "code": "I"
+    },
+    "Suspended": {
+      "name": "Suspended",
+      "code": "S"
+    }
   }
 }

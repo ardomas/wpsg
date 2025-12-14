@@ -10,11 +10,6 @@ function wpsg_shortcode_just_test(){
 
     ob_start();
 
-    // echo 'This Juat A Test.';
-    echo '<xmp>';
-    print_r( $data );
-    echo '</xmp>';
-
     return ob_get_clean();
 
 }
@@ -30,11 +25,10 @@ function wpsg_shortcode_about_us(){
     ob_start();
 
     ?><h1><?php echo $init_data['name']; ?></h1><?php
-    ?><div><p><?php print_r($init_data['summary']); ?></p></div><?php
-    ?><div><h2>Tentang Kami</h2><p><?php echo $init_data['briefs']; ?></p></div><?php
     /*
-    ?><div><h2>Values</h2><p><?php print_r( $init_data['values'] ); ?></p></div><?php
+    ?><div><p><?php print_r($init_data['summary']); ?></p></div><?php
     */
+    ?><div><h2>Tentang Kami</h2><p><?php echo $init_data['briefs']; ?></p></div><?php
 
     return ob_get_clean();
 }
@@ -49,5 +43,14 @@ function wpsg_shortcode_values( $atts=[] ){
 
     ob_start();
     echo maybe_unserialize( $main_src['profile_values'][$key] );
+    return ob_get_clean();
+}
+
+function wpsg_shortcode_legal(){
+    $main_src = WPSG_ProfilesRepository::get_all_data();
+    ob_start();
+    ?><h2>Legal</h2><p><div><p><?php
+        echo maybe_unserialize( $main_src['profile_identity']['legal'] );
+    ?></p></div><?php
     return ob_get_clean();
 }

@@ -113,7 +113,7 @@ function wpsg_dbDelta($args = []){
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     if( is_array( $args ) ){
-        foreach ($arg as $tbkey => $sql) {
+        foreach ($args as $tbkey => $sql) {
             dbDelta($sql);
         }
     }
@@ -161,11 +161,10 @@ function wpsg_get_network_id() {
 
     // fallback (WordPress 4.6 ke bawah)
     $network = get_network();
-    return $network ? $network::id : 1;
+    return $network ? $network->id : 1;
 }
 
 function wpsg_get_profile_data( $site_id=null ){
     if( $site_id==null ) $site_id = wpsg_get_network_id();
-    $init = WPSG_ProfilesRepository::init();
-    return $init::data;
+    return WPSG_ProfilesData::get_all_data($site_id);
 }

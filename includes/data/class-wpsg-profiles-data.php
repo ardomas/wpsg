@@ -117,22 +117,22 @@ class WPSG_ProfilesData {
      * @param int|null $site_id
      * @return mixed
      */
-    public static function get_all_data($site_id = nll){
+    public static function get_all_data($site_id = null){
         global $wpdb;
         $result = [];
 
         if ($site_id === null) {
             $site_id = wpsg_get_network_id();
-            $rows = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT data_key, data_value FROM {$wpdb->base_prefix}wpsg_data WHERE site_id = '%d' AND deleted_at IS NULL",
-                    $site_id
-                ),
-                ARRAY_A
-            );
-            foreach( $rows as $row ){
-                $result[$row['data_key']] = maybe_unserialize( $row['data_value'] );
-            }
+        }
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT data_key, data_value FROM {$wpdb->base_prefix}wpsg_data WHERE site_id = '%d' AND deleted_at IS NULL",
+                $site_id
+            ),
+            ARRAY_A
+        );
+        foreach( $rows as $row ){
+            $result[$row['data_key']] = maybe_unserialize( $row['data_value'] );
         }
         return $result;
     }

@@ -100,37 +100,62 @@ class WPSG_ProfileIdentity {
 
 
                     <div class="wpsg-boxed wpsg-form-field">
-                        <label for="profile_summary"><strong>Profile Summary</strong></label>
                         <div class="wpsg-row">
+                            <div class="col-6">
+                                <label for="profile_summary"><strong>Profile Summary</strong></label>
+                                <div class="wpsg-row">
 
-                            <?php
-                                $content = $data['profile_summary'] ?? '';
-                                wp_editor(
-                                    $content,
-                                    'wpsg_identity_profile_summary',
-                                    [
-                                        'textarea_name' => 'profile_summary',
-                                        'textarea_rows' => 6,
-                                        'media_buttons' => false,
-                                        'teeny' => true
-                                    ]
-                                );
-                            ?>
+                                    <?php
+                                        $content = $data['profile_summary'] ?? '';
+                                        wp_editor(
+                                            $content,
+                                            'wpsg_identity_profile_summary',
+                                            [
+                                                'textarea_name' => 'profile_summary',
+                                                'textarea_rows' => 6,
+                                                'media_buttons' => false,
+                                                'teeny' => true
+                                            ]
+                                        );
+                                    ?>
 
+                                </div>
+                            </div>
+                            <div class="col-6">
+
+                                <label for="brief_history"><strong>Brief History</strong></label>
+                                <div class="wpsg-row">
+
+                                    <?php
+                                        $content = $data['brief_history'] ?? '';
+                                        wp_editor(
+                                            $content,
+                                            'wpsg_identity_brief_history',
+                                            [
+                                                'textarea_name' => 'brief_history',
+                                                'textarea_rows' => 6,
+                                                'media_buttons' => false,
+                                                'teeny' => true
+                                            ]
+                                        );
+                                    ?>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="wpsg-boxed wpsg-form-field">
-                        <label for="brief_history"><strong>Brief History</strong></label>
+                        <label for="legal"><strong>Legal</strong></label>
                         <div class="wpsg-row">
 
                             <?php
-                                $content = $data['brief_history'] ?? '';
+                                $content = $data['legal'] ?? '';
                                 wp_editor(
                                     $content,
-                                    'wpsg_identity_brief_history',
+                                    'wpsg_identity_legal',
                                     [
-                                        'textarea_name' => 'brief_history',
+                                        'textarea_name' => 'legal',
                                         'textarea_rows' => 6,
                                         'media_buttons' => false,
                                         'teeny' => true
@@ -169,6 +194,7 @@ class WPSG_ProfileIdentity {
             'tagline'          => sanitize_text_field($_POST['tagline'] ?? ''),
             'profile_summary'  => wp_kses_post($_POST['profile_summary'] ?? ''),
             'brief_history'    => wp_kses_post($_POST['brief_history'] ?? ''),
+            'legal'            => wp_kses_post($_POST['legal'] ?? ''),
             'year_established' => intval($_POST['year_established'] ?? 0),
         ];
 

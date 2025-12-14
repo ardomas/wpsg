@@ -52,100 +52,80 @@ class WPSG_Announcements {
             <h1 class="wp-heading-inline">Announcements</h1>
             <a href="<?php echo admin_url( $this->base_url . '&action=add' ); ?>" class="page-title-action">Add New</a>
             <hr class="wp-header-end">
-            <table class="wp-list-table wpsg-full-width fixed striped posts">
-
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th class="manage-column" colspan="2" style="text-align: center;">Title</th>
-                        <th class="manage-column">Tags</th>
-                        <th class="manage-column">Author</th>
-                        <th class="manage-column">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-        <?php
-
-                if (!empty($announcements)) {
-
-                    foreach ($announcements as $ann) {
-
-                        $meta = [];
-                        if ($ann) { // pastikan post memang ada
-                            $meta  = $this->posts_handler->get_meta($ann->id);
-                            // $ann = array_merge((array) $ann, $meta);
+            <div class="wpsg-form">
+                <div class="widefat"><?php
+                    if( !empty( $announcements ) ){
+                        foreach( $announcements as $ann ){
+                            $meta = [];
+                            if($ann){
+                                $meta = $this->posts_handler->get_meta($ann->id);
+                            }
+                            $edit_link = admin_url( $this->base_url . '&action=edit&id=' . $ann->id);
+                            $delete_link = wp_nonce_url(admin_url( $this->base_url .  '&action=delete&id=' . $ann->id), 'wpsg_ann_delete_' . $ann->id);
+                            ?><div class="wpsg-boxed">
+                                <div class="wpsg-form-field" style="font-weight: 600;">
+                                    <div class="wpsg-row">
+                                        <div class="col-8">
+                                            <?php echo $ann->title; ?>
+                                        </div>
+                                        <div class="col-4" style="text-align: right;">
+                                            <div class="btn-actions">
+                                                <span class="edit"><a href="<?php echo esc_url($edit_link); ?>">Edit</a></span> |
+                                                <span class="trash"><a href="<?php echo esc_url($delete_link); ?>">Trash</a></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wpsg-row">
+                                    <div class="col-1"><?php
+                                        if (!empty($meta['image'])) {
+                                            $img_url = esc_url($meta['image']);
+                                            echo '<img src="'.$img_url.'" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid #ccc;" />';
+                                        } else {
+                                            echo '<span style="'.$placeholder_style.'"></span>';
+                                        }
+                                    ?></div>
+                                    <div class="col-11">
+                                        <div class="wpsg-row">
+                                            <div class="col-3">
+                                                <div>City: <br/><?php
+                                                    echo ucfirst( $meta['locations']['city'] );
+                                                ?></div>
+                                            </div>
+                                            <div class="col-3">
+                                                <div>Date: <br/><?php
+                                                    echo $meta['date_start'];
+                                                    if( $meta['date_start'] != $meta['date_end'] ){
+                                                        echo ' to ' . $meta['date_end'];
+                                                    }
+                                                ?></div>
+                                                <div>Time: <br/><?php
+                                                    if( !is_null( $meta['time_start'] ) &&
+                                                        !is_null( $meta['time_end'  ] ) && 
+                                                        ( $meta['time_start']!=$meta['time_end'] ) ){
+                                                        ?><div><?php echo $meta['time_start'] . ' - ' . $meta['time_end']; ?></div><?php
+                                                    }
+                                                ?></div>
+                                            </div>
+                                            <div class="col-3"><?php
+                                                echo 'Published :<br/><div>' . esc_html(date('Y-m-d H:i', strtotime($ann->published_at))) . '</div>';
+                                                echo 'Expired Date :<br/><div>' . esc_html(date('Y-m-d H:i', strtotime($meta['expiry_date']))) . '</div>';
+                                            ?></div>
+                                            <div class="col-3"><?php
+                                                echo 'Author :<br/><div>' . esc_html(get_userdata($ann->author_id)->display_name) . '</div>';
+                                                echo 'Tagline :<br/><div>' . ( $meta['tagline'] ?? '-' ) . '</div>';
+                                            ?></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><?php
                         }
-
-                        $edit_link = admin_url( $this->base_url . '&action=edit&id=' . $ann->id);
-                        $delete_link = wp_nonce_url(admin_url( $this->base_url .  '&action=delete&id=' . $ann->id), 'wpsg_ann_delete_' . $ann->id);
-
-                        ?><tr>
-                            <td style="text-align: center; padding-left: 10px; padding-right: 10px;"><?php
-
-                                // default placeholder box (abu-abu)
-                                $placeholder_style = 'display:inline-block;width:60px;height:60px;background:#ddd;border:1px solid #ccc;border-radius:4px;';
-
-                                if (!empty($meta['image'])) {
-                                    $img_url = esc_url($meta['image']);
-                                    echo '<img src="'.$img_url.'" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid #ccc;" />';
-                                } else {
-                                    echo '<span style="'.$placeholder_style.'"></span>';
-                                }
-
-                            ?><div class="row-actions">
-                                    <span class="edit"><a href="<?php echo esc_url($edit_link); ?>">Edit</a> | </span>
-                                    <span class="trash"><a href="<?php echo esc_url($delete_link); ?>">Trash</a></span>
-                                </div>
-                            </td><td style="width: 50%; min-width: 250px; max-width: 500px;">
-                                <strong></strong><a href="<?php echo esc_url($edit_link); ?>"><?php echo esc_html($ann->title); ?></a></strong><br/>
-                                <div class="wpsg-flex">
-                                    <div><p><?php echo ucfirst( $meta['locations']['city'] ); ?></p>
-                                    <p><?php 
-                                        echo $meta['date_start'];
-                                        if( $meta['date_start'] != $meta['date_end'] ){
-                                            echo ' to ' . $meta['date_end'];
-                                        }
-                                    ?></p><p style="white-space: text-nowrap;"><?php
-
-                                        if( !is_null( $meta['time_start'] ) &&
-                                            !is_null( $meta['time_end'  ] ) && 
-                                            ( $meta['time_start']!=$meta['time_end'] ) ){
-                                            ?><div><?php echo $meta['time_start'] . ' - ' . $meta['time_end']; ?></div><?php
-                                        }
-
-                                    ?></p></div>
-                                    
-                                </div>
-                            </td><td class="column-thumbnail" style="width:70px;"><?php
-                            ?></td><td><?php
-                                echo $meta['tagline'] ?? '-';
-                            ?></td><td><?php
-                                echo esc_html(get_userdata($ann->author_id)->display_name);
-                            ?></td><td><?php 
-                                echo '<strong>' . ucfirst( $ann->status ) . '</strong>';
-
-                                if( trim(strtolower( $ann->status )) == 'published' ){
-                                    echo '<div>Date : ' . esc_html(date('Y-m-d H:i', strtotime($ann->published_at))) . '</div>';
-                                }
-                                if( $meta!=[] ){
-                                    if( isset( $meta['expiry_date'] ) ){
-                                        ?><div>Expired Date: <?php
-                                        echo esc_html(date('Y-m-d H:i', strtotime($meta['expiry_date'])));
-                                        ?></div><?php
-                                    }
-                                }
-
-                            ?></td>
-                        </tr><?php
-
+                    } else {
+                        //
                     }
-                } else {
-                    echo '<tr><td colspan="6">No announcements found.</td></tr>';
-                }
-        ?>
+                ?></div>
+            </div>
 
-                </tbody>
-            </table>
         </div>
         <?php
 
@@ -234,13 +214,6 @@ class WPSG_Announcements {
     }
 
     protected function generate_form(){
-
-        /*
-        echo '$this->data:'
-        ?><xmp><?php
-        print_r( $this->data )
-        ?></xmp><?php
-        */
 
 ?>
         <form class="wpsg-form" method="post" id="wpsg-ann-form">

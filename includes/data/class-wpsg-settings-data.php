@@ -225,7 +225,7 @@ class WPSG_SettingsData {
         // Ambil semua SQL create table dari method create_table
         $sqls = self::_create_tables();
 
-        foreach ($sqls as $table_name => $sql) {
+        foreach ($sqls as $sql) {
             dbDelta($sql);
         }
     }

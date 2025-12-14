@@ -138,10 +138,6 @@ class WPSG_MembershipsService {
             return new WP_Error( 'missing_data', 'Data required.' );
         }
 
-        echo '<xmp>Test';
-        print_r( $full_data );
-        echo '</xmp>';
-
         $membership  = $full_data['membership'] ?? [];
         $meta        = $full_data['meta'] ?? [];
         $site_meta   = $full_data['site_meta'] ?? []; // network options
@@ -172,25 +168,6 @@ class WPSG_MembershipsService {
         // Before save hook
         do_action( 'wpsg_membership_before_save', $membership, $meta, $site_meta );
 
-        // Persist main membership via repository
-        // echo '<xmp>';
-        // print_r( $membership );
-        // echo '</xmp>';
-        /*
-        if( $membership['id']==0 ){
-            $tmp = [];
-            foreach( $membership as $k=>$v ){
-                if( $k!=='id' ){
-                    $tmp[$k] = $v;
-                }
-            }
-            $membership = $tmp;
-        }
-        */
-        // echo '<xmp>';
-        // print_r( $membership );
-        // echo '</xmp>';
-        // die('lihat hasil');
         $res = $this->repo->set( $membership );
         // repo->set returns insert_id (int) on insert, or number of rows affected on update, or false
         if ( $res === false ) {
