@@ -132,6 +132,7 @@ a.btn {
 
 .wpsg-row {
     display: flex;
+    flex: content;
     width: 100%;
     gap: 10px;
 }
@@ -344,4 +345,32 @@ a.wpsg-card-link {
     width: 100%;
     font-weight: 600;
     margin-bottom: 0.25rem;
+}
+
+.wpsg-gallery-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 120px);
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+}
+
+.wpsg-gallery-item {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 6px;
+    list-style: none;
+    position: relative;
+}
+
+.wpsg-gallery-thumb img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.wpsg-actions {
+    position: absolute;
+    top: 4px;
+    right: 4px;
 }

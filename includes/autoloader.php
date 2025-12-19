@@ -45,6 +45,8 @@ if ( ! class_exists( 'WPSG_Autoloader' ) ) {
                     $folder = 'includes/repositories/';
                 } elseif (substr($short, -7) === 'Service') {
                     $folder = 'includes/services/';
+                } elseif (substr($short, -4) === 'Ajax') {
+                    $folder = 'includes/ajax/';
                 } else {
                     // Default fallback (misal: helpers, utilitas)
                     $folder = 'includes/';

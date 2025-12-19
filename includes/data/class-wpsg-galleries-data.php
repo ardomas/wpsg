@@ -27,6 +27,7 @@ class WPSG_GalleriesData {
             title VARCHAR(255) NOT NULL,
             description TEXT NULL,
             thumbnail_id BIGINT UNSIGNED NULL,
+            item_count INT NOT NULL DEFAULT 0,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY (id)
@@ -36,6 +37,7 @@ class WPSG_GalleriesData {
             id BIGINT UNSIGNED AUTO_INCREMENT,
             album_id BIGINT UNSIGNED NOT NULL,
             post_id BIGINT UNSIGNED NOT NULL,
+            caption VARCHAR(255) NULL,
             position INT DEFAULT 0,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id),

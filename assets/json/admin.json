@@ -309,6 +309,7 @@
             }
         }
     },
+
     "gallery_items": {
         "type": "action",
         "data": {
@@ -317,8 +318,24 @@
                 "view": "gallery_items",
                 "path": "modules/galleries/items.php",
                 "class": "WPSG_GalleryItems",
-                "method": "render_page",
+                "method": "render",
                 "default": true
+            },
+            "edit": {
+                "page": "wpsg-admin",
+                "view": "gallery_items",
+                "path": "modules/galleries/items.php",
+                "class": "WPSG_GalleryItems",
+                "method": "render",
+                "default": false
+            },
+            "delete": {
+                "page": "wpsg-admin",
+                "view": "gallery_items",
+                "path": "modules/galleries/items.php",
+                "class": "WPSG_GalleryItems",
+                "method": "render",
+                "default": false
             }
         }
     },

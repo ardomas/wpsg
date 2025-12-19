@@ -18,13 +18,13 @@ class WPSG_Galleries {
 
     public function delete_data() {
         $url_back = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=list" );
-        if( isset( $_GET['id'] ) ){
-            $id = $_GET['id'];
+        if( isset( $_GET['album_id'] ) ){
+            $album_id = $_GET['album_id'];
 
             ?><div class='notice notice-error'><?php
 
-            if( !is_null( $id ) && trim($id)!='' && $id!='0' ){
-                if( $this->service->delete_album( $id ) ){
+            if( !is_null( $album_id ) && trim($album_id)!='' && $album_id!='0' ){
+                if( $this->service->delete_album( $album_id ) ){
                     ?><p>Data sudah di dihapus</p><?php
                 } else {
                     // Bisa tambahkan message error
@@ -47,7 +47,7 @@ class WPSG_Galleries {
 
         ?><div class="wrap">
             <h2 class="wp-heading-inline">Galeri <?php echo( $site_data['full_name'] ); ?></h2>
-            <a class="button button-primary" href="?page=<?php echo $this->page; ?>&view=<?php echo $this->view; ?>&action=add">Tambah Album</a>
+            <a class="button button-primary" href="?page=<?php echo $this->page; ?>&view=<?php echo $this->view; ?>&action=add">Add Album</a>
 
             <div class="wpsg wpsg-form">
                 <div class="wpsg-form-field">
@@ -55,34 +55,17 @@ class WPSG_Galleries {
                     if( !empty($albums) ){
                         $view_item = 'gallery_items';
                         foreach( $albums as $album ){
-                            $act_fill   = admin_url( "admin.php?page={$this->page}&view={$view_item}&action=list&id={$album['id']}" );
-                            $act_edit   = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=edit&id={$album['id']}" );
-                            $act_delete = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=delete&id={$album['id']}" );
+                            $act_fill   = admin_url( "admin.php?page={$this->page}&view={$view_item}&action=list&album_id={$album['id']}" );
+                            $act_edit   = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=edit&album_id={$album['id']}" );
+                            $act_delete = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=delete&album_id={$album['id']}" );
                             $thumbnail_url = $album['thumbnail_id'] 
                                 ? wp_get_attachment_url($album->thumbnail_id) 
                                 : '';
                             ?><div class="wpsg-boxed">
                                 <div class="wpsg-row">
-                                    <div class="col-10">
+                                    <div class="col-8">
 
                                         <div class="wpsg-form-field">
-                                            <div class="wpsg-row">
-                                                <div class="col-6">
-                                                    <b><a href="<?php echo $act_fill; ?>"><?php echo esc_html($album['title']); ?></a></b>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="wpsg-row">
-                                                        <div class="col" style="text-align: left;">
-                                                            <a class="btn btn-action" href="<?php echo $act_fill; ?>" title="Isi Album"><i class="dashicons dashicons-images-alt2"></i> Contents</a>
-                                                        </div>
-                                                        <div class="col" style="text-align: right;">
-                                                            <a class="btn btn-action" href="<?php echo $act_edit; ?>" title="Edit Album"><i class="dashicons dashicons-edit"></i> Edit</a>
-                                                            <a class="btn btn-action btn-danger" href="<?php echo $act_delete; ?>" title="Hapus Album"><i class="dashicons dashicons-trash"></i> Delete</a>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
                                             <div class="wpsg-row">
                                                 <div class="col-2 wpsg-form-field" style="text-align: center;"><?php
                                                     if( $thumbnail_url!='' ){
@@ -92,17 +75,46 @@ class WPSG_Galleries {
                                                     }
                                                 ?></div>
                                                 <div class="col-10">
-                                                    <div class="wpsg-row"><?php
-                                                        echo esc_html( $album['description'] );
+                                                    <div class="wpsg-row">
+                                                        <b><a href="<?php echo $act_fill; ?>"><?php echo esc_html($album['title']); ?></a></b>
+                                                    </div>
+                                                    <div class="wpsg-row">
+                                                        <div class="wpsg-form-field"><?php
+                                                        echo nl2br( esc_html( $album['description'] ) );
                                                     ?></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                     </div>
-                                    <div class="col-2">
-                                        <div class="wpsg-form-field">Created at:<br/><?php echo esc_html($album['created_at']); ?></div>
-                                        <div class="wpsg-form-field">Last Update:<br/><?php echo esc_html($album['updated_at']); ?></div>
+                                    <div class="col-4">
+                                        <table class="table" style="width: 100%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <div class="wpsg-row">
+                                                            <div class="col" style="text-align: left;">
+                                                                <a class="btn btn-action" href="<?php echo $act_fill; ?>" title="Isi Album"><i class="dashicons dashicons-images-alt2"></i> Contents</a>
+                                                            </div>
+                                                            <div class="col" style="text-align: right;">
+                                                                <a class="btn btn-action" href="<?php echo $act_edit; ?>" title="Edit Album"><i class="dashicons dashicons-edit"></i> Edit</a>
+                                                                <a class="btn btn-action btn-danger" href="<?php echo $act_delete; ?>" title="Hapus Album"><i class="dashicons dashicons-trash"></i> Delete</a>
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align: right;">Created at :</td>
+                                                    <td style="text-align: left;"><?php echo esc_html($album['created_at']); ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align: right;">Last Update :</td>
+                                                    <td style="text-align: left;"><?php echo esc_html($album['updated_at']); ?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div><?php
@@ -118,8 +130,8 @@ class WPSG_Galleries {
     }
     public function render_form() {
         $data = [];
-        if( isset( $_GET['id'] ) ){
-            $id   = $_GET['id'];
+        if( isset( $_GET['album_id'] ) ){
+            $id   = $_GET['album_id'];
             $data = (array) $this->service->get_album( $id );
         }
         $this->render_form__( $data );
@@ -141,7 +153,7 @@ class WPSG_Galleries {
 
                 $subtitle = 'New Data';
                 if( $id ){
-                    echo '<input type="hidden" name="id" value="' . esc_attr($id) . '">';
+                    echo '<input type="hidden" name="album_id" value="' . esc_attr($id) . '">';
                     $subtitle = 'Update Data';
                 }
 
@@ -168,7 +180,7 @@ class WPSG_Galleries {
                 </div>
             </div>
             <div class="wpsg-rows">
-                <p class="submit"><input type="submit" name="submit_album" id="submit" class="button button-primary" value="Simpan Album"></p>
+                <p class="submit"><input type="submit" name="submit_album" id="submit" class="button button-primary" value="Save Album"></p>
             </div>
 
         </form><?php
@@ -180,18 +192,18 @@ class WPSG_Galleries {
 
             // Ambil data dari form, bersihkan
             $data = [
-                'id'          => $_POST['id'] ?? null,
+                'id'          => $_POST['album_id'] ?? null,
                 'title'       => sanitize_text_field($_POST['title'] ?? ''),
                 'description' => sanitize_textarea_field($_POST['description'] ?? ''),
                 'updated_at'  => current_time('mysql')
             ];
-            if( !isset( $_POST['id'] ) ){
+            if( !isset( $_POST['album_id'] ) ){
                 $data ['created_at'] = current_time('mysql');
             }
 
             // Jika update, sertakan ID
-            if ( !empty($_POST['id']) ) {
-                $data['id'] = intval($_POST['id']);
+            if ( !empty($_POST['album_id']) ) {
+                $data['id'] = intval($_POST['album_id']);
             }
 
             // Panggil service untuk set album
@@ -218,7 +230,7 @@ class WPSG_Galleries {
         if ( isset($_POST['submit_album']) ) {
             // Tangkap data dari form
             $album_data = [
-                'id'          => $_POST['id'] ?? null,
+                'id'          => $_POST['album_id'] ?? null,
                 'site_id'     => wpsg_get_network_id(),
                 'title'       => sanitize_text_field($_POST['title']),
                 'description' => sanitize_textarea_field($_POST['description']),

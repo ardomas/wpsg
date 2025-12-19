@@ -230,6 +230,7 @@ class WPSG_AdminFrontend {
         $page   = $_GET['page']   ?? 'wpsg-admin';
         $view   = $_GET['view']   ?? 'dashboard';
         $tab    = $_GET['tab' ]   ?? '';
+        $action = 'list';
 
         $GLOBALS['wpsg_current_page'  ] = $page;
         $GLOBALS['wpsg_current_view'  ] = $view;
@@ -257,8 +258,11 @@ class WPSG_AdminFrontend {
 
                     if (!isset($sidebar_menu[$view])) {
 
-                        echo '<h2>404: View Not Found</h2>';
-                        // return;
+                        $sidebar_menu = WPSG_AdminData::get($view);
+                        if( $sidebar_menu['data'] ){
+                            $view_data = $sidebar_menu['data'];
+                            self::render_display( $view_data[$action] );
+                        }
                     } else {
 
                         $view_data = $sidebar_menu[$view];

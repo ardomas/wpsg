@@ -129,6 +129,11 @@ add_action('plugins_loaded', function(){
     do_action('wp_wpsg_galleries');
 });
 
+require_once WPSG_DIR . 'includes/ajax/class-wpsg-galleries-ajax.php';
+add_action('plugins_loaded', function(){
+    new WPSG_GalleriesAjax();
+});
+
 /*
 add_filter('template_include', function($template) {
     if (is_front_page()) {
@@ -186,3 +191,18 @@ if ( file_exists($frontend_loader) ) {
 
 // Load shortcode module
 require_once WPSG_DIR . 'modules/shortcodes/shortcodes-loader.php';
+
+add_action('wp_ajax_wpsg_add_gallery_item', function () {
+
+    $album_id = intval($_POST['album_id']);
+    $post_id  = intval($_POST['post_id']);
+
+    $service = new WPSG_GalleryService();
+    $service->save_item([
+        'album_id' => $album_id,
+        'post_id'  => $post_id,
+        'position' => 0
+    ]);
+
+    wp_send_json_success();
+});
