@@ -1,0 +1,22 @@
+{
+    "menu": {
+        "indicator":  {
+            "title": "Daftar Pantauan Perkembangan",
+            "icon" : "fas fa-chart-bar",
+            "path" : "frontend/settings/indicators",
+            "file" : "main.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "daily_activity": {
+            "title": "Daftar Aktivitas Harian Anak",
+            "icon" : "fas fa-calendar-day",
+            "path" : "frontend/settings/daily-activities",
+            "file" : "main.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        }
+    }
+}

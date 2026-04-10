@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../../.."
+		},
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../themes/wpsg-fse-starter"
+		}
+	],
+	"settings": {}
+}

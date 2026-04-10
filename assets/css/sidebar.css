@@ -15,8 +15,10 @@
 
     --wpsg-sidebar-icon: #a7aaad;
 
+    /*
     --wpsg-admin-accent-bg: #4681b9;
     --wpsg-admin-accent: #cbd633;
+    */
 
     --wpsg-sidebar-menu-bg: #1d2327;
     --wpsg-sidebar-menu: #c3c4c7;
@@ -26,6 +28,7 @@
     --wpsg-sidebar-menu-active: #d6e8f5;
     --wpsg-sidebar-menu-hover-active-bg: #3081c4;
     --wpsg-sidebar-menu-hover-active: #e8f4fd;
+
 }
 
 /* Container sidebar */
@@ -71,13 +74,13 @@
     overflow-y: auto;
 }
 
-.wpsg-menu {
+.wpsg-sidebar-menu {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.wpsg-menu li a {
+.wpsg-sidebar-menu li a {
     display: flex;
     position: relative;
     align-items: center;
@@ -89,40 +92,40 @@
     transition: 0.15s;
 }
 
-.wpsg-menu li a:hover {
+.wpsg-sidebar-menu li a:hover {
     background: var(--wpsg-sidebar-menu-hover-bg);
     color: var(--wpsg-sidebar-menu-hover);
 }
-.wpsg-menu li a:hover::before {
+.wpsg-sidebar-menu li a:hover::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;                              /* ketebalan garis */
+    width: 4px;
     height: 100%;
-    background: var(--wpsg-sidebar-menu-hover); /* warna biru WordPress */
+    background: var(--wpsg-sidebar-menu-hover);
 }
 
-.wpsg-menu li.active > a {
+.wpsg-sidebar-menu li.active > a {
     background: var(--wpsg-sidebar-menu-active-bg);
     color: var(--wpsg-sidebar-menu-active);
 }
 
-.wpsg-menu li.active > a:hover {
+.wpsg-sidebar-menu li.active > a:hover {
     background: var(--wpsg-sidebar-menu-hover-active-bg);
     color: var(--wpsg-sidebar-menu-hover-active);
 }
-.wpsg-menu li.active > a:hover::before {
+.wpsg-sidebar-menu li.active > a:hover::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;                  /* ketebalan garis biru */
+    width: 4px;
     height: 100%;
     background: var(--wpsg-sidebar-menu-hover-active);
 }
 
-.wpsg-menu li.disabled a {
+.wpsg-sidebar-menu li.disabled a {
     opacity: 0.4;
     pointer-events: none;
 }

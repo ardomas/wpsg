@@ -1,0 +1,106 @@
+:root {
+    /* Parameter Global agar konsisten */
+    --btn-wpsg-bg-s: 0%; 
+    --btn-wpsg-bg-l: 50%;
+    --btn-wpsg-bg-l-hover: 60%;   /* Lebih gelap untuk hover */
+    --btn-wpsg-bg-l-active: 40%;  /* Lebih gelap lagi untuk klik */
+
+    --sat-process: 0%;
+    --sat-cancel: 70%;
+    --sat-exit: 70%;
+
+    --lum-process: 0%;
+    --lum-cancel: 50%;
+    --lum-exit: 50%;
+
+    --btn-wpsg-text-h: 0;
+    --btn-wpsg-text-s: 0%;
+    --btn-wpsg-text-l: 100%;
+
+    /* Definisi Hue untuk masing-masing fungsi */
+    --hue-process: 150; /* Hijau */
+    --hue-cancel: 35;   /* Oranye/Kuning */
+    --hue-exit: 10;     /* Merah */
+}
+
+.btn.btn-process {
+    --h: var(--hue-process);
+    --bs-btn-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-hover));
+    --bs-btn-hover-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-hover));
+    --bs-btn-active-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-active));
+    --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
+}
+
+/* --- BUTTON CANCEL --- */
+.btn.btn-cancel {
+    --h: var(--hue-cancel);
+    --bs-btn-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l));
+    --bs-btn-border-color: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l-hover));
+    --bs-btn-active-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l-active));
+    --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
+}
+
+/* --- BUTTON EXIT --- */
+.btn.btn-exit {
+    --h: var(--hue-exit);
+    --bs-btn-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l));
+    --bs-btn-border-color: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l-hover));
+    --bs-btn-active-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l-active));
+    --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
+}
+
+.btn.btn-outline-process {
+    --h: var(--hue-process);
+    --bs-btn-color: hsl(var(--hue-process), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
+    --bs-btn-active-bg: hsl(var(--btn-wpsg-text-h), var(--sat-process), var(--btn-wpsg-bg-l-active));
+}
+
+[class^="btn-process"]:disabled, [class^="btn-cancel"]:disabled, [class^="btn-exit"]:disabled {
+    filter: grayscale(0.25);
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Gabungkan semua class tombol custom kamu di sini */
+.btn.btn-process, .btn.btn-cancel, .btn.btn-exit {
+    background-color: var(--bs-btn-bg) !important;
+    border-color: var(--bs-btn-border-color) !important;
+    color: var(--bs-btn-color) !important;
+}
+
+/* Mengatur perilaku saat Hover */
+
+.btn.btn-process:hover, .btn.btn-cancel:hover, .btn.btn-exit:hover {
+    background-color: var(--bs-btn-hover-bg) !important;
+    border-color: var(--bs-btn-hover-border-color, var(--bs-btn-hover-bg)) !important;
+    /* color: var(--bs-btn-hover-color, #fff) !important; */
+    /* color: var(--bs-btn-color) !important; */
+}
+
+
+/* Mengatur perilaku saat Active (Diklik) */
+.btn.btn-process:active, .btn.btn-cancel:active, .btn.btn-exit:active {
+    background-color: var(--bs-btn-active-bg) !important;
+    border-color: var(--bs-btn-active-border-color, var(--bs-btn-active-bg)) !important;
+}
+
+/* Khusus untuk Outline agar tidak tabrakan */
+.btn.btn-outline-process, .btn.btn-outline-cancel, .btn.btn-outline-exit {
+    background-color: transparent !important;
+    border-color: var(--bs-btn-bg) !important;
+    /* border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l)) !important; */
+    color: hsl(var(--h), var(--btn-wpsg-text-l), var(--btn-wpsg-text-l)) !important;
+}
+
+.btn.btn-outline-process:hover, .btn.btn-outline-cancel:hover, .btn.btn-outline-exit:hover {
+    background-color: var(--bs-btn-hover-bg) !important;
+    /* color: var(--bs-btn-color) !important; */
+}

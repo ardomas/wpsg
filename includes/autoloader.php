@@ -39,12 +39,20 @@ if ( ! class_exists( 'WPSG_Autoloader' ) ) {
 
                 // Tentukan folder tujuan berdasarkan suffix
                 $folder = '';
-                if (substr($short, -4) === 'Data') {
-                    $folder = 'includes/data/';
+
+                /*
+                if (substr($short, -14) === 'RESTController') {
+                    $folder = 'includes/rest/';
+                } else
+                */
+                if( substr($short, -11) === 'FormHandler' ){
+                    $folder = 'includes/handlers/';
                 } elseif (substr($short, -10) === 'Repository') {
                     $folder = 'includes/repositories/';
                 } elseif (substr($short, -7) === 'Service') {
                     $folder = 'includes/services/';
+                } elseif (substr($short, -4) === 'Data') {
+                    $folder = 'includes/data/';
                 } elseif (substr($short, -4) === 'Ajax') {
                     $folder = 'includes/ajax/';
                 } else {
@@ -84,6 +92,7 @@ if ( ! class_exists( 'WPSG_Autoloader' ) ) {
             // Replace namespace separators with directory separators
             $file = self::$base_dir . str_replace( '\\', '/', $relative_class ) . '.php';
 
+            // var_dump( '<p>' . $file . '</p>' );
             if ( file_exists( $file ) ) {
                 require_once $file;
             }

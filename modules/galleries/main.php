@@ -40,7 +40,7 @@ class WPSG_Galleries {
 
     public function render_page() {
 
-        $site_id   = wpsg_get_network_id();
+        $site_id   = get_current_network_id();
         $profiles  = wpsg_get_profile_data();
         $site_data = $profiles['profile_identity'];
         $albums = $this->service->get_album_list(['site_id'=>$site_id,'limit'=>50]); // ambil 50 album terakhir
@@ -95,11 +95,11 @@ class WPSG_Galleries {
                                                     <td colspan="2">
                                                         <div class="wpsg-row">
                                                             <div class="col" style="text-align: left;">
-                                                                <a class="btn btn-action" href="<?php echo $act_fill; ?>" title="Isi Album"><i class="dashicons dashicons-images-alt2"></i> Contents</a>
+                                                                <a class="btn btn-action" href="<?php echo $act_fill; ?>" title="Isi Album"><i class="fa-solid fa-photo-film"></i> Contents</a>
                                                             </div>
                                                             <div class="col" style="text-align: right;">
-                                                                <a class="btn btn-action" href="<?php echo $act_edit; ?>" title="Edit Album"><i class="dashicons dashicons-edit"></i> Edit</a>
-                                                                <a class="btn btn-action btn-danger" href="<?php echo $act_delete; ?>" title="Hapus Album"><i class="dashicons dashicons-trash"></i> Delete</a>
+                                                                <a class="btn btn-action" href="<?php echo $act_edit; ?>" title="Edit Album"><i class="fa-solid fa-pencil"></i> Edit</a>
+                                                                <a class="btn btn-action btn-danger" href="<?php echo $act_delete; ?>" title="Hapus Album"><i class="fa-regular fa-trash-can"></i> Delete</a>
                                                             </div>
                                                         </div>
 
@@ -120,7 +120,7 @@ class WPSG_Galleries {
                             </div><?php
                         }
                     } else {
-                        ?><div class="row">GAK ADA DATA</div><?php
+                        ?><div class="row">Album tidak ditemukan</div><?php
                     }
                     ?></div>
                 </div>
@@ -231,7 +231,7 @@ class WPSG_Galleries {
             // Tangkap data dari form
             $album_data = [
                 'id'          => $_POST['album_id'] ?? null,
-                'site_id'     => wpsg_get_network_id(),
+                'site_id'     => get_current_network_id(),
                 'title'       => sanitize_text_field($_POST['title']),
                 'description' => sanitize_textarea_field($_POST['description']),
                 'created_at'  => current_time('mysql'),
@@ -239,7 +239,7 @@ class WPSG_Galleries {
             ];
 
             // Simpan melalui service
-            $saved_id = $this->service->set($album_data);
+            $saved_id = $this->service->set_album($album_data);
 
             if ($saved_id) {
                 echo '<div class="notice notice-success"><p>Album berhasil disimpan. ID: ' . esc_html($saved_id) . '</p></div>';

@@ -2,7 +2,13 @@
    CORE LAYOUT – Struktur global WP Admin + WPSG
    ============================================================ */
 :root {
+
+    --border-color: rgba(0,0,0,0.25);
     --table-border: rgba(0,0,0,0.25);
+
+    /* wpsg-boxed */
+    --wpsg--boxed--border--color: rgba(0,0,0,0.25);
+
     /* dashicons */
     --dashicons-plus : "\f542";
     --dashicons-minus: "\f460";
@@ -18,7 +24,13 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
              Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
              "Helvetica Neue", sans-serif;
-    background: #f0f0f1;
+    /* background: #f0f0f1; */
+    background-color: var(--body--background--color);
+    color: var(--body--text--color);
+}
+
+a {
+    text-decoration: none;
 }
 
 th div::before, td div::before {
@@ -54,7 +66,7 @@ table.bordered td, table.bordered th {
     border-width: 1px; border-style: solid; border-color: var(--table-border);
 }
 
-table.hover tr:hover td { background-color: rgba(248,248,168,0.35); }
+table.hover tr:hover td { background-color: rgba( var(--bs-primary-rgb), 0.125 ); }
 
 table.striped tr:nth-child(odd) td { background-color: rgba(255,255,255,0.25); }
 table.striped tr:nth-child(even) td { background-color: rgba(0,0,0,0.025); }
@@ -203,7 +215,7 @@ a.btn {
     font-size: 24px;
     font-weight: 600;
     margin: 0 0 20px 0;
-    color: #1d2327;
+    /* color: #1d2327; */
 }
 
 /* Flex container untuk cards */
@@ -247,11 +259,11 @@ a.btn {
     margin: 0 0 10px;
     font-weight: 600;
     text-align: center;
-    background-color: #d3e4f0;
-    color: #1d2327;
+    /* background-color: #d3e4f0; */
+    /* color: #1d2327; */
 }
 .wpsg-card:hover h1, .wpsg-card:hover h2, .wpsg-card:hover h3, .wpsg-card:hover h4 {
-    background-color: #b0d4ea;
+    /* background-color: #b0d4ea; */
     transition: 0.2s ease-in-out;
 }
 
@@ -265,7 +277,7 @@ a.btn {
     text-align: left;
     margin: 0;
     font-size: 0.85rem;
-    color: #5a5f63;
+    /* color: #5a5f63; */
 }
 
 a .wpsg-card { margin: 0; padding: 0; }
@@ -320,8 +332,8 @@ a.wpsg-card-link {
 }
 
 .wpsg-boxed {
-    background: #fff;
-    border: 1px solid #d1d1d1;
+    /* background: #fff; */
+    border: 1px solid var(--wpsg--boxed--border--color);
     padding: 20px;
     box-sizing: border-box;
 }
@@ -373,4 +385,102 @@ a.wpsg-card-link {
     position: absolute;
     top: 4px;
     right: 4px;
+}
+
+.wpsg-border {
+    border-color: var(--border-color);
+    border-style: solid;
+    border-width: 1px;
+}
+
+.wpsg-gap-h-1 * { margin-left: 0.325em; padding-left: 0.325em; padding-right: 0.325em; }
+.wpsg-gap-h-2 * { margin-left: 0.750em; padding-left: 0.325em; padding-right: 0.325em; }
+.wpsg-gap-h-3 * { margin-left: 1.125em; padding-left: 0.325em; padding-right: 0.325em; }
+    .wpsg-gap-h-1 *:first-child, 
+    .wpsg-gap-h-2 *:first-child,
+    .wpsg-gap-h-3 *:first-child { margin-left: 0; }
+
+/*    
+.wpsg-menu {
+    position: absolute;
+    left: 0;
+    top: -1.125em;
+    width: 100%;
+    line-height: 2.25em;
+    margin-bottom: 1em;
+}
+
+.wpsg-menu-item {
+    text-decoration: none;
+    margin: 0px;
+    padding: 5px 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    transition-timing-function: ease-in-out;
+    transition-delay: 5s;
+}
+*/
+
+/*
+.wpsg-menu-primary {
+    color: #fff;
+    background-color: rgba(var(--bs-primary-rgb),0.9); 
+    border-color: var(--bs-primary-border); 
+}
+.wpsg-menu-active, .wpsg-menu-primary:hover { 
+    color: #fff;
+    background-color: rgba(var(--bs-primary-rgb),1); 
+}
+.wpsg-menu-primary-outline {
+    color: var(--bs-primary);
+    background: linear-gradient(to bottom, rgba(var(--bs-primary-rgb),0.0625) 0%, transparent 25%);
+    border-color: transparent; 
+}
+.wpsg-menu-primary-outline:hover {
+    background: linear-gradient(to bottom, rgba(var(--bs-primary-rgb),0.0625) 0%, rgba(var(--bs-primary-rgb),0.125) 100%);
+    border-color: rgba(var(--bs-primary-rgb),0.25);
+}
+
+.wpsg-menu-danger {
+    color: #fff;
+    background-color: rgba(var(--bs-danger-rgb),0.9); 
+    border-color: var(--bs-danger-border); 
+}
+.wpsg-menu-danger:hover { 
+    color: #fff;
+    background-color: rgba(var(--bs-danger-rgb),1); 
+}
+.wpsg-menu-danger-outline {
+    color: var(--bs-danger);
+    background: linear-gradient(to bottom, rgba(var(--bs-danger-rgb),0.0625) 0%, transparent 25%);
+    border-color: transparent; 
+}
+.wpsg-menu-danger-outline:hover {
+    background: linear-gradient(to bottom, rgba(var(--bs-danger-rgb),0.0625) 0%, rgba(var(--bs-danger-rgb),0.125) 100%);
+    border-color: rgba(var(--bs-primary-rgb),0.25);
+}
+*/
+
+.wpsg-content {
+    padding: 50px 0px 20px;
+    /* background-color: var(--body--background--color); */
+    color: var(--body--text--color);
+}
+
+table.table.wpsg-table-app thead tr {
+    background-color: rgba(var(--bs-primary-rgb),0.125);
+}
+table.table.wpsg-table-app tbody tr:hover td {
+    cursor: pointer;
+    background-color: rgba(var(--bs-warning-rgb),0.0625);
+    /* background-color: yellow; */
+}
+
+table.table.wpsg-table-app tr:nth-child(odd ) td { background-color: rgba(0,0,0,0.025); }
+table.table.wpsg-table-app tr:nth-child(even) td { background-color: rgba(255,255,255,0.25); }
+
+table.table.wpsg-table-app tbody tr.wpsg-row-blank-data td {
+    cursor: not-allowed;
+    background-color: rgba( var(--bs-warning), 1 );
 }

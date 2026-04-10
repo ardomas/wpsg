@@ -16,7 +16,7 @@ class WPSG_GalleriesService {
     public function set_album($data) {
         // Bisa tambah validasi atau manipulasi data
         if( !isset( $data['site_id'] ) ){
-            $data['site_id'] = wpsg_get_network_id();
+            $data['site_id'] = get_current_network_id();
         }
         if (empty($data['title'])) {
             return new WP_Error('empty_title', 'Title album tidak boleh kosong.');
@@ -43,13 +43,13 @@ class WPSG_GalleriesService {
      * ITEMS
      * --------------------------------------------- */
 
-    public function set_item($data) {
+    public function save_item($data) {
         // Bisa tambah validasi post_id misal
         if (empty($data['post_id'])) {
             return new WP_Error('empty_post', 'Post ID item tidak boleh kosong.');
         }
 
-        return $this->repo->set_item($data);
+        return $this->repo->save_item($data);
     }
 
     public function delete_item($id) {

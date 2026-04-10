@@ -4,7 +4,7 @@
         "data": {
             "wp-admin": {
                 "title": "WP Admin",
-                "icon": "dashicons-wordpress",
+                "icon": "fa-brands fa-wordpress fa-fw fa-lg",
                 "path": null,
                 "class": null,
                 "description": "Back to WP-Admin",
@@ -14,7 +14,7 @@
             },
             "dashboard": {
                 "title": "Dashboard",
-                "icon": "dashicons-layout",
+                "icon": "fa-solid fa-house-laptop fa-fw fa-lg",
                 "path": "modules/dashboard.php",
                 "class": "WPSG_Dashboard",
                 "method": "render",
@@ -25,7 +25,7 @@
             },
             "profile": {
                 "title": "Profile",
-                "icon": "dashicons-index-card",
+                "icon": "fa-solid fa-id-card fa-fw fa-lg",
                 "path": "modules/profile.php",
                 "class": "WPSG_Profile",
                 "method": "render",
@@ -36,9 +36,42 @@
                 "site": "all",
                 "view": true
             },
+            "programs": {
+                "title": "Programs",
+                "icon": "fa-solid fa-book-open fa-fw fa-lg",
+                "path": "modules/programs.php",
+                "class": "WPSG_Programs",
+                "method": "render",
+                "description": "Manage all programs",
+                "dashboard": true,
+                "site": "all",
+                "view": true
+            },
+            "activities": {
+                "title": "Activities",
+                "icon": "fa-solid fa-puzzle-piece fa-fw fa-lg",
+                "path": "modules/activities.php",
+                "class": "WPSG_Activities",
+                "method": "render",
+                "description": "Manage all activities",
+                "dashboard": true,
+                "site": "all",
+                "view": true
+            },
+            "services": {
+                "title": "Services",
+                "icon": "fa-regular fa-handshake fa-fw fa-lg",
+                "path": "modules/services.php",
+                "class": "WPSG_Services",
+                "method": "render",
+                "description": "Manage all services",
+                "dashboard": true,
+                "site": "all",
+                "view": true
+            },
             "articles": {
                 "title": "Articles",
-                "icon": "dashicons-welcome-write-blog",
+                "icon": "fa-solid fa-file-word fa-fw fa-lg",
                 "path": "modules/articles.php",
                 "class": "WPSG_Articles",
                 "method": "render",
@@ -49,7 +82,7 @@
             },
             "announcements": {
                 "title": "Announcements",
-                "icon": "dashicons-megaphone",
+                "icon": "fa-solid fa-bullhorn fa-fw fa-lg",
                 "path": "modules/announcements.php",
                 "class": "WPSG_AnnouncementsList",
                 "method": "render_list",
@@ -60,7 +93,7 @@
             },
             "galleries": {
                 "title": "Galleries",
-                "icon": "dashicons-format-gallery",
+                "icon": "fa-solid fa-photo-film fa-fw fa-lg",
                 "path": "modules/galleries/main.php",
                 "class": "WPSG_Galleries",
                 "method": "render_page",
@@ -71,7 +104,7 @@
             },
             "memberships": {
                 "title": "Membership",
-                "icon": "dashicons-groups",
+                "icon": "fa-solid fa-users-between-lines fa-fw fa-lg",
                 "path": "modules/memberships.php",
                 "class": "WPSG_Memberships",
                 "method": "render_list",
@@ -80,9 +113,20 @@
                 "site": "main",
                 "view": true
             },
+            "users": {
+                "title": "User App",
+                "icon": "fa-solid fa-user-graduate fa-fw fa-lg",
+                "path": "modules/users.php",
+                "class": "WPSG_Users",
+                "method": "render",
+                "description": "Manage all users of front end apps",
+                "dashboard": true,
+                "site": "site",
+                "view": true
+            },
             "settings": {
                 "title": "Settings",
-                "icon": "dashicons-admin-generic",
+                "icon": "fa-solid fa-gear fa-fw fa-lg",
                 "path": "modules/settings.php",
                 "submenu": "settings",
                 "default": "general",
@@ -101,7 +145,7 @@
         "data": {
             "identity": {
                 "title": "Identity",
-                "icon": "dashicons-index-card",
+                "icon": "fa-solid fa-id-card fa-fw fa-lg",
                 "path": "modules/profile/identity.php",
                 "class": "WPSG_ProfileIdentity",
                 "method": "render",
@@ -111,7 +155,7 @@
             },
             "address": {
                 "title": "Address",
-                "icon": "dashicons-location-alt",
+                "icon": "fa-solid fa-location-dot fa-fw fa-lg",
                 "path": "modules/profile/address.php",
                 "class": "WPSG_ProfileAddress",
                 "method": "render",
@@ -121,7 +165,7 @@
             },
             "contact": {
                 "title": "Contact",
-                "icon": "dashicons-email",
+                "icon": "fa-solid fa-envelope fa-fw fa-lg",
                 "path": "modules/profile/contact.php",
                 "class": "WPSG_ProfileContact",
                 "method": "render",
@@ -131,7 +175,7 @@
             },
             "social": {
                 "title": "Social",
-                "icon": "dashicons-share",
+                "icon": "fa-solid fa-share-nodes fa-fw fa-lg",
                 "path": "modules/profile/social.php",
                 "class": "WPSG_ProfileSocial",
                 "method": "render",
@@ -141,7 +185,7 @@
             },
             "values": {
                 "title": "Values",
-                "icon": "dashicons-heart",
+                "icon": "fa-solid fa-bullseye fa-fw fa-lg",
                 "path": "modules/profile/values.php",
                 "class": "WPSG_ProfileValues",
                 "method": "render",
@@ -151,7 +195,7 @@
             },
             "branding": {
                 "title": "Branding",
-                "icon": "dashicons-art",
+                "icon": "fs-solid fa-ranking-star fa-fw fa-lg",
                 "path": "modules/profile/branding.php",
                 "class": "WPSG_ProfileBranding",
                 "method": "render",
@@ -161,7 +205,7 @@
             },
             "preferences": {
                 "title": "Preferences",
-                "icon": "dashicons-admin-generic",
+                "icon": "fa-solid fa-asterisk fa-fw fa-lg",
                 "path": "modules/profile/preferences.php",
                 "class": "WPSG_ProfilePreferences",
                 "method": "render",
@@ -214,6 +258,82 @@
                 "class": "WPSG_Memberships",
                 "method": "handle_delete_membership",
                 "default": true
+            }
+        }
+    },
+
+    "programs": {
+        "type": "action",
+        "data": {
+            "list": {
+                "page": "wpsg-admin",
+                "view": "programs",
+                "path": "modules/programs.php",
+                "class": "WPSG_Programs",
+                "method": "render",
+                "default": true
+            },
+            "add": {
+                "page": "wpsg-admin",
+                "view": "programs",
+                "path": "modules/programs.php",
+                "class": "WPSG_Programs",
+                "method": "render",
+                "default": false
+            },
+            "edit": {
+                "page": "wpsg-admin",
+                "view": "programs",
+                "path": "modules/programs.php",
+                "class": "WPSG_Programs",
+                "method": "render",
+                "default": false
+            },
+            "save": {
+                "page": "wpsg-admin",
+                "view": "programs",
+                "path": "modules/programs.php",
+                "class": "WPSG_Programs",
+                "method": "wpsg_handle_save_program",
+                "default": false
+            }
+        }
+    },
+
+    "activities": {
+        "type": "action",
+        "data": {
+            "list": {
+                "page": "wpsg-admin",
+                "view": "activities",
+                "path": "modules/activities.php",
+                "class": "WPSG_Activities",
+                "method": "render",
+                "default": true
+            },
+            "add": {
+                "page": "wpsg-admin",
+                "view": "activities",
+                "path": "modules/activities.php",
+                "class": "WPSG_Activities",
+                "method": "render",
+                "default": false
+            },
+            "edit": {
+                "page": "wpsg-admin",
+                "view": "activities",
+                "path": "modules/activities.php",
+                "class": "WPSG_Activities",
+                "method": "render",
+                "default": false
+            },
+            "save": {
+                "page": "wpsg-admin",
+                "view": "activities",
+                "path": "modules/activities.php",
+                "class": "WPSG_Activities",
+                "method": "wpsg_handle_save_activity",
+                "default": false
             }
         }
     },
@@ -345,7 +465,7 @@
         "data": {
             "general": {
                 "title": "General",
-                "icon": "dashicons-admin-settings",
+                "icon": "fa-solid fa-sliders-h fa-fw fa-lg",
                 "path": "modules/settings/general.php",
                 "class": "WPSG_SettingsGeneral",
                 "method": "render",
@@ -355,7 +475,7 @@
             },
             "platform-private": {
                 "title": "Private Media Platforms",
-                "icon": "dashicons-shield",
+                "icon": "fa-solid fa-people-arrows fa-fw fa-lg",
                 "path": "modules/settings/platform-private.php",
                 "class": "WPSG_SettingsPlatformPrivate",
                 "method": "render",
@@ -365,7 +485,7 @@
             },
             "platform-public": {
                 "title": "Public Media Platforms",
-                "icon": "dashicons-admin-site",
+                "icon": "fa-solid fa-icons fa-fw fa-lg",
                 "path": "modules/settings/platform-public.php",
                 "class": "WPSG_SettingsPlatformPublic",
                 "method": "render",
@@ -375,7 +495,7 @@
             },
             "business-type": {
                 "title": "Business Types",
-                "icon": "dashicons-businessman",
+                "icon": "fa-solid fa-tags fa-fw fa-lg",
                 "path": "modules/settings/business-types.php",
                 "class": "WPSG_SettingsBusinessTypes",
                 "method": "render",

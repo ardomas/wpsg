@@ -40,13 +40,13 @@ class WPSG_PostsData {
             post_type VARCHAR(50) NOT NULL DEFAULT 'post',
             title VARCHAR(255) NOT NULL,
             status ENUM('draft','published','archived') NOT NULL DEFAULT 'draft',
+            order_number INT(11) NOT NULL DEFAULT 1,
             author_id INT(11) NOT NULL,
-
             published_at DATETIME NULL,
-
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            PRIMARY KEY (id)
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_site_id (site_id)
         ) $charset_collate;";
         $this->wpdb->query($sql_posts);
 
@@ -56,9 +56,11 @@ class WPSG_PostsData {
             post_id INT(11) NOT NULL,
             meta_key VARCHAR(255) NOT NULL,
             meta_value LONGTEXT,
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            PRIMARY KEY (id)
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_post_id (post_id),
+            KEY idx_post_meta (post_id, meta_key)
         ) $charset_collate;";
         $this->wpdb->query($sql_postmeta);
 
@@ -70,9 +72,13 @@ class WPSG_PostsData {
             author_id INT(11) NOT NULL,
             content TEXT NOT NULL,
             status ENUM('pending','approved','spam') NOT NULL DEFAULT 'pending',
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            PRIMARY KEY (id)
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_post_id (post_id),
+            KEY idx_post_parent_id (post_id,parent_id),
+            KEY idx_author_id (author_id),
+            KEY idx_status (status)
         ) $charset_collate;";
 
         $this->wpdb->query($sql_comments);
@@ -87,8 +93,8 @@ class WPSG_PostsData {
             'post_type'     => 'post',
             'title'         => '',
             'status'        => 'draft',
-            'site_id'       => get_current_blog_id(),
-            'author_id'     => get_current_user_id(),
+            'site_id'       => get_current_network_id(),
+            'author_id'     => get_current_network_id(),
             'published_at'  => current_time('mysql'),
             'created_at'    => current_time('mysql'),
             'updated_at'    => current_time('mysql'),
@@ -138,7 +144,7 @@ class WPSG_PostsData {
         ];
         $args = wp_parse_args($args, $defaults);
 
-        $current_site = wpsg_get_network_id();
+        $current_site = get_current_network_id();
         $main_site_id = 1;
 
         // Tentukan site filter
@@ -161,8 +167,17 @@ class WPSG_PostsData {
         $sql = "SELECT * FROM {$this->table_posts}
             WHERE {$site_sql}
             AND post_type = %s
-            AND status = %s
-            ORDER BY published_at DESC";
+            AND status = %s";
+
+        $orderBy = " ORDER BY published_at DESC";
+
+        if( isset( $args['order'] ) ){
+            if( $args['order']!= null && trim( $args['order'] )!='' ) {
+                $orderBy = " ORDER BY " . esc_sql( $args['order'] );
+            }
+        }
+
+        $sql .= $orderBy;
 
         // Limit query jika diperlukan
         $limit_sql = "";
@@ -180,7 +195,7 @@ class WPSG_PostsData {
     public function get_posts($args = []) {
         $defaults = [
             'post_type' => 'post',
-            'site_id'   => get_current_blog_id(),
+            'site_id'   => get_current_network_id(),
         ];
         $args = wp_parse_args($args, $defaults);
 

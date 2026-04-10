@@ -1,0 +1,85 @@
+{
+
+    "roles": [ "owner", "administrator", "staff", "teacher", "guardian", "child" ],
+    "genders": { "": "-unset-", "M": "Laki-laki", "F": "Perempuan" },
+    "status" : [ "active", "inactive" ],
+
+    "menu": {
+        "children"  : {
+            "title": "Daftar Anak", 
+            "icon" : "fas fa-children", 
+            "path" : "frontend/children",
+            "show" : true,
+            "pos"  : "left",
+            "group": "main",
+            "role" : ["administrator","teacher","staff","guardian","children"]
+        },
+        "schedules"  : {
+            "title": "Jadwal",
+            "icon" : "fas fa-calendar-alt",
+            "path" : "frontend/schedules",
+            "show" : true,
+            "pos"  : "left",
+            "group": "main",
+            "role" : ["administrator","teacher","staff","guardian","children"]
+        },
+        "activities" : {
+            "title": "Catatan Aktivitas",
+            "icon" : "fas fa-pen-to-square", 
+            "path" : "frontend/activities", 
+            "show" : true,
+            "pos"  : "left",
+            "group": "main", 
+            "role" : ["administrator","teacher","staff"]
+        },
+        "reports" : {
+            "title": "Laporan",
+            "icon" : "fas fa-file-circle-check",
+            "path" : "frontend/reports",
+            "show" : false,
+            "pos"  : "left",
+            "group": "main",
+            "role" : ["administrator","teacher","staff","guardian","children"]
+        },
+        "settings": {
+            "title": "Settings",
+            "icon" : "fas fa-gears",
+            "path" : "frontend/settings",
+            "show" : true,
+            "pos"  : "left",
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "users" : {
+            "title": "Users",
+            "icon" : "fas fa-user-friends", 
+            "path" : "frontend/users", 
+            "show" : true,
+            "pos"  : "left",
+            "group": "administrator", 
+            "role" : ["administrator","staff"]
+        }
+    },
+
+    "menu-settings": {
+        "indicator":  {
+            "title": "Indikator",
+            "icon" : "fas fa-chart-bar",
+            "path" : "frontend/settings/indicators",
+            "show" : true,
+            "file" : "main.php",
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "daily_activity": {
+            "title": "Daftar Aktivitas Harian",
+            "icon" : "fas fa-calendar-day",
+            "path" : "frontend/settings/daily-activities",
+            "show" : true,
+            "file" : "main.php",
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        }
+    }
+
+}

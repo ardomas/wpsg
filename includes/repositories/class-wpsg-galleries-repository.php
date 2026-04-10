@@ -58,7 +58,7 @@ class WPSG_GalleriesRepository {
     /**
      * Set item: insert jika $id null, update jika $id ada
      */
-    public function set_item($data) {
+    public function save_item($data) {
         $id = null;
         if( isset( $data['id'] ) ){
             if( !empty( $data['id'] ) && !is_null( $data['id'] ) && $data['id']!='0' ){

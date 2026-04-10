@@ -201,9 +201,9 @@ class WPSG_SettingsData {
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             option_key VARCHAR(191) NOT NULL,
             option_value LONGTEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            deleted_at DATETIME NULL DEFAULT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP NULL DEFAULT NULL,
             PRIMARY KEY (id),
             UNIQUE KEY option_key_unique (option_key)
         ) $charset_collate;"];

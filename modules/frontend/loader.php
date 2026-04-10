@@ -16,6 +16,7 @@ class WPSG_Frontend {
      * Initialize module
      */
     public static function init() {
+
         // shortcodes & actions
         add_action('init', [__CLASS__, 'register_shortcodes']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
@@ -28,13 +29,15 @@ class WPSG_Frontend {
                 add_filter('the_content', [__CLASS__, 'render_frontpage_content'], 20);
             }
         });
+
     }
 
     /**
      * Register shortcodes
      */
     public static function register_shortcodes() {
-        add_shortcode('wpsg_home', [__CLASS__, 'shortcode_home']);
+        // add_shortcode('wpsg_home', [__CLASS__, 'shortcode_home']);
+        add_shortcode('wpsg_app' , [__CLASS__, 'shortcode_app' ]);
     }
 
     /**
@@ -49,6 +52,14 @@ class WPSG_Frontend {
         return ob_get_clean();
     }
 
+    public static function shortcode_app($atts=[], $content = null){
+        $atts = shortcode_atts([], $atts, 'wpsg_home');
+        ob_start();
+        self::render_content_partial();
+        return ob_get_clean();
+
+    }
+
     /**
      * Render content partial and return it for the_content filter
      */
@@ -61,10 +72,10 @@ class WPSG_Frontend {
     }
 
     /**
-     * Include content partial (front-page-content.php)
+     * Include content partial (main.php)
      */
     public static function render_content_partial() {
-        $file = WPSG_DIR . 'modules/frontend/front-page-content.php';
+        $file = WPSG_DIR . 'modules/frontend/main.php';
         if (file_exists($file)) {
             // provide $data to the partial
             $data = self::get_frontpage_data();

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpsg/program-form",
+  "title": "WPSG Program Form",
+  "category": "widgets",
+  "icon": "forms",
+  "description": "Form input Program (WPSG internal).",
+  "supports": {
+    "html": false,
+    "inserter": false,
+    "reusable": false
+  },
+  "editorScript": "file:../index.js",
+  "render": "file:../render-form.php"
+}

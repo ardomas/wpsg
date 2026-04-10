@@ -1,0 +1,31 @@
+{
+    "menu": {
+        "indicator": {
+            "title": "Indikator Perkembangan",
+            "icon" : "fas fa-chart-bar",
+            "path" : "frontend/settings/indicators",
+            "file" : "indicators.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "indicator_domain": {
+            "title": "Domain Perkembangan",
+            "icon" : "fas fa-sitemap",
+            "path" : "frontend/settings/indicators",
+            "file" : "categories.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "indicator_attribute": {
+            "title": "Atribut Indikator",
+            "icon" : "fas fa-th-large",
+            "path" : "frontend/settings/indicators",
+            "file" : "attributes.php",
+            "show" : false,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        }
+    }
+}

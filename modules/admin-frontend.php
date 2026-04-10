@@ -98,14 +98,7 @@ class WPSG_AdminFrontend {
                 <span class="version">v<?php echo WPSG_VERSION; ?></span>
             </div>
 
-            <ul class="wpsg-menu">
-
-                <li class="<?php echo $current_page === '' ? 'active' : ''; ?>">
-                    <a href="<?php echo site_url('/'); ?>">
-                        <span class="dashicons dashicons-admin-home"></span>
-                        Back to Home
-                    </a>
-                </li>
+            <ul class="wpsg-sidebar-menu">
 
                 <?php
                 foreach ($sidebar_main as $key => $item_menu) {
@@ -120,7 +113,7 @@ class WPSG_AdminFrontend {
                         ?>
                         <li class="<?php echo ($current_view === $key) ? 'active' : ''; ?>">
                             <a href="<?php echo $link; ?>">
-                                <span class="dashicons <?php echo esc_attr($item_menu['icon']); ?>"></span>
+                                <span class="<?php echo esc_attr($item_menu['icon']); ?>"></span>
                                 <?php echo esc_html($item_menu['title']); ?>
                             </a>
                         </li>
@@ -135,7 +128,7 @@ class WPSG_AdminFrontend {
                 <!-- Placeholder menu lain -->
                 <li class="disabled">
                     <a href="#">
-                        <span class="dashicons dashicons-ellipsis"></span>
+                        <span class="fa-solid fa-ellipsis"></span>
                         More Modules Coming...
                     </a>
                 </li>
@@ -160,8 +153,16 @@ class WPSG_AdminFrontend {
             require_once $file;
 
             if (class_exists($class)) {
+                if( method_exists( $class, 'instance' ) || method_exists( $class, 'get_instance' ) ) {
+                    if( method_exists( $class, 'instance' ) ) {
+                        $module = $class::instance();
+                    } else {
+                        $module = $class::get_instance();
+                    }
+                } else {
+                    $module = new $class();
+                }
 
-                $module = new $class();
                 $module->$method();
 
             } else {
@@ -224,7 +225,7 @@ class WPSG_AdminFrontend {
      */
     public function load_admin_page() {
 
-        $view_with_actions = ['announcements', 'galleries', 'memberships'];
+        $view_with_actions = ['announcements', 'galleries', 'memberships','programs', 'activities'];
         $is_action = false;
 
         $page   = $_GET['page']   ?? 'wpsg-admin';

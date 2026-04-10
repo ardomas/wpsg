@@ -44,11 +44,12 @@ class WPSG_ProfilesData {
                 site_id BIGINT UNSIGNED NOT NULL,
                 data_key VARCHAR(191) NOT NULL,
                 data_value LONGTEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                deleted_at DATETIME NULL DEFAULT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP NULL DEFAULT NULL,
                 PRIMARY KEY (id),
-                UNIQUE KEY site_key_unique (site_id, data_key)
+                UNIQUE KEY site_key_unique (site_id, data_key),
+                KEY idx_site_key (site_id, deleted_at)
             ) $charset_collate;"
         ];
 
@@ -122,7 +123,7 @@ class WPSG_ProfilesData {
         $result = [];
 
         if ($site_id === null) {
-            $site_id = wpsg_get_network_id();
+            $site_id = get_current_network_id();
         }
         $rows = $wpdb->get_results(
             $wpdb->prepare(
@@ -149,7 +150,7 @@ class WPSG_ProfilesData {
         global $wpdb;
 
         if ($site_id === null) {
-            $site_id = wpsg_get_network_id();
+            $site_id = get_current_network_id();
         }
 
         if ($site_id === "*") {
@@ -188,7 +189,7 @@ class WPSG_ProfilesData {
         global $wpdb;
 
         if ($site_id === null) {
-            $site_id = wpsg_get_network_id();
+            $site_id = get_current_network_id();
         }
 
         $value = maybe_serialize($value);

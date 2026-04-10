@@ -7,7 +7,7 @@ class WPSG_Gallery_Shortcode {
     protected $service;
 
     public function __construct() {
-        $this->service = new WPSG_GalleryService();
+        $this->service = new WPSG_GalleriesService();
         add_shortcode('wpsg_gallery', [$this, 'render']);
         add_filter('query_vars', [$this, 'register_query_var']);
     }
@@ -29,7 +29,7 @@ class WPSG_Gallery_Shortcode {
 
     protected function render_album_list() {
 
-        $albums = $this->service->get_all_albums();
+        $albums = $this->service->get_album_list();
 
         if (empty($albums)) {
             return '<p>Belum ada gallery.</p>';

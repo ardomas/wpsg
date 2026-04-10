@@ -64,9 +64,37 @@ class WPSG_AdminData {
             if (!isset($item['view'])) $item['view'] = true;
             if (!isset($item['site'])) $item['site'] = 'main';
 
+            if ( ($item['dashboard']) || $item['view'] ) {
+                if( is_admin() ){
+                    switch( $item['site'] ){
+                        case 'main':
+                            // Hanya tampil di main site
+                            if ( is_multisite() && is_admin() && is_main_network() ) {
+                                // continue 2;
+                                $clean_data[$key] = $item;
+                            }
+                            break;
+                        case 'site':
+                            // Hanya tampil di sub site
+                            if ( is_multisite() && is_admin() && !is_main_network() ) {
+                                // continue 2;
+                                $clean_data[$key] = $item;
+                            }
+                            break;
+                        case 'all':
+                        default:
+                            $clean_data[$key] = $item;
+                            break;
+                    }
+                }
+            }
+            /*
+            */
+            /*
             if (($item['dashboard'] || $item['view']) && ($item['site'] === 'all' || ( is_main_network() && is_admin() ) )) {
                 $clean_data[$key] = $item;
             }
+            */
 
         }
 

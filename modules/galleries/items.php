@@ -65,7 +65,8 @@ class WPSG_GalleryItems {
                 $this->render_form();
                 break;
             case "delete":
-                $this->delete_item();
+                $this->service->delete_item($this->item_id); 
+                $this->render_reload($this->album_id);
                 break;
             default:
                 echo $this->render_list();
@@ -110,7 +111,7 @@ class WPSG_GalleryItems {
         };
 
         // 🔹 Service yang bekerja
-        if( $this->service->set_item($data) ){
+        if( $this->service->save_item($data) ){
             $url_back = admin_url( "admin.php?page={$this->page}&view={$this->view}&action=list&album_id={$album_id}" );
             // 🔁 Redirect agar tidak double submit
             ?><div class='notice notice-error'>
@@ -239,12 +240,12 @@ class WPSG_GalleryItems {
                         <div class="wpsg-action">
                             <div class="wpsg-row">
                                 <a class="btn btn-action change wpsg-edit-item" href="<?php echo $url_edit; ?>" title="Edit Data">
-                                    <i class="dashicons dashicons-edit"></i> Edit
+                                    <i class="fa-solid fa-pencil"></i> Edit
                                 </a>
                                 <a class="btn btn-action delete wpsg-delete-item" href="#" title="Delete Data"
                                    data-item-id="<?php echo esc_attr($item->id); ?>"
                                    data-nonce="<?php echo esc_attr( wp_create_nonce('wpsg_delete_gallery_item') ); ?>">
-                                    <i class="dashicons dashicons-trash"></i> Delete
+                                    <i class="fa-regular fa-trash-can"></i> Delete
                                 </a>
                             </div>
                         </div>

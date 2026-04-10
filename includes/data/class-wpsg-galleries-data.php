@@ -20,28 +20,31 @@ class WPSG_GalleriesData {
         global $wpdb;
 
         $charset = $wpdb->get_charset_collate();
+        $table_main = self::$table_main;
+        $table_item = self::$table_item;
 
-        $sql1 = "CREATE TABLE " . self::$table_main . " (
+        $sql1 = "CREATE TABLE {$table_main} (
             id BIGINT UNSIGNED AUTO_INCREMENT,
             site_id BIGINT UNSIGNED NOT NULL,
             title VARCHAR(255) NOT NULL,
             description TEXT NULL,
             thumbnail_id BIGINT UNSIGNED NULL,
             item_count INT NOT NULL DEFAULT 0,
-            created_at DATETIME NOT NULL,
-            updated_at DATETIME NOT NULL,
-            PRIMARY KEY (id)
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_site_id (site_id)
         ) $charset;";
 
-        $sql2 = "CREATE TABLE " . self::$table_item . " (
+        $sql2 = "CREATE TABLE {$table_item} (
             id BIGINT UNSIGNED AUTO_INCREMENT,
             album_id BIGINT UNSIGNED NOT NULL,
             post_id BIGINT UNSIGNED NOT NULL,
             caption VARCHAR(255) NULL,
             position INT DEFAULT 0,
-            created_at DATETIME NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            FOREIGN KEY (album_id) REFERENCES " . self::$table_main . "(id) ON DELETE CASCADE
+            FOREIGN KEY (album_id) REFERENCES {$table_main} (id) ON DELETE CASCADE
         ) $charset;";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';

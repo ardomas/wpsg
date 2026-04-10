@@ -25,20 +25,6 @@ class WPSG_Announcements {
 
     }
 
-/*
-    protected function list_register_menu() {
-        add_menu_page(
-            'Announcements',
-            'Announcements',
-            'manage_options',
-            'wpsg_announcements',
-            [$this, 'render'],
-            'dashicons-megaphone',
-            6
-        );
-    }
-*/
-
     protected function generate_list(){
 
         $page = 'wpsg-admin';
@@ -49,8 +35,8 @@ class WPSG_Announcements {
 
         ?>
         <div class="wrap">
-            <h1 class="wp-heading-inline">Announcements</h1>
-            <a href="<?php echo admin_url( $this->base_url . '&action=add' ); ?>" class="page-title-action">Add New</a>
+            <h2 class="wp-heading-inline">Announcements</h2>
+            <a href="<?php echo admin_url( $this->base_url . '&action=add' ); ?>" class="button button-primary page-title-action">Add New</a>
             <hr class="wp-header-end">
             <div class="wpsg-form">
                 <div class="widefat"><?php

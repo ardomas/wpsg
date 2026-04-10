@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "wpsg/program-list",
+  "title": "WPSG Program List",
+  "category": "widgets",
+  "description": "Display list of programs from WPSG module",
+  "attributes": {
+    "view_mode": {
+      "type": "string",
+      "default": "list"
+    },
+    "limit": {
+      "type": "number",
+      "default": 5
+    }
+  },
+  "editorScript": "file:../index.js",
+  "render": "file:../render-list.php"
+}
