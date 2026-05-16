@@ -435,6 +435,9 @@ class WPSG_DataBase {
      * karena proses ini bisa menghapus data secara permanen tanpa bisa dikembalikan
      * --------------------------------------------------------- */
     public function delete_by_site( int $site_id ) {
+        if( !in_array( 'site_id', $this->registered_fields ) ){
+            return false;
+        }
         return $this->wpdb->delete(
             $this->table_name,
             [ 'site_id' => $site_id ]

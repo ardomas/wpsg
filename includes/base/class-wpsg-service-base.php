@@ -3,13 +3,13 @@ if (!defined('ABSPATH')) exit;
 
 abstract class WPSG_ServiceBase {
 
-    protected $repo;
+    protected object $repo;
 
     public function __construct() {
-        $this->repo = null;
+        // $this->repo = null;
     }
 
-    public function repo_assignment($repo) {
+    public function repo_assignment(object $repo) {
         $this->repo = $repo;
     }
 
@@ -52,7 +52,7 @@ abstract class WPSG_ServiceBase {
      * data yang sudah ada, tergantung pada apakah $data['id'] disertakan atau tidak,
      * jika disertakan apakah null atau tidak
      * --------------------------------------------------------- */
-    public function save($data) {
+    public function save(array $data) {
         if( $this->repo==null ) return 0;
         return $this->repo->save($data);
     }
@@ -67,7 +67,7 @@ abstract class WPSG_ServiceBase {
      * ---------------------------------------------------------
      * pada data menggunakan metode soft_delete, pada repository menggunakan metode delete
      * --------------------------------------------------------- */
-    public function delete($id) {
+    public function delete(int $id) {
         if( $this->repo==null ) return false;
         return $this->repo->delete($id);
     }
@@ -75,7 +75,7 @@ abstract class WPSG_ServiceBase {
         if( $this->repo==null ) return false;
         return $this->repo->delete_by_ids($ids);
     }
-    public function delete_by_site($site_id) {
+    public function delete_by_site(int $site_id) {
         if( $this->repo==null ) return false;
         return $this->repo->delete_by_site($site_id);
     }
@@ -86,7 +86,7 @@ abstract class WPSG_ServiceBase {
      * ---------------------------------------------------------
      * pada data menggunakan metode restore, pada repository menggunakan metode restore
      * --------------------------------------------------------- */
-    public function restore($id) {
+    public function restore(int $id) {
         if( $this->repo==null ) return 0;
         return $this->repo->restore($id);
     }
@@ -94,7 +94,7 @@ abstract class WPSG_ServiceBase {
         if( $this->repo==null ) return 0;
         return $this->repo->restore_by_ids($ids);
     }
-    public function restore_by_site($site_id) {
+    public function restore_by_site(int $site_id) {
         if( $this->repo==null ) return 0;
         return $this->repo->restore_by_site($site_id);
     }
@@ -106,7 +106,7 @@ abstract class WPSG_ServiceBase {
      * ---------------------------------------------------------
      * pada data menggunakan metode delete_by_site, pada repository menggunakan metode destroy_by_site
      * --------------------------------------------------------- */
-    public function destroy($id) {
+    public function destroy(int $id) {
         if( $this->repo==null ) return false;
         return $this->repo->destroy($id);
     }
@@ -114,7 +114,7 @@ abstract class WPSG_ServiceBase {
         if( $this->repo==null ) return false;
         return $this->repo->destroy_by_ids($ids);
     }
-    public function destroy_by_site($site_id) {
+    public function destroy_by_site(int $site_id) {
         if( $this->repo==null ) return false;
         return $this->repo->destroy_by_site($site_id);
     }

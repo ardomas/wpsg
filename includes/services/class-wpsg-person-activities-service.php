@@ -4,9 +4,9 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_PersonActivitiesService
 {
-    private $repo_data;
-    private $repo_master;
-    private $repo_detail;
+    private WPSG_DailyActivitiesRepository $repo_data;
+    private WPSG_PersonActivitiesRepository $repo_master;
+    private WPSG_PersonActivityDetailRepository $repo_detail;
 
     public function __construct()
     {
@@ -16,8 +16,8 @@ class WPSG_PersonActivitiesService
     }
 
     public function create_tables(){
-        $this->repo_detail->data->create_table();
-        $this->repo_master->data->create_table();
+        $this->repo_master->dbdata->create_table();
+        $this->repo_detail->dbdata->create_table();
     }
 
     public function blank_data(){
@@ -27,7 +27,7 @@ class WPSG_PersonActivitiesService
         return $this->repo_detail->blank_data();
     }
 
-    public function get($id, $include_deleted = false) {
+    public function get(int $id, $include_deleted = false) {
         if( $id==0 ){
             $data = $this->repo_master->blank_data();
         } else {
@@ -39,7 +39,7 @@ class WPSG_PersonActivitiesService
         $data_list = $this->repo_master->get_list($args, $include_deleted);
         return $data_list;
     }
-    public function get_detail( $id ){
+    public function get_detail( int $id ){
         if( $id==0 ){
             $data = $this->repo_detail->blank_data();
         } else {
@@ -47,22 +47,25 @@ class WPSG_PersonActivitiesService
         }
         return $data;
     }
-    public function get_detail_list( $master_id, $args=[], $include_deleted = false ){
+    public function get_detail_list( int $master_id, $args=[], $include_deleted = false ){
         $new_args = $args;
         $new_args['person_activity_id'] = $master_id;
         $data_list = $this->repo_detail->get_list( $new_args, $include_deleted );
         return $data_list;
     }
 
-    public function publish_data($id) {
+    public function publish_data(int $id) {
         $this->repo_master->publish_data($id);
     }
 
-    public function unpublish_data($id) {
+    public function unpublish_data(int $id) {
         $this->repo_master->unpublish_data($id);
     }
 
-    public function ensure_data_master($data){
+    public function ensure_data_master($data=[]){
+        if( empty($data) ){
+            $data = $this->blank_data();
+        }
         // $post_data = $data;
         $master_id = $this->repo_master->ensure_data( $data );
         // $detail_ids = [];
@@ -78,21 +81,27 @@ class WPSG_PersonActivitiesService
         }
         return $master_id;
     }
-    public function ensure_data_detail($data){
+    public function ensure_data_detail($data=[]){
+        if( empty($data) ){
+            $data = $this->blank_data_detail();
+        }
         // $post_data = $data;
         return $this->repo_detail->ensure_data( $data );
         // return $post_data;
     }
 
-    public function save( $data ) {
+    public function save( $data=[] ) {
+        if( empty($data) ){
+            $data = false;
+        }
         return $this->repo_master->save( $data );
     }
 
-    public function delete( $id ) {
+    public function delete( int $id ) {
         return $this->repo_master->delete( $id );
     }
 
-    public function restore( $id ) {
+    public function restore( int $id ) {
         return $this->repo_master->restore( $id );
     }
 
@@ -100,15 +109,18 @@ class WPSG_PersonActivitiesService
         return $this->repo_master->destroy( $id );
     }
 
-    public function save_detail( $data ){
+    public function save_detail( $data=[] ){
+        if( empty($data) ){
+            $data = false;
+        }
         return $this->repo_detail->save( $data );
     }
 
-    public function delete_detail( $id ){
+    public function delete_detail( int $id ){
         return $this->repo_detail->delete( $id );
     }
 
-    public function restore_detail( $id ){
+    public function restore_detail( int $id ){
         return $this->repo_detail->restore( $id );
     }
 

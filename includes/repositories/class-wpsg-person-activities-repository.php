@@ -14,11 +14,11 @@ class WPSG_PersonActivitiesRepository extends WPSG_RepositoryBase {
         $this->dbdata = new WPSG_PersonActivitiesData();
     }
 
-    public function publish_data($id) {
+    public function publish_data(int $id) {
         $this->dbdata->publish_data($id);
     }
 
-    public function unpublish_data($id) {
+    public function unpublish_data(int $id) {
         $this->dbdata->unpublish_data($id);
     }
 

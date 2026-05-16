@@ -8,11 +8,11 @@ class WPSG_ServiceTreeBase extends WPSG_ServiceBase {
         parent::__construct();
     }
 
-    public function get_parent($id){
+    public function get_parent(int $id){
         return $this->repo->get_parent($id);
     }
 
-    public function get_children($id, $include_deleted = false) {
+    public function get_children(int $id, $include_deleted = false) {
         return $this->repo->get_children( $id, $include_deleted );
     }
 
@@ -20,7 +20,7 @@ class WPSG_ServiceTreeBase extends WPSG_ServiceBase {
         return $this->repo->get_tree( $args, $include_deleted );
     }
  
-    public function get_descendants( $id, $include_deleted = false ){
+    public function get_descendants( int $id, $include_deleted = false ){
         return $this->repo->get_descendants( $id, $include_deleted );
     }
 

@@ -286,22 +286,11 @@ class WPSG_ChildrenAjax {
         wp_send_json_success( $person_rec_data );
     }
 
-    public function ensure_person_activity_data_master(){
-        check_ajax_referer('ensure_person_activity_data_master', 'nonce');
-
-        $post = $_POST['data'];
-
+    private function _submit_person_daily_activity_master( array $post ){
         $service = new WPSG_PersonActivitiesService();
-        $person_activity_id = $service->ensure_data_master( $post );
-        if( $person_activity_id && $post['time_check'] ){
-            $this->submit_person_activity_data_master([
-                'person_activity_id'=>$person_activity_id[0],
-                'time_check'=>$post['time_check']
-            ]);
-        }
-        wp_send_json_success( $person_activity_id );
+        $person_activity_id = $service->save( $post );
+        return $person_activity_id;
     }
-
     public function submit_person_activity_data_master(){
         check_ajax_referer('submit_person_activity_data_master', 'nonce' );
 
@@ -317,12 +306,35 @@ class WPSG_ChildrenAjax {
             }
         }
 
+        $person_activity_id = $this->_submit_person_daily_activity_master( $post );
+
         $service = new WPSG_PersonActivitiesService();
-        $person_activity_id = $service->save( $post );
         $person_rec_data = $service->get( $person_activity_id );
         wp_send_json_success( $person_rec_data );
-        // wp_send_json_success( $post );
     }
+
+    public function ensure_person_activity_data_master(){
+        check_ajax_referer('ensure_person_activity_data_master', 'nonce');
+
+        $post = $_POST['data'];
+
+        $service = new WPSG_PersonActivitiesService();
+        $person_activity_id = $service->ensure_data_master( $post );
+        if( $person_activity_id && ( $post['time_check'] || $post['time_leave'] ) ){
+            $post['id'] = $person_activity_id;
+            $this->_submit_person_daily_activity_master( $post );
+            /*
+            $this->submit_person_activity_data_master(
+                [
+                'person_activity_id'=>$person_activity_id[0],
+                'time_check'=>$post['time_check']
+                ]
+            );
+            */
+        }
+        wp_send_json_success( $person_activity_id );
+    }
+
     public function delete_person_activity_data_master(){
         check_ajax_referer('delete_person_activity_data_master', 'nonce' );
 

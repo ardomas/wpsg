@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_RepositoryBase {
 
-    protected $dbdata;
+    protected object $dbdata;
 
     public function __construct() {
         // do nothing
@@ -49,7 +49,8 @@ class WPSG_RepositoryBase {
         $data = $this->treat_special_columns($data);
         return $this->dbdata->insert($data);
     }
-    public function update($id, array $data) {
+
+    public function update(int $id, array $data) {
         if( $this->dbdata==null ) return 0;
         $data = $this->treat_special_columns($data);
         return $this->dbdata->update($id, $data);
