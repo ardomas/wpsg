@@ -66,10 +66,24 @@ class WPSG_AppFormHandler {
         $children_factory = wpsg_children_factory();
         $children_factory->save_child_data($_POST);
 
+        $url_referer = wp_get_referer();
+        $queryString = parse_url( $url_referer, PHP_URL_QUERY );
+
+        $new_url = '/app/';
+        if( $queryString ) {
+            parse_str( $queryString, $data );
+            $data['act'] = wpsg_encrypt('list');
+            if( isset( $data['id'] ) ){
+                unset( $data['id'] );
+            }
+            $new_url .= '?' . http_build_query( $data );
+        }
+
         wp_safe_redirect(
             add_query_arg(
                 [ 'updated' => 1 ],
-                wp_get_referer()
+                $new_url
+                // wp_get_referer()
             )
         );
 

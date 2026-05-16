@@ -2,18 +2,18 @@
     "menu": {
         "indicator":  {
             "title": "Catatan Bulanan Perkembangan Anak",
-            "icon" : "far fa-calendar-check",
-            "path" : "frontend/activities/monthly",
-            "file" : "main.php",
+            "icon" : "fas fa-person-arrow-up-from-line",
+            "path" : "frontend/activities",
+            "file" : "act-form-monthly.php",
             "show" : true,
             "group": "main",
             "role" : ["administrator","teacher","staff"]
         },
         "daily_activity": {
-            "title": "Catatan Aktivitas Harian Anak",
-            "icon" : "far fa-calendar-days",
-            "path" : "frontend/activities/daily",
-            "file" : "main.php",
+            "title": "Catatan Harian Aktivitas Anak",
+            "icon" : "fas fa-children",
+            "path" : "frontend/activities",
+            "file" : "act-form-daily.php",
             "show" : true,
             "group": "main",
             "role" : ["administrator","teacher","staff"]

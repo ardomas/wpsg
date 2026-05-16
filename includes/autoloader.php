@@ -40,6 +40,7 @@ if ( ! class_exists( 'WPSG_Autoloader' ) ) {
                 // Tentukan folder tujuan berdasarkan suffix
                 $folder = '';
 
+                $filter_folders = ['FormHandler', 'Repository', 'Service', 'Ajax', 'Base', 'Data'];
                 /*
                 if (substr($short, -14) === 'RESTController') {
                     $folder = 'includes/rest/';
@@ -51,10 +52,12 @@ if ( ! class_exists( 'WPSG_Autoloader' ) ) {
                     $folder = 'includes/repositories/';
                 } elseif (substr($short, -7) === 'Service') {
                     $folder = 'includes/services/';
-                } elseif (substr($short, -4) === 'Data') {
-                    $folder = 'includes/data/';
                 } elseif (substr($short, -4) === 'Ajax') {
                     $folder = 'includes/ajax/';
+                } elseif (substr($short, -4) === 'Base') {
+                    $folder = 'includes/base/';
+                } elseif (substr($short, -4) === 'Data') {
+                    $folder = 'includes/data/';
                 } else {
                     // Default fallback (misal: helpers, utilitas)
                     $folder = 'includes/';

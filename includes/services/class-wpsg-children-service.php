@@ -9,8 +9,7 @@ class WPSG_ChildrenService {
 
     protected $site_id;
 
-    public function __construct(
-    ) {
+    public function __construct() {
         $this->persons      = new WPSG_PersonsRepository();
         $this->relation     = new WPSG_PersonRelationsRepository();
         $this->site_persons = new WPSG_SitePersonsRepository();
@@ -66,6 +65,7 @@ class WPSG_ChildrenService {
 
     }
 
+/*
     public function save_userdata( array $raw_data, int $person_id = 0 ) : int {
 
         $data = [];
@@ -86,6 +86,7 @@ class WPSG_ChildrenService {
         return $this->save_person( $data, $person_id, 'guardian' );
 
     }
+*/
 
     /**
      * Create or update child person
@@ -136,31 +137,14 @@ class WPSG_ChildrenService {
 
         // 4. relation to child
         // $this->relation->remove_relations_by_type( absint( $raw_data['child_id'] ), $raw_data['relation_type'] );
-        $test = $this->relation->get_relations_by_type( $raw_data['child_id'], $relation_type );
-        /*
-        ?>test<br/><xmp><?php
-        print_r( $init_data );
-        ?></xmp><xmp><?php
-        print_r( $test );
-        ?></xmp><br/><?php
-        /* */
-        if( $test==[] ){
+        $rel_data = $this->relation->get_relations_by_type( $raw_data['child_id'], $relation_type );
+        if( $rel_data==[] ){
             // echo 'set relation';
             $this->relation->create([
                 'person_id' => $raw_data['child_id'],
                 'related_person_id' => $raw_data['person_id'],
                 'relation_type' => $raw_data['relation_type']
             ]);
-            // $rel_id = $this->relation->get_relation_id(
-            //     absint( $raw_data['child_id'] ),
-            //     absint( $raw_data['person_id'] ),
-            //     $raw_data['relation_type']
-            // );
-            // $this->relation->activate_relation(
-            //     absint( $raw_data['child_id'] ),
-            //     absint( $raw_data['person_id'] ),
-            //     $raw_data['relation_type']
-            // );
         } else {
             // do nothing
         }
@@ -169,25 +153,46 @@ class WPSG_ChildrenService {
 
     }
 
+    public function get_child( int $child_id ) : array {
+        $person = $this->persons->get( $child_id );
+        $site_id = wpsg_get_network_id();
+        $person['site_id'] = $site_id;
+        $temp_parent = $this->relation->get_parents( $child_id );
+        $parents = [
+            'father' => [],
+            'mother' => []
+        ];
+        foreach( $temp_parent as $obj ){
+            if( $obj['relation_type']=='father' ){
+                $parents['father'] = $this->persons->get( $obj['related_person_id'] );
+            }
+            if( $obj['relation_type']=='mother' ){
+                $parents['mother'] = $this->persons->get( $obj['related_person_id'] );
+            }
+        }
+        $person['parents'] = $parents;
+        $temp_roles = $this->site_persons->get_by_site_person( $site_id, $child_id );
+        $roles = wp_list_pluck( $temp_roles, 'role' );
+        $person['roles']   = $roles;
+        return $person;
+    }
+
     public function get_children( array $args = [] ): array {
         $user = wp_get_current_user();
         $defaults = [
             'role'   => 'child'
         ];
+
         $args['site_id'] = $this->site_id;
 
         /*
-        echo '<xmp>';
-        print_r($user->roles);
-        echo '</xmp>';
-        /* */
-
         foreach( $user->roles as $role ) {
             if( $role=='administrator' ){
                 $defaults['site_id'] = $this->site_id;
                 break;
             }
         }
+        */
         if( in_array( 'administrator', (array) $user->roles ) ){
             // jika administrator, tampilkan semua anak di site
             $args['site_id'] = $this->site_id;
@@ -211,7 +216,7 @@ class WPSG_ChildrenService {
                 } else if( $role=='administrator' ){
                     $view_all = true;
                 } else if( $role=='staff' ){
-                    $view_all = false;
+                    $view_all = true;
                 } else if( $role=='teacher' ){
                     $view_all = true;
                 } else {
@@ -220,14 +225,7 @@ class WPSG_ChildrenService {
                 }
             }
 
-            /*
-            echo 'user id: ' . $user->ID . '<br/>';
-            echo 'person_by_site: <br/>';
-            echo '<xmp>';
-            print_r($person_by_site);
-            echo '</xmp>';
-            /* */
-
+            $person = null;
             if( $view_all ){
                 $args['site_id'] = $this->site_id;
             } else {
@@ -240,27 +238,11 @@ class WPSG_ChildrenService {
                 } else {
                     $person = null;
                 }
-
-                /*
-                echo 'person roles: <br/>';
-                echo '<xmp>';
-                print_r($person_roles);
-                echo '</xmp>';
-                echo 'person: <br/>';
-                echo '<xmp>';
-                print_r($person);
-                echo '</xmp>';
-                /* */
-
             }
+
         }
-        /*
-        echo 'args: <br/>';
-        echo '<xmp>';
-        print_r($args);
-        echo '</xmp>';
-        /* */
         $init_data = $this->_get_full_list( wp_parse_args( $args, $defaults ) );
+        // print_r( $init_data );
         return $init_data;
     }
 
@@ -280,22 +262,25 @@ class WPSG_ChildrenService {
     }
 
     protected function _get_full_list( array $args = [] ): array {
+        // print_r( $args );
         $links = $this->_get_id_list( $args );
-        /*
-        ?><p>link_ids<xmp><?php
-        print_r($links);
-        ?></xmp></p><?php
-        /* */
+        // print_r( $links );
         $persons = [];
         foreach ( $links as $link ) {
             $person = $this->persons->get( $link['person_id'] );
             if ( $person ) {
+                // site persons => current site id
+                $person['site_id'] = wpsg_get_network_id();
+                // relations
+                $person['relations'] = $this->relation->get_all_by_related_person( $person['id'] );
+                // push in array
                 $persons[] = $person;
             }
         }
         return $persons;
     }
     public function delete_person(int $person_id) {
+        $this->site_persons->delete( $person_id );
         return $this->persons->delete( $person_id );
     }
 
@@ -304,6 +289,8 @@ class WPSG_ChildrenService {
         $person_by_site  = [];
         $filter_relation = false;
         $site_id = $this->site_id;
+        // print_r( $site_id );
+        // print_r( $args );
         if( isset($args['site_id']) ){
             $site_id = $args['site_id'];
         }
@@ -313,13 +300,6 @@ class WPSG_ChildrenService {
             unset( $args['related_person_id'] );
             $person_by_relations = $this->relation->get_all_by_related_person( $related_person_id );
             $relation_ids = wp_list_pluck( $person_by_relations, 'person_id' );
-
-            /*
-            ?><p>person by relations : <?php echo $related_person_id; ?><xmp><?php
-            print_r($person_by_relations);
-            ?></xmp></p><?php
-            /* */
-
         }
         $temp_person_by_site = $this->site_persons->get_persons_by_site(
             $site_id,
@@ -341,7 +321,7 @@ class WPSG_ChildrenService {
         return $this->relation->get_related_persons_by_types( $person_id, $relation_types );
     }
     public function delete_relation( int $person_id, int $related_person_id ){
-
+        //
     }
 
     public function sanitize(array $data){
@@ -350,8 +330,7 @@ class WPSG_ChildrenService {
         $relation   = [];
         $relate_fields  = ['id','person_id','related_person_id','relation_type','is_active','start_date','end_date'];
         $exclude_fields = ['action','sid','nonce','submit','wpsg_children_nonce','_wp_http_referer','child_id'];
-        // $person_fields = ['id','user_id','name','email','slug','status','description'];
-        die('sanitize');
+        // die('sanitize');
         $results = wpsg_retransform_array( 
             $data, [
                 'is_key' => true, 
@@ -360,38 +339,11 @@ class WPSG_ChildrenService {
                 'exclude_keys' => $exclude_fields
             ] 
         );
-        /*
-        foreach( $data as $key=>$item ){
-            if( $key=='person_id' ){
-                $person['id'] = $item;
-                $relation['person_id'] = $item;
-            } else {
-                if( !in_array( $key, $exclude_fields ) ){
-                    if( in_array( $key, $relate_fields ) && $key!='person_id' ){
-                        $relation[$key] = $item;
-                    } else {
-                        $person[$key] = $item;
-                    }
-                }
-            }
-        }
-        */
         return [
             'person' => $results['person'] ?? [],
             'relation' => $results['relation'] ?? []
         ];
 
-        /*
-        foreach( $data as $key=>$item ){
-            if( strpos( $key, 'person_' )===0 ){
-                $clean_data['person'][ str_replace('person_','',$key) ] = $item;
-            }
-            if( strpos( $key, 'relation_' )===0 ){
-                $clean_data['relations'][ str_replace('relation_','',$key) ] = $item;
-            }
-        }
-        return $clean_data;
-        */
     }
 
 }

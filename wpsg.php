@@ -49,6 +49,12 @@ $mapping_class_files = [
 
 ];
 
+// activates my global javascript libraries
+function wpsg_enqueue_main_js() {
+    wp_enqueue_script( 'wpsg-main', WPSG_URL . 'assets/js/libraries.js', array(), WPSG_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'wpsg_enqueue_main_js' );
+
 // Load mapped class files
 foreach ($mapping_class_files as $file) {
     if (file_exists($file)) {
@@ -75,9 +81,10 @@ register_activation_hook(__FILE__, function() {
 
     ob_start();
 
+    //
+    // WPSG_BasicBuilderBase::get_instance();
+    //
     WPSG_PostsData::get_instance();
-    // $svc_contents = WPSG_ContentsService();
-    // WPSG_ContentsService::get_instance();
 
     WPSG_SettingsData::get_instance();
     WPSG_SettingsData::create_tables();
@@ -86,6 +93,12 @@ register_activation_hook(__FILE__, function() {
     WPSG_PersonsData::create_tables();
 
     WPSG_SitePersonsData::create_table();
+
+    $base_config= new WPSG_BaseConfigData();
+    $base_config->create_table();
+
+    $cal_year  = new WPSG_CalendarYearData();
+    $cal_year->create_table();
 
     $person_rel = new WPSG_PersonRelationsRepository();
     $person_rel->activate();
@@ -103,23 +116,31 @@ register_activation_hook(__FILE__, function() {
     // Indicators
     // First - create tables for categories, attributes, and indicators
     $mst_indicator_categories = new WPSG_IndicatorCategoriesData();
-    $mst_indicator_categories->create_tables();
+    $mst_indicator_categories->create_table();
     $mst_indicator_attributes = new WPSG_IndicatorAttributesData();
-    $mst_indicator_attributes->create_tables();
+    $mst_indicator_attributes->create_table();
     $mst_indicators = new WPSG_IndicatorsData();
-    $mst_indicators->create_tables();
+    $mst_indicators->create_table();
     // Then - create relation tables
     $mst_indicator_attribute_relations = new WPSG_IndicatorAttributeRelationsData();
     $mst_indicator_attribute_relations->create_tables();
-    //
+    // Then - create transaction tables - persons - indicators
+    $mst_person_indicators = new WPSG_PersonRecIndicatorsService();
+    $mst_person_indicators->create_tables();
 
-    // master table => Daily Activity
+    //
+    // Daily Activity
+    // Master Table - Definition and References
     $daily_activities = new WPSG_DailyActivitiesData();
     $daily_activities->create_table();
-    // Person Activities
-    $person_activities = new WPSG_PersonActivitiesData();
-    $person_activities->create_table();
     //
+    // Person Activities - transaction tables
+    // Master
+    $person_activities_master = new WPSG_PersonActivitiesData();
+    $person_activities_master->create_table();
+    // Detail
+    $person_activities_detail = new WPSG_PersonActivityDetailData();
+    $person_activities_detail->create_table();
 
     $leak = ob_get_clean();
     file_put_contents(WPSG_DIR . 'activation_output.log', $leak);
@@ -151,6 +172,30 @@ add_action('plugins_loaded', function(){
     do_action('wp_wpsg_galleries');
 });
 
+// require_once WPSG_DIR . 'includes/helpers/ajax-handlers.php';
+
+// ajax here !
+
+require_once WPSG_DIR . 'includes/ajax/class-wpsg-fe-settings-ajax.php';
+add_action('plugins_loaded', function(){
+    new WPSG_FESettingsAjax();
+});
+
+require_once WPSG_DIR . 'includes/ajax/class-wpsg-fe-calendars-ajax.php';
+add_action('plugins_loaded', function(){
+    new WPSG_FECalendarsAjax();
+});
+
+require_once WPSG_DIR . 'includes/ajax/class-wpsg-indicators-ajax.php';
+add_action('plugins_loaded', function(){
+    new WPSG_IndicatorsAjax();
+});
+
+require_once WPSG_DIR . 'includes/ajax/class-wpsg-children-ajax.php';
+add_action('plugins_loaded', function(){
+    new WPSG_ChildrenAjax();
+});
+
 require_once WPSG_DIR . 'includes/ajax/class-wpsg-galleries-ajax.php';
 add_action('plugins_loaded', function(){
     new WPSG_GalleriesAjax();
@@ -180,6 +225,7 @@ function wpsg_load_front_page_template($template) {
 function wpsg_enqueue_frontend_styles() {
     $css_files = [
         'wpsg-core_layout' => 'assets/css/core-layout.css',
+        "wpsg-grades"      => 'assets/css/wpsg-grades.css',
         "wpsg-buttons"     => 'assets/css/wpsg-buttons.css',
         'wpsg-frontend'    => 'modules/frontend/assets/css/frontend.css',
          // Tambahkan file CSS lainnya di sini

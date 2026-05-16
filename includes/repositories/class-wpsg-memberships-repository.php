@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPSG_MembershipsRepository {
 
     /** @var WPSG_MembershipsData */
-    protected $data;
+    protected $dbdata;
 
     public function __construct() {
-        $this->data = new WPSG_MembershipsData();
+        $this->dbdata = new WPSG_MembershipsData();
     }
 
     public function create_tables() {
-        return $this->data->create_tables();
+        return $this->dbdata->create_tables();
     }
 
     /* ========================================================================
@@ -50,7 +50,7 @@ class WPSG_MembershipsRepository {
             }
         }
 
-        return $this->data->get_all( $filtered );
+        return $this->dbdata->get_all( $filtered );
     }
 
     /**
@@ -60,7 +60,7 @@ class WPSG_MembershipsRepository {
         $id = intval( $id );
         if ( $id <= 0 ) return null;
 
-        return $this->data->get( $id );
+        return $this->dbdata->get( $id );
     }
 
     /**
@@ -69,7 +69,7 @@ class WPSG_MembershipsRepository {
     public function set( $data ) {
         if ( ! is_array( $data ) ) return false;
 
-        return $this->data->set( $data );
+        return $this->dbdata->set( $data );
     }
 
     /**
@@ -79,7 +79,7 @@ class WPSG_MembershipsRepository {
         $id = intval( $id );
         if ( $id <= 0 ) return false;
 
-        return $this->data->delete( $id );
+        return $this->dbdata->delete( $id );
     }
 
 
@@ -91,7 +91,7 @@ class WPSG_MembershipsRepository {
         $site_id = intval( $site_id );
         if ( $site_id <= 0 ) return [];
 
-        return $this->data->get_all_meta( $site_id );
+        return $this->dbdata->get_all_meta( $site_id );
     }
 
     public function get_meta( $site_id, $meta_key ) {
@@ -100,7 +100,7 @@ class WPSG_MembershipsRepository {
 
         if ( $site_id <= 0 || $meta_key === '' ) return null;
 
-        return $this->data->get_meta( $site_id, $meta_key );
+        return $this->dbdata->get_meta( $site_id, $meta_key );
     }
 
     public function set_meta( $site_id, $meta_key, $meta_value ) {
@@ -109,7 +109,7 @@ class WPSG_MembershipsRepository {
 
         if ( $site_id <= 0 || $meta_key === '' ) return false;
 
-        return $this->data->set_meta( $site_id, $meta_key, $meta_value );
+        return $this->dbdata->set_meta( $site_id, $meta_key, $meta_value );
     }
 
     /**
@@ -127,14 +127,14 @@ class WPSG_MembershipsRepository {
 
         if ( $site_id <= 0 || $meta_key === '' ) return false;
 
-        return $this->data->delete_meta( $site_id, $meta_key );
+        return $this->dbdata->delete_meta( $site_id, $meta_key );
     }
 
     public function delete_all_meta( $site_id ) {
         $site_id = intval( $site_id );
         if ( $site_id <= 0 ) return false;
 
-        return $this->data->delete_all_meta( $site_id );
+        return $this->dbdata->delete_all_meta( $site_id );
     }
 
 }

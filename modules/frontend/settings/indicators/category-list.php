@@ -15,17 +15,17 @@ $page_title = "Domain Perkembangan Anak";
                     <h2>Daftar <?php echo $page_title; ?></h2>
                 </div>
                 <div class="col-12 col-sm-4 text-end"><?php
-                        echo fe_generate_href_button([
+                        echo fe_render_href_button([
                             'url_params'=>[ 'sid' => $_GET['sid'], 's1' => $_GET['s1'] ?? null, 's2'=>$_GET['s2'] ?? null, 'act'=>wpsg_encrypt('add') ], 
                             'class'=>'btn-process mx-1',
-                            'text'=>'Tambah',
+                            'title'=>'Tambah',
                             'icon'=>'fas fa-plus fa-fw'
                         ]);
-                        echo fe_generate_href_button([
+                        echo fe_render_href_button([
                             'url_params'=>[ 'sid' => $_GET['sid'], 's1' => $_GET['s1'] ?? null ], 
                             'exclude_keys'=>[], 
                             'class'=>'btn-process',
-                            'text'=>'Kembali', 
+                            'title'=>'Kembali', 
                             'icon'=>'fas fa-reply fa-fw'
                         ]);
                 ?></div>

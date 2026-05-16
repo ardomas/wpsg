@@ -122,6 +122,10 @@ class WPSG_PersonRelationsData {
 
         return $inserted ? (int) $this->db->insert_id : false;
     }
+    public function update( int $id, array $data ) {
+        $data['updated_at'] = current_time( 'mysql' );
+        return $this->db->update( $this->table, $data, [ 'id' => $id ] );
+    }
 
     /**
      * Get relation by ID
@@ -198,21 +202,39 @@ class WPSG_PersonRelationsData {
         string $relation_type = '',
         bool $active_only = true
     ){
+        $val = [];
+        $r_t = strtolower( trim($relation_type) );
+        $rel = null;
         $sql = "
             SELECT * FROM {$this->table}
             WHERE  person_id = %d
-              AND  relation_type = %s
         ";
+        $val[] = $person_id;
+        if( $r_t=='parent' || $r_t=='parents' ){
+            $sql .= "AND relation_type IN ( 'parent', 'parents', 'father', 'mother', 'guardian' )";
+            // $val[] = "( 'parent', 'parents', 'father', 'mother', 'guardian' )";
+            // $rel = "( 'parent', 'parents', 'father', 'mother', 'guardian' )";
+        } else {
+            $sql .= "AND relation_type = %s";
+            // $rel = $relation_type;
+            $val[] = $relation_type;
+        }
+        if( $active_only ){
+            $sql .= " AND is_active";
+        }
         if( $active_only ){
             $sql .= " AND is_active";
         }
 
         // echo( '<br/>' . $sql . '; ' . $person_id . '; ' . $relation_type  );
-
-        return $this->db->get_results(
-            $this->db->prepare( $sql, $person_id, $relation_type ),
+        $result = $this->db->get_results(
+            $this->db->prepare( $sql, $val ),
             ARRAY_A
         );
+        // echo $this->db->last_query;
+        // die('test');
+
+        return $result;
     }
 
     public function get_relations_to_person(
@@ -225,9 +247,6 @@ class WPSG_PersonRelationsData {
             WHERE  related_person_id = %d
               AND  relation_type = %s
         ";
-        if( $active_only ){
-            $sql .= " AND is_active";
-        }
         return $this->db->get_results(
             $this->db->prepare( $sql, $person_id, $relation_type ),
             ARRAY_A

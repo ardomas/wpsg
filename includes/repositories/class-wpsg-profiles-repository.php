@@ -63,10 +63,12 @@ class WPSG_ProfilesRepository {
      * @param int|null $site_id
      * @return bool
      */
+    /*
     public static function delete($key, $site_id = null) {
         self::init();
-        return self::$data::delete_data($key, $site_id);
+        return self::$data::delete($key, $site_id);
     }
+    */
 
     /**
      * Ambil semua profil untuk *seluruh site*.

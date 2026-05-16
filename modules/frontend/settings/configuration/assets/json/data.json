@@ -1,0 +1,223 @@
+{
+    "menu": {
+        "score": {
+            "title": "Score dan Grade",
+            "icon" : "fas fa-chart-bar",
+            "path" : "frontend/settings/configuration",
+            "file" : "scores.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"],
+            "description": "Pengaturan utama grade dan penilaian untuk anak-anak."
+        },
+        "holiday": {
+            "title": "Konfigurasi Hari dan Tanggal Utama",
+            "icon" : "fas fa-calendar-alt",
+            "path" : "frontend/settings/configuration",
+            "file" : "schedules.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"],
+            "description": "Pengaturan utama hari libur tetap untuk kalender utama (masehi).<br/>Untuk konfigurasi tahunan, lakukan di halaman pengaturan kalender."
+        }
+    },
+
+    "schedules": {
+        "weekly" : [
+            { "code": "0", "sign": "1" },
+            { "code": "1", "sign": "0" },
+            { "code": "2", "sign": "0" },
+            { "code": "3", "sign": "0" },
+            { "code": "4", "sign": "0" },
+            { "code": "5", "sign": "0" },
+            { "code": "6", "sign": "1" }
+        ],
+        "global": [
+            { "code": "01-01", "sign": "1", "meta": [{ "title": "New Year", "description": "Public Holiday, The start of the modern Gregorian calendar, widely celebrated with a day off work globally." }] },
+            { "code": "01-04", "sign": "0", "meta": [{ "title": "World Braille Day", "description": "Recognizes the birth of Louis Braille and the importance of Braille as a means of communication for the blind." }] },
+            { "code": "01-14", "sign": "0", "meta": [{ "title": "World Logic Day", "description": "A UNESCO initiative to foster international cooperation and promote the development of logic in science and philosophy." }] },
+            { "code": "01-24", "sign": "0", "meta": [
+                { "title": "International Day of Education", "description": "Proclaimed by the UN General Assembly to celebrate the role of education for peace and development." },
+                { "title": "World Day for African and Afrodescendant Culture", "description": "Celebrates the many vibrant cultures of the African continent and African diasporas around the world." }
+            ]},
+            { "code": "01-26", "sign": "0", "meta": [{ "title": "International Day of Clean Energy", "description": "A day to raise awareness and mobilize action for a transition to clean energy for the benefit of people and the planet." }] },
+            { "code": "01-27", "sign": "0", "meta": [{ "title": "International Holocaust Remembrance Day", "description": "Memorial day designated by the UN to honor the victims of the Nazi era and promote Holocaust education." }] },
+            { "code": "01-28", "sign": "0", "meta": [{ "title": "Data Privacy Day", "description": "An international effort to create awareness about the importance of respecting privacy and safeguarding data." }] },
+
+            { "code": "02-02", "sign": "0", "meta": [{ "title": "World Wetlands Day", "description": "Raises global awareness about the vital role of wetlands for people and our planet." }] },
+            { "code": "02-04", "sign": "0", "meta": [{ "title": "World Cancer Day", "description": "Led by the Union for International Cancer Control to support the goals of the World Cancer Declaration." }] },
+            { "code": "02-06", "sign": "0", "meta": [{ "title": "International Day of Zero Tolerance for Female Genital Mutilation", "description": "A UN-sponsored awareness day to eradicate the practice of female genital mutilation." }] },
+            { "code": "02-10", "sign": "0", "meta": [{ "title": "World Pulses Day", "description": "Recognizes the importance of pulses (legumes) as a global food source and their nutritional benefits." }] },
+            { "code": "02-11", "sign": "0", "meta": [{ "title": "International Day of Women and Girls in Science", "description": "Aims to promote full and equal access to and participation in science for women and girls." }] },
+            { "code": "02-13", "sign": "0", "meta": [{ "title": "World Radio Day", "description": "Proclaimed by UNESCO to celebrate radio as a medium and improve international cooperation between broadcasters." }] },
+            { "code": "02-14", "sign": "0", "meta": [{ "title": "Valentine's Day", "description": "A global celebration of love and affection." }] },
+            { "code": "02-20", "sign": "0", "meta": [{ "title": "World Day of Social Justice", "description": "Promotes efforts to tackle issues such as poverty, exclusion, gender inequality, and unemployment." }] },
+            { "code": "02-21", "sign": "0", "meta": [{ "title": "International Mother Language Day", "description": "Aims to promote linguistic and cultural diversity and multilingualism across the globe." }] },
+
+            { "code": "03-01", "sign": "0", "meta": [{ "title": "Zero Discrimination Day", "description": "Launched by UNAIDS to promote equality before the law and in practice throughout all UN member states." }] },
+            { "code": "03-03", "sign": "0", "meta": [{ "title": "World Wildlife Day", "description": "Celebrates the world's wild animals and plants and their contribution to our lives and the health of the planet." }] },
+            { "code": "03-08", "sign": "0", "meta": [{ "title": "International Women's Day", "description": "A global day celebrating the social, economic, cultural, and political achievements of women." }] },
+            { "code": "03-20", "sign": "0", "meta": [
+                { "title": "International Day of Happiness", "description": "Recognizes the importance of happiness and well-being as universal goals in human lives." },
+                { "title": "French Language Day", "description": "Celebrates multilingualism and cultural diversity by promoting the French language." }
+            ]},
+            { "code": "03-21", "sign": "0", "meta": [
+                { "title": "International Day for the Elimination of Racial Discrimination", "description": "Commemorates the 1960 Sharpeville incident to increase efforts to eliminate racial discrimination." },
+                { "title": "World Poetry Day", "description": "Established by UNESCO in 1999 to support linguistic diversity through poetic expression." },
+                { "title": "International Day of Forests", "description": "Established by the UN in 2012 to raise awareness of the importance of all types of forests." },
+                { "title": "World Down Syndrome Day", "description": "Symbolically held on 21/3 to advocate for the rights and well-being of people with Down Syndrome." },
+                { "title": "March Equinox", "description": "Astronomical event where day and night are equal; marks the start of spring (North) or autumn (South)." }
+            ]},
+
+            { "code": "04-02", "sign": "0", "meta": [{ "title": "World Autism Awareness Day", "description": "Designated by the UN to encourage measures to raise awareness about people with Autism Spectrum Disorder." }] },
+            { "code": "04-04", "sign": "0", "meta": [{ "title": "International Day for Mine Awareness", "description": "Raises awareness about the threat caused by landmines and explosive remnants of war." }] },
+            { "code": "04-05", "sign": "0", "meta": [{ "title": "International Day of Conscience", "description": "A day to promote a culture of peace with love and conscience." }] },
+            { "code": "04-06", "sign": "0", "meta": [{ "title": "International Day of Sport for Development and Peace", "description": "Recognizes the positive role that sport and physical activity play in communities." }] },
+            { "code": "04-07", "sign": "0", "meta": [{ "title": "World Health Day", "description": "Commemorates the founding of the WHO and highlights a priority area of global public health." }] },
+            { "code": "04-12", "sign": "0", "meta": [{ "title": "International Day of Human Space Flight", "description": "Celebrates the beginning of the space era and the first human space flight by Yuri Gagarin in 1961." }] },
+            { "code": "04-21", "sign": "0", "meta": [{ "title": "World Creativity and Innovation Day", "description": "Encourages creativity in problem-solving for human development and sustainability." }] },
+            { "code": "04-22", "sign": "0", "meta": [{ "title": "International Mother Earth Day", "description": "Raises awareness and appreciation for the Earth's natural environment and the need for its protection." }] },
+            { "code": "04-23", "sign": "0", "meta": [
+                { "title": "World Book and Copyright Day", "description": "A UNESCO celebration of books and reading to promote publishing and intellectual property." },
+                { "title": "English Language Day", "description": "Celebrates the history, culture, and achievements associated with the English language." }
+            ]},
+            { "code": "04-25", "sign": "0", "meta": [{ "title": "World Malaria Day", "description": "Provides education and understanding of malaria as a preventable and curable disease." }] },
+            { "code": "04-26", "sign": "0", "meta": [{ "title": "World Intellectual Property Day", "description": "Focuses on the role of IP rights in encouraging innovation and creativity." }] },
+
+            { "code": "05-01", "sign": "1", "meta": [{ "title": "International Workers Day", "description": "Also known as May Day, it commemorates the historic struggles and gains made by workers." }] },
+            { "code": "05-03", "sign": "0", "meta": [{ "title": "World Press Freedom Day", "description": "Highlights the importance of freedom of the press and the duty to respect it." }] },
+            { "code": "05-05", "sign": "0", "meta": [{ "title": "World Portuguese Language Day", "description": "Celebrates the Portuguese language and Lusophone cultures." }] },
+            { "code": "05-15", "sign": "0", "meta": [{ "title": "International Day of Families", "description": "Promotes awareness of issues relating to families and demographic processes affecting them." }] },
+            { "code": "05-16", "sign": "0", "meta": [{ "title": "International Day of Light", "description": "Appreciates the role light plays in science, culture, art, and sustainable development." }] },
+            { "code": "05-17", "sign": "0", "meta": [{ "title": "World Telecommunication and Information Society Day", "description": "Focuses on the possibilities that the Internet and ICT can bring to societies." }] },
+            { "code": "05-20", "sign": "0", "meta": [{ "title": "World Bee Day", "description": "Acknowledges the role of bees and other pollinators for the ecosystem and food security." }] },
+            { "code": "05-21", "sign": "0", "meta": [{ "title": "World Day for Cultural Diversity for Dialogue and Development", "description": "Deepens understanding of the values of cultural diversity." }] },
+            { "code": "05-22", "sign": "0", "meta": [{ "title": "International Day for Biological Diversity", "description": "Promotion of biodiversity issues and the protection of Earth's natural resources." }] },
+            { "code": "05-31", "sign": "0", "meta": [{ "title": "World No-Tobacco Day", "description": "Raises awareness on the harmful and deadly effects of tobacco use." }] },
+
+            { "code": "06-01", "sign": "0", "meta": [{ "title": "Global Day of Parents", "description": "Honors parents throughout the world for their selfless commitment to children." }] },
+            { "code": "06-03", "sign": "0", "meta": [{ "title": "World Bicycle Day", "description": "Recognizes the bicycle as a simple, sustainable, and reliable means of transportation." }] },
+            { "code": "06-05", "sign": "0", "meta": [{ "title": "World Environment Day", "description": "Encouraging awareness and action for the protection of the environment." }] },
+            { "code": "06-07", "sign": "0", "meta": [{ "title": "World Food Safety Day", "description": "Aims to help prevent, detect, and manage foodborne risks." }] },
+            { "code": "06-08", "sign": "0", "meta": [{ "title": "World Oceans Day", "description": "Raises awareness of our collective duty to use ocean resources sustainably." }] },
+            { "code": "06-12", "sign": "0", "meta": [{ "title": "World Day Against Child Labour", "description": "Fosters the worldwide movement against child labour in all its forms." }] },
+            { "code": "06-14", "sign": "0", "meta": [{ "title": "World Blood Donor Day", "description": "Raises awareness of the need for safe blood and thanks voluntary donors." }] },
+            { "code": "06-17", "sign": "0", "meta": [{ "title": "World Day to Combat Desertification and Drought", "description": "Promotes efforts to combat land degradation and drought." }] },
+            { "code": "06-20", "sign": "0", "meta": [{ "title": "World Refugee Day", "description": "Honours the courage and resilience of refugees around the globe." }] },
+            { "code": "06-21", "sign": "0", "meta": [
+                { "title": "International Day of Yoga", "description": "Recognizes the holistic benefits of this ancient practice." },
+                { "title": "June Solstice", "description": "The longest day in the Northern Hemisphere and shortest in the Southern Hemisphere." }
+            ]},
+            { "code": "06-23", "sign": "0", "meta": [{ "title": "United Nations Public Service Day", "description": "Celebrates the value of public service and recognizes the contribution of public servants." }] },
+            { "code": "06-26", "sign": "0", "meta": [{ "title": "International Day Against Drug Abuse and Illicit Trafficking", "description": "Strengthens action to achieve a society free of drug abuse." }] },
+
+            { "code": "07-11", "sign": "0", "meta": [{ "title": "World Population Day", "description": "Focuses attention on the urgency and importance of population issues." }] },
+            { "code": "07-15", "sign": "0", "meta": [{ "title": "World Youth Skills Day", "description": "Highlights equipping young people with skills for employment and entrepreneurship." }] },
+            { "code": "07-17", "sign": "0", "meta": [{ "title": "World Day for International Justice", "description": "Recognizes the system of international criminal justice." }] },
+            { "code": "07-18", "sign": "0", "meta": [{ "title": "Nelson Mandela International Day", "description": "A call to action for individuals to take responsibility for making the world better." }] },
+            { "code": "07-28", "sign": "0", "meta": [{ "title": "World Hepatitis Day", "description": "Raises awareness of viral hepatitis and its impact on global health." }] },
+            { "code": "07-30", "sign": "0", "meta": [
+                { "title": "International Day of Friendship", "description": "Friendship between peoples and cultures can build bridges between communities." },
+                { "title": "World Day against Trafficking in Persons", "description": "Aims to raise awareness and stop the exploitation of human beings." }
+            ]},
+
+            { "code": "08-01", "sign": "0", "meta": [{ "title": "World Lung Cancer Day", "description": "Raises awareness about lung cancer and the importance of early detection." }] },
+            { "code": "08-09", "sign": "0", "meta": [{ "title": "International Day of the World's Indigenous Peoples", "description": "Promotes and protects the rights of the world’s indigenous populations." }] },
+            { "code": "08-12", "sign": "0", "meta": [{ "title": "International Youth Day", "description": "Draws attention to cultural and legal issues surrounding youth." }] },
+            { "code": "08-19", "sign": "0", "meta": [{ "title": "World Humanitarian Day", "description": "Honors humanitarian aid workers who have lost their lives for causes." }] },
+            { "code": "08-21", "sign": "0", "meta": [{ "title": "International Day of Remembrance and Tribute to the Victims of Terrorism", "description": "Honors and supports the survivors of terrorism." }] },
+            { "code": "08-22", "sign": "0", "meta": [{ "title": "International Day Commemorating the Victims of Acts of Violence Based on Religion or Belief", "description": "Condemns acts targeting religious minorities." }] },
+            { "code": "08-23", "sign": "0", "meta": [{ "title": "International Day for the Remembrance of the Slave Trade and its Abolition", "description": "Memorializes the transatlantic slave trade and its impact." }] },
+            { "code": "08-29", "sign": "0", "meta": [{ "title": "International Day against Nuclear Tests", "description": "Increases awareness about the effects of nuclear weapon test explosions." }] },
+            { "code": "08-30", "sign": "0", "meta": [{ "title": "International Day of the Victims of Enforced Disappearances", "description": "Draws attention to individuals imprisoned at unknown locations." }] },
+            { "code": "08-31", "sign": "0", "meta": [{ "title": "International Day for People of African Descent", "description": "Celebrates heritage and culture and promotes human rights." }] },
+
+            { "code": "09-05", "sign": "0", "meta": [{ "title": "International Day of Charity", "description": "Mobilizes people and NGOs to help others through volunteer activities." }] },
+            { "code": "09-07", "sign": "0", "meta": [{ "title": "International Day of Clean Air for Blue Skies", "description": "Aimed at improving air quality for human health and the environment." }] },
+            { "code": "09-08", "sign": "0", "meta": [{ "title": "International Literacy Day", "description": "Reminds the community of the importance of literacy for individuals." }] },
+            { "code": "09-09", "sign": "0", "meta": [{ "title": "International Day to Protect Education from Attack", "description": "Focuses on preserving schools as safe spaces during conflicts." }] },
+            { "code": "09-15", "sign": "0", "meta": [{ "title": "International Day of Democracy", "description": "Upholds the principles of freedom and respect for human rights." }] },
+            { "code": "09-16", "sign": "0", "meta": [{ "title": "International Day for the Preservation of the Ozone Layer", "description": "Commemorates the date of the signing of the Montreal Protocol." }] },
+            { "code": "09-21", "sign": "0", "meta": [{ "title": "International Day of Peace", "description": "Devoted to strengthening the ideals of peace among all nations." }] },
+            { "code": "09-22", "sign": "0", "meta": [
+                { "title": "September Equinox", "description": "Day and night are approximately equal; marks the start of autumn (North) or spring (South)." },
+                { "title": "International Day of Radiant Peace", "description": "A day to promote peace and harmony within oneself and the world." }
+            ]},
+            { "code": "09-26", "sign": "0", "meta": [{ "title": "International Day for the Total Elimination of Nuclear Weapons", "description": "Mobilizes efforts towards a nuclear-weapon-free world." }] },
+            { "code": "09-27", "sign": "0", "meta": [{ "title": "World Tourism Day", "description": "Cultivates awareness of the social, cultural, and economic value of tourism." }] },
+            { "code": "09-28", "sign": "0", "meta": [{ "title": "International Day for Universal Access to Information", "description": "Recognizes the right to seek and receive information as integral to freedom." }] },
+            { "code": "09-29", "sign": "0", "meta": [{ "title": "International Day of Awareness of Food Loss and Waste", "description": "Promotes global efforts to reduce food waste." }] },
+            { "code": "09-30", "sign": "0", "meta": [{ "title": "International Translation Day", "description": "Pays tribute to language professionals bringing nations together." }] },
+
+            { "code": "10-01", "sign": "0", "meta": [{ "title": "International Day of Older Persons", "description": "Celebrates the contributions of older people to society." }] },
+            { "code": "10-02", "sign": "0", "meta": [{ "title": "International Day of Non-Violence", "description": "Promotes non-violence through education, observed on Mahatma Gandhi's birthday." }] },
+            { "code": "10-05", "sign": "0", "meta": [{ "title": "World Teachers' Day", "description": "Commemorates the 1966 Recommendation concerning the Status of Teachers." }] },
+            { "code": "10-09", "sign": "0", "meta": [{ "title": "World Post Day", "description": "Marks the anniversary of the Universal Postal Union establishment in 1874." }] },
+            { "code": "10-10", "sign": "0", "meta": [{ "title": "World Mental Health Day", "description": "Mobilizing efforts in support of mental health worldwide." }] },
+            { "code": "10-11", "sign": "0", "meta": [{ "title": "International Day of the Girl Child", "description": "Increases awareness of gender inequality faced by girls worldwide." }] },
+            { "code": "10-13", "sign": "0", "meta": [{ "title": "International Day for Disaster Risk Reduction", "description": "Promotes a global culture of risk-awareness and disaster reduction." }] },
+            { "code": "10-15", "sign": "0", "meta": [{ "title": "International Day of Rural Women", "description": "Recognizes the role of rural women in agricultural development." }] },
+            { "code": "10-16", "sign": "0", "meta": [{ "title": "World Food Day", "description": "Tackles global hunger and commemorates the founding of the FAO." }] },
+            { "code": "10-17", "sign": "0", "meta": [{ "title": "International Day for the Eradication of Poverty", "description": "Promotes awareness of the need to eradicate poverty in all countries." }] },
+            { "code": "10-24", "sign": "0", "meta": [{ "title": "United Nations Day", "description": "Marks the anniversary of the entry into force of the UN Charter in 1945." }] },
+            { "code": "10-31", "sign": "0", "meta": [{ "title": "World Cities Day", "description": "Promoting interest in global urbanization and addressing its challenges." }] },
+
+            { "code": "11-05", "sign": "0", "meta": [{ "title": "World Tsunami Awareness Day", "description": "Aimed at sharing innovative approaches to tsunami risk reduction." }] },
+            { "code": "11-10", "sign": "0", "meta": [{ "title": "World Science Day for Peace and Development", "description": "Highlights the significant role of science in society." }] },
+            { "code": "11-14", "sign": "0", "meta": [{ "title": "World Diabetes Day", "description": "Responds to growing health threats posed by diabetes worldwide." }] },
+            { "code": "11-16", "sign": "0", "meta": [{ "title": "International Day for Tolerance", "description": "Generates public awareness of the dangers of intolerance." }] },
+            { "code": "11-19", "sign": "0", "meta": [
+                { "title": "World Toilet Day", "description": "Inspires action to tackle the global sanitation crisis." },
+                { "title": "World Philosophy Day", "description": "Primary global observance for philosophy (usually 3rd Thursday of Nov)." }
+            ]},
+            { "code": "11-20", "sign": "0", "meta": [{ "title": "World Children's Day", "description": "Commemorates the 1959 Declaration of the Rights of the Child." }] },
+            { "code": "11-21", "sign": "0", "meta": [{ "title": "World Television Day", "description": "Recognizes the role of television in presenting global issues." }] },
+            { "code": "11-25", "sign": "0", "meta": [{ "title": "International Day for the Elimination of Violence against Women", "description": "Raises awareness of violence subject to women around the world." }] },
+            { "code": "11-30", "sign": "0", "meta": [{ "title": "Day of Remembrance for all Victims of Chemical Warfare", "description": "Pays tribute to victims and reaffirms the elimination of chemical weapons." }] },
+
+            { "code": "12-01", "sign": "0", "meta": [{ "title": "World AIDS Day", "description": "Dedicated to raising awareness of the pandemic and mourning victims." }] },
+            { "code": "12-02", "sign": "0", "meta": [{ "title": "International Day for the Abolition of Slavery", "description": "Marks the adoption of the UN Convention against human trafficking." }] },
+            { "code": "12-03", "sign": "0", "meta": [{ "title": "International Day of Persons with Disabilities", "description": "Promotes the rights and well-being of persons with disabilities." }] },
+            { "code": "12-05", "sign": "0", "meta": [{ "title": "World Soil Day", "description": "Advocating for the sustainable management of soil resources." }] },
+            { "code": "12-07", "sign": "0", "meta": [{ "title": "International Civil Aviation Day", "description": "Raises awareness of the importance of aviation to social development." }] },
+            { "code": "12-09", "sign": "0", "meta": [{ "title": "International Anti-Corruption Day", "description": "Raises awareness of corruption and the role of the Convention in preventing it." }] },
+            { "code": "12-10", "sign": "0", "meta": [{ "title": "Human Rights Day", "description": "Commemorates the 1948 adoption of the Universal Declaration of Human Rights." }] },
+            { "code": "12-11", "sign": "0", "meta": [{ "title": "International Mountain Day", "description": "Highlights opportunities and constraints in mountain development." }] },
+            { "code": "12-12", "sign": "0", "meta": [{ "title": "International Universal Health Coverage Day", "description": "Aims to raise awareness of the need for resilient health systems." }] },
+            { "code": "12-18", "sign": "0", "meta": [{ "title": "International Migrants Day", "description": "Recognizes the contributions of migrants and respects their rights." }] },
+            { "code": "12-20", "sign": "0", "meta": [{ "title": "International Human Solidarity Day", "description": "Reminds governments to respect commitments to international agreements." }] },
+            { "code": "12-21", "sign": "0", "meta": [{ "title": "December Solstice", "description": "The shortest day in the Northern Hemisphere and longest in the Southern Hemisphere." } ]},
+            { "code": "12-25", "sign": "1", "meta": [{ "title": "Christmas Day", "description": "Annual festival commemorating the birth of Jesus Christ." }] },
+            { "code": "12-26", "sign": "0", "meta": [
+                { "title": "Boxing Day", "description": "A public holiday celebrated in many Commonwealth nations, traditionally a day to give gifts to the poor or service workers." },
+                { "title": "Tsunami Remembrance Day", "description": "Commemorates the victims of the 2004 Indian Ocean Tsunami, one of the deadliest natural disasters in history, to raise awareness about disaster preparedness." }
+            ]}
+        ],
+        "locale": [
+            { "code": "01-01", "sign": "1", "meta": [{"title": "New Year's Day", "description": "The first day of the year on the modern Gregorian calendar, observed as a public holiday in Indonesia."}] },
+            { "code": "04-21", "sign": "0", "meta": [{"title": "Kartini Day", "description": "Commemorates the birth of Raden Ajeng Kartini, a pioneer in the area of women's rights for Indonesians."}] },
+            { "code": "05-01", "sign": "1", "meta": [{"title": "International Labour Day", "description": "Commemorates the labour movement and workers' rights; a national holiday in Indonesia."}] },
+            { "code": "05-02", "sign": "0", "meta": [{"title": "National Education Day", "description": "Hardiknas. Commemorates the birth of Ki Hadjar Dewantara, the father of Indonesian education."}] },
+            { "code": "05-20", "sign": "0", "meta": [{"title": "National Awakening Day", "description": "Hari Kebangkitan Nasional. Marks the 1908 founding of Budi Utomo, the first indigenous political society."}] },
+            { "code": "06-01", "sign": "1", "meta": [{"title": "Pancasila Day", "description": "Commemorates the birth of the state philosophy, Pancasila, as first formulated by Sukarno in 1945."}] },
+            { "code": "07-23", "sign": "0", "meta": [{"title": "National Children's Day", "description": "Hari Anak Nasional. Dedicated to promoting the rights and welfare of children in Indonesia."}] },
+            { "code": "08-14", "sign": "0", "meta": [{"title": "Scout Day", "description": "Hari Pramuka. Commemorates the inauguration of the National Scout Movement Headquarters in 1961."}] },
+            { "code": "08-17", "sign": "1", "meta": [{"title": "Independence Day", "description": "The proclamation of Indonesia's independence from Dutch and Japanese colonization in 1945."}] },
+            { "code": "09-17", "sign": "0", "meta": [{"title": "PMI Anniversary", "description": "The founding day of the Indonesian Red Cross Society (Palang Merah Indonesia) in 1945."}] },
+            { "code": "09-30", "sign": "0", "meta": [{"title": "G30S Remembrance Day", "description": "A day to remember the victims of the September 30th Movement and reflect on national history."}] },
+            { "code": "10-01", "sign": "0", "meta": [{"title": "Pancasila Sanctity Day", "description": "Hari Kesaktian Pancasila. Commemorates the resilience of the state ideology against the G30S movement."}] },
+            { "code": "10-02", "sign": "0", "meta": [{"title": "National Batik Day", "description": "Commemorates UNESCO's recognition of Batik as a Masterpiece of Oral and Intangible Heritage of Humanity."}] },
+            { "code": "10-05", "sign": "0", "meta": [{"title": "Indonesian National Armed Forces Day", "description": "Hari TNI. The anniversary of the founding of the Indonesian National Armed Forces."}] },
+            { "code": "10-22", "sign": "0", "meta": [{"title": "National Santri Day", "description": "Hari Santri Nasional. Recognizes the contribution of ulamas and students (santri) to the struggle for independence."}] },
+            { "code": "10-28", "sign": "0", "meta": [{"title": "Youth Pledge Day", "description": "Hari Sumpah Pemuda. Commemorates the 1928 youth oath of \"One Land, One Nation, One Language\"."}] },
+            { "code": "11-10", "sign": "0", "meta": [{"title": "Heroes' Day", "description": "Hari Pahlawan. Commemorates the Battle of Surabaya and honors those who died for Indonesian independence."}] },
+            { "code": "11-25", "sign": "0", "meta": [{"title": "National Teacher's Day", "description": "Hari Guru Nasional. Coincides with the anniversary of the Indonesian Teachers Association (PGRI)."}] },
+            { "code": "12-09", "sign": "0", "meta": [{"title": "National Election Day", "description": "Often designated as a holiday during major elections, though specific dates are determined by election cycles."}] },
+            { "code": "12-15", "sign": "0", "meta": [{"title": "Infantry Day", "description": "Hari Juang Kartika. Commemorates the Battle of Ambarawa, honoring the Indonesian Army infantry."}] },
+            { "code": "12-22", "sign": "0", "meta": [{"title": "Mother's Day", "description": "Hari Ibu. Commemorates the first Indonesian Women's Congress in 1928, focusing on women's role in the nation."}] },
+            { "code": "12-25", "sign": "1", "meta": [{"title": "Christmas Day", "description": "An annual festival commemorating the birth of Jesus Christ, observed as a religious and cultural celebration."}] },
+            { "code": "12-26", "sign": "0", "meta": [{"title": "Tsunami Remembrance", "description": "A day of mourning for the 2004 Tsunami victims."}] }
+        ]
+    }
+        
+}

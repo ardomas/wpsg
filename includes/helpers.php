@@ -46,7 +46,7 @@ if( !function_exists('wpsg_enqueue_cdn_style') ){
 if( !function_exists('wpsg_get_separator') ){ function wpsg_get_separator() { return '-$-'; } }
 
 if( !function_exists('wpsg_retransform_array') ){
-    function wpsg_retransform_array( $array, $filters ) {
+    function wpsg_retransform_array( array $array, $filters ) {
 
         $result = [ 'data' => [], 'id' => null, 'relation' => [] ];
 
@@ -151,19 +151,35 @@ function wpsg_enqueue_picocss(){
  */
 function wpsg_enqueue_fontawesome() {
 
+/*
     $attr_style = [
         'src'=>'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css',
         'ver'=>'6.7.2',
-        'integrity' => 'sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==',
         'origin'    => 'anonymous',
         'policy'    => 'no-referrer',
+        'integrity' => 'sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==',
     ];
     $attr_script = [
         'src'   => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js',
         'ver'   => '6.7.2',
-        'integrity' => 'sha512-b+nQTCdtTBIRIbraqNEwsjB6UvL3UEMkXnhzd8awtCYh0Kcsjl9uEgwVFVbhoj3uu1DO1ZMacNvLoyJJiNfcvg==',
         'origin'    => 'anonymous',
         'policy'    => 'no-referrer',
+        'integrity' => 'sha512-b+nQTCdtTBIRIbraqNEwsjB6UvL3UEMkXnhzd8awtCYh0Kcsjl9uEgwVFVbhoj3uu1DO1ZMacNvLoyJJiNfcvg==',
+    ];
+*/
+    $attr_style = [
+        'src' => 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/fontawesome.min.css',
+        'ver' => '7.2.0',
+        'origin'    => 'anonymous',
+        'policy'    => 'no-referrer',
+        // 'integrity' => 'sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==',
+    ];
+    $attr_script = [
+        'src' => 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/js/fontawesome.min.js',
+        'ver' => '7.2.0',
+        'origin'    => 'anonymous',
+        'policy'    => 'no-referrer',
+        // 'integrity' => 'sha512-b+nQTCdtTBIRIbraqNEwsjB6UvL3UEMkXnhzd8awtCYh0Kcsjl9uEgwVFVbhoj3uu1DO1ZMacNvLoyJJiNfcvg==',
     ];
 
     wpsg_enqueue_cdn_style( 'wpsg-fontawesome-css', $attr_style  );
@@ -171,21 +187,63 @@ function wpsg_enqueue_fontawesome() {
 
 }
 
+if( !class_exists('WPSG_encryption') ){
+    class WPSG_encryption {
+
+        private static $instance   = null;
+        private static $chip_code;
+        private static $secret_key;
+        private static $options;
+
+        static function get_instance(){
+            if(  self::$instance === null ){
+                self::$instance = new self();
+            }
+            self::$chip_code  = 'AES-128-CTR';
+            self::$secret_key = '0123456789ABCDEF';
+            self::$options    = 0;
+            return self::$instance;
+        }
+
+        static function encrypt( string $string_data='' ): string {
+            // $iv_length  = openssl_cipher_iv_length( self::$chip_code );
+            $user = wp_get_current_user();
+            $site_name   = get_current_site()->site_name;
+            $encrypt_iv  = mb_substr( str_replace( ' ', '', $site_name ) . self::$secret_key, 0, 16 );
+            $encrypt_key = $user->ID . '-$-' . $user->name;
+            return openssl_encrypt( $string_data, self::$chip_code, $encrypt_key, self::$options, $encrypt_iv );
+        }
+        static function decrypt( string $string_code='' ): string {
+            if( $string_code==null ) return '?';
+            // $iv_length  = openssl_cipher_iv_length( self::$chip_code );
+            $user = wp_get_current_user();
+            $site_name   = get_current_site()->site_name;
+            $encrypt_iv  = mb_substr( str_replace( ' ', '', $site_name ) . self::$secret_key, 0, 16 );
+            $encrypt_key = $user->ID . '-$-' . $user->name;
+            return openssl_decrypt( $string_code, self::$chip_code, $encrypt_key, self::$options, $encrypt_iv );
+        }
+
+    }
+}
+
 if( !function_exists('wpsg_encrypt') ){
     function wpsg_encrypt( string $string_data='' ){
-        $user = wp_get_current_user();
-        $chip_code  = 'AES-128-CTR';
-        $iv_length  = openssl_cipher_iv_length( $chip_code );
-        $options    = 0;
-        $site_name  = get_current_site()->site_name;
-        $encrypt_iv  = mb_substr( str_replace( ' ', '', $site_name ) . '0123456789ABCDEF', 0, 16 );
-        $encrypt_key = $user->ID . '-$-' . $user->name;
-        return openssl_encrypt( $string_data, $chip_code, $encrypt_key, $options, $encrypt_iv );
+        return WPSG_encryption::get_instance()::encrypt( $string_data );
+        // $user = wp_get_current_user();
+        // $chip_code  = 'AES-128-CTR';
+        // $iv_length  = openssl_cipher_iv_length( $chip_code );
+        // $options    = 0;
+        // $site_name  = get_current_site()->site_name;
+        // $encrypt_iv  = mb_substr( str_replace( ' ', '', $site_name ) . '0123456789ABCDEF', 0, 16 );
+        // $encrypt_key = $user->ID . '-$-' . $user->name;
+        // return openssl_encrypt( $string_data, $chip_code, $encrypt_key, $options, $encrypt_iv );
     }
 }
 
 if( !function_exists('wpsg_decrypt') ){
-    function wpsg_decrypt( string $string_code=null ){
+    function wpsg_decrypt( string $string_code='' ){
+        return WPSG_encryption::get_instance()::decrypt( $string_code );
+        /*
         if( $string_code==null ) return false;
         $user = wp_get_current_user();
         $chip_code = 'AES-128-CTR';
@@ -195,10 +253,11 @@ if( !function_exists('wpsg_decrypt') ){
         $encrypt_iv  = mb_substr( str_replace( ' ', '', $site_name ) . '0123456789ABCDEF', 0, 16 );
         $encrypt_key = $user->ID . '-$-' . $user->name;
         return openssl_decrypt( $string_code, $chip_code, $encrypt_key, $options, $encrypt_iv );
+        */
     }
 }
 
-function wpsg_get_json_data( $file_path ){
+function wpsg_get_json_data( string $file_path ){
     if (file_exists($file_path)) {
         $content   = file_get_contents($file_path);
         $json_data = json_decode( $content, true );
@@ -338,13 +397,21 @@ function wpsg_site_abbreviation() {
 if( !function_exists('wpsg_encode_keys') ){
     function wpsg_encode_keys( array $args ){
         global $wpsg_app_global_separator;
-        $str_main = '';
         $new_args = [];
         foreach( $args as $arg ){
             $item = trim( $arg );
             $new_args[] = $item;
         }
         return md5( base64_encode( implode( $wpsg_app_global_separator, $new_args ) ) );
+        /*
+        $new_args = [];
+        foreach( $args as $arg ){
+            $item = str_replace(' ', '', trim( $arg ) );
+            $new_args[] = $item;
+        }
+        $str_args = implode( $wpsg_app_global_separator, $new_args );
+        return wpsg_encrypt( $str_args );
+        */
     }
 }
 

@@ -7,10 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 $obj_children = new WPSG_ChildrenService();
 
 $user = wp_get_current_user();
-$child_id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
 $user_id   = $user->ID;
 
-$user_id   = $user->ID;
+$child_id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
 $code_key  = wpsg_encode_keys( [$user_id, $child_id] );
 
 $param_ok = false;
@@ -81,9 +80,21 @@ switch( $rid ){
 
     <div class="wpsg-page-content">
 
+        <div class="d-none">
+            <input type="hidden" name="sid" id="sid" value="<?php echo esc_attr( $_GET['sid'] ); ?>">
+            <input type="hidden" name="cid" id="cid" value="<?php echo esc_attr( $_GET['cid'] ); ?>"/>
+            <input type="hidden" name="vid" id="vid" value="<?php echo esc_attr( $code_key ); ?>"/>
+
+            <code id="data-persons"><?php echo json_encode($persons); ?></code>
+
+            <code id="data-father"><?php echo json_encode($guardians['father']); ?></code>
+            <code id="data-mother"><?php echo json_encode($guardians['mother']); ?></code>
+            <code id="data-guardian"><?php echo json_encode($guardians['guardian']); ?></code>
+        </div>
+
             <?php
 
-                $can_edit_data = ( ($user && $user->roles && ($user->roles[0] != 'subscriber')) || ( $p_user && !in_array( $p_user['role'], ['guardian','child'] ) ) );
+                $can_edit_data = ( ($user && $user->roles && ($user->roles[0] != 'subscriber')) );
                 require __DIR__ . '/guardian-dataform.php';
 
             ?>

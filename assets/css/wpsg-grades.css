@@ -1,0 +1,50 @@
+:root {
+    --wpsg--grade--0--hue: 0;
+    --wpsg--grade--1--hue: 10;
+    --wpsg--grade--2--hue: 55;
+    --wpsg--grade--3--hue: 120;
+    --wpsg--grade--0--bg--color: hsl( var( --wpsg--grade--0--hue ), 75%, 25%);
+    --wpsg--grade--1--bg--color: hsl( var( --wpsg--grade--1--hue ), 75%, 25%);
+    --wpsg--grade--2--bg--color: hsl( var( --wpsg--grade--2--hue ), 75%, 25%);
+    --wpsg--grade--3--bg--color: hsl( var( --wpsg--grade--3--hue ), 75%, 25%);
+    --wpsg--grade--0--text--color: hsl( 55,100%,50% );
+    --wpsg--grade--text--color: hsl( 0,0%,80% );
+}
+
+.grade-0 {
+    background-color: hsl( var( --wpsg--grade--0--hue ), 25%, 12.5% );
+    color: var( --wpsg--grade--0--text--color );
+    border-color: hsl( var( --wpsg--grade--0--hue ), 75%, 25% );
+}
+.grade-1 {
+    background-color: hsl( var( --wpsg--grade--1--hue ), 75%, 25% );
+    color: var( --wpsg--grade--text--color );
+    border-color: hsl( var( --wpsg--grade--1--hue ), 75%, 45% );
+}
+.grade-2 {
+    background-color: hsl( var( --wpsg--grade--2--hue ), 75%, 25% );
+    color: var( --wpsg--grade--text--color );
+    border-color: hsl( var( --wpsg--grade--2--hue ), 75%, 45% );
+}
+.grade-3 {
+    background-color: hsl( var( --wpsg--grade--3--hue ), 75%, 25% );
+    color: var( --wpsg--grade--text--color );
+    border-color: hsl( var( --wpsg--grade--3--hue ), 75%, 45% );
+}
+
+.border-grade-0 {
+    background-color: hsla( var( --wpsg--grade--0--hue ), 25%, 12.5%, 0.5 );
+    border-color: hsl( var( --wpsg--grade--0--hue ), 25%, 25% );
+}
+.border-grade-1 {
+    background-color: hsla( var( --wpsg--grade--1--hue ), 75%, 25%, 0.235 );
+    border-color: hsl( var( --wpsg--grade--1--hue ), 75%, 45% );
+}
+.border-grade-2 {
+    background-color: hsla( var( --wpsg--grade--2--hue ), 75%, 25%, 0.235 );
+    border-color: hsl( var( --wpsg--grade--2--hue ), 75%, 45% );
+}
+.border-grade-3 {
+    background-color: hsla( var( --wpsg--grade--3--hue ), 75%, 25%, 0.235 );
+    border-color: hsl( var( --wpsg--grade--3--hue ), 75%, 45% );
+}

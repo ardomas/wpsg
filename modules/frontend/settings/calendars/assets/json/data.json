@@ -1,0 +1,41 @@
+{
+    "menu": {
+        "cal-year":  {
+            "title": "Kalender Tahunan",
+            "icon" : "far fa-calendar-days",
+            "path" : "frontend/settings/calendars",
+            "file" : "set-cal-year.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "cal-month": {
+            "title": "Tema Bulanan",
+            "icon" : "far fa-calendar",
+            "path" : "frontend/settings/calendars",
+            "file" : "set-cal-month.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "cal-week": {
+            "title": "Jadwal Mingguan",
+            "icon" : "fas fa-calendar-week",
+            "path" : "frontend/settings/calendars",
+            "file" : "set-cal-week.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "cal-day": {
+            "title": "Agenda Harian",
+            "icon" : "fas fa-calendar-day",
+            "path" : "frontend/settings/calendars",
+            "file" : "set-cal-daily.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        }
+    }
+
+}

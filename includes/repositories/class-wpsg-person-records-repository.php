@@ -8,17 +8,17 @@ class WPSG_PersonRecordsRepository {
     /**
      * @var WPSG_PersonRecordsData
      */
-    protected $data;
+    protected $dbdata;
 
     public function __construct() {
-        $this->data = WPSG_PersonRecordsData::get_instance();
+        $this->dbdata = WPSG_PersonRecordsData::get_instance();
     }
 
     /**
      * Called on plugin activation
      */
     public function activate() {
-        $this->data->activate();
+        $this->dbdata->activate();
     }
 
     /* ---------------------------------------------------------
@@ -26,19 +26,19 @@ class WPSG_PersonRecordsRepository {
      * --------------------------------------------------------- */
 
     public function get( $record_id ) {
-        return $this->data->get( $record_id );
+        return $this->dbdata->get( $record_id );
     }
 
     public function create( array $record_data ) {
-        return $this->data->insert( $record_data );
+        return $this->dbdata->insert( $record_data );
     }
 
     public function update( $record_id, array $record_data ) {
-        return $this->data->update( $record_id, $record_data );
+        return $this->dbdata->update( $record_id, $record_data );
     }
 
     public function delete( $record_id ) {
-        return $this->data->delete( $record_id );
+        return $this->dbdata->delete( $record_id );
     }
 
     /* ---------------------------------------------------------
@@ -46,7 +46,7 @@ class WPSG_PersonRecordsRepository {
      * --------------------------------------------------------- */
 
     public function get_by_person( $person_id, array $args = [] ) {
-        return $this->data->get_by_person( $person_id, $args );
+        return $this->dbdata->get_by_person( $person_id, $args );
     }
 
     public function get_by_person_and_type( $person_id, $record_type, $record_subtype = null ) {
@@ -59,7 +59,7 @@ class WPSG_PersonRecordsRepository {
             $args['record_subtype'] = $record_subtype;
         }
 
-        return $this->data->get_by_person( $person_id, $args );
+        return $this->dbdata->get_by_person( $person_id, $args );
     }
 
     /* ---------------------------------------------------------
@@ -75,14 +75,14 @@ class WPSG_PersonRecordsRepository {
      */
     public function create_with_meta( array $record_data, array $meta_data = [] ) {
 
-        $record_id = $this->data->insert( $record_data );
+        $record_id = $this->dbdata->insert( $record_data );
 
         if ( ! $record_id ) {
             return false;
         }
 
         foreach ( $meta_data as $key => $value ) {
-            $this->data->set_meta( $record_id, $key, $value );
+            $this->dbdata->set_meta( $record_id, $key, $value );
         }
 
         return $record_id;
@@ -95,7 +95,7 @@ class WPSG_PersonRecordsRepository {
     public function replace_meta( $record_id, array $meta_data ) {
 
         foreach ( $meta_data as $key => $value ) {
-            $this->data->set_meta( $record_id, $key, $value );
+            $this->dbdata->set_meta( $record_id, $key, $value );
         }
 
         return true;
@@ -106,14 +106,14 @@ class WPSG_PersonRecordsRepository {
      * --------------------------------------------------------- */
 
     public function get_meta( $record_id, $key = '', $single = true ) {
-        return $this->data->get_meta( $record_id, $key, $single );
+        return $this->dbdata->get_meta( $record_id, $key, $single );
     }
 
     public function set_meta( $record_id, $key, $value ) {
-        return $this->data->set_meta( $record_id, $key, $value );
+        return $this->dbdata->set_meta( $record_id, $key, $value );
     }
 
     public function delete_meta( $record_id, $key ) {
-        return $this->data->delete_meta( $record_id, $key );
+        return $this->dbdata->delete_meta( $record_id, $key );
     }
 }

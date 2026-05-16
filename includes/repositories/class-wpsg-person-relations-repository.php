@@ -12,20 +12,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPSG_PersonRelationsRepository {
 
     /** @var WPSG_PersonRelationsData */
-    private $data;
+    private $dbdata;
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->data = WPSG_PersonRelationsData::get_instance();
+        $this->dbdata = WPSG_PersonRelationsData::get_instance();
     }
 
     /**
      * Called on plugin activation
      */
     public function activate() {
-        $this->data->activate();
+        $this->dbdata->activate();
     }
 
     /* ---------------------------------------------------------
@@ -33,23 +33,39 @@ class WPSG_PersonRelationsRepository {
      * --------------------------------------------------------- */
 
     public function get( int $id ) {
-        return $this->data->get( $id );
+        return $this->dbdata->get( $id );
     }
 
     public function create( array $data ) {
-        return $this->data->insert( $data );
+        return $this->dbdata->insert( $data );
+    }
+    public function ensure_relation( int $person_id, int $related_person_id, $relation_type ) {
+        $data_id   = 0;
+        $temp_data = $this->dbdata->get_between( $person_id, $related_person_id );
+        $init_data = [
+            'person_id' => $person_id,
+            'related_person_id' => $related_person_id,
+            'relation_type' => $relation_type
+        ];
+        if( !$temp_data ){
+            $data_id = $this->dbdata->insert( $init_data );
+        } else {
+            $data_id = $temp_data[0]['id'];
+            $this->dbdata->update( $data_id, $init_data );
+        }
+        return $data_id;
     }
 
     public function delete( int $id ) : bool {
-        return $this->data->delete( $id );
+        return $this->dbdata->delete( $id );
     }
 
     public function deactivate( int $id ) : bool {
-        return $this->data->deactivate( $id );
+        return $this->dbdata->deactivate( $id );
     }
 
     public function activate_relation( int $id ) : bool {
-        return $this->data->activate_relation( $id );
+        return $this->dbdata->activate_relation( $id );
     }
 
     /* ---------------------------------------------------------
@@ -64,7 +80,7 @@ class WPSG_PersonRelationsRepository {
         string $relation_type = '',
         bool $active_only = true
     ) : array {
-        return $this->data->get_relations_by_person(
+        return $this->dbdata->get_relations_by_person(
             $person_id,
             $relation_type,
             $active_only
@@ -79,7 +95,7 @@ class WPSG_PersonRelationsRepository {
         string $relation_type = '',
         bool $active_only = true
     ) : array {
-        return $this->data->get_relations_to_person(
+        return $this->dbdata->get_relations_to_person(
             $person_id,
             $relation_type,
             $active_only
@@ -117,7 +133,7 @@ class WPSG_PersonRelationsRepository {
         int $person_id,
         bool $active_only = true
     ): array {
-        return $this->data->get_all_by_related_person(
+        return $this->dbdata->get_all_by_related_person(
             $person_id,
             $active_only
         );
@@ -128,7 +144,7 @@ class WPSG_PersonRelationsRepository {
         int $related_person_id,
         string $relation_type = ''
     ): ?array {
-        return $this->data->get_by_persons_relation(
+        return $this->dbdata->get_by_persons_relation(
             $person_id,
             $related_person_id,
             $relation_type
@@ -162,7 +178,7 @@ class WPSG_PersonRelationsRepository {
      * Get parents of a child
      */
     public function get_parents( int $child_id, bool $active_only = true ) : array {
-        return $this->get_relations_to_person(
+        return $this->dbdata->get_relations_by_person(
             $child_id,
             'parent',
             $active_only
@@ -170,7 +186,7 @@ class WPSG_PersonRelationsRepository {
     }
 
     public function get_relations_by_type( int $person_id, string $relation_type='', $active_only=true ) {
-        return $this->data->get_relations_by_type( $person_id, $relation_type, $active_only );
+        return $this->dbdata->get_relations_by_type( $person_id, $relation_type, $active_only );
     }
 
     public function remove_relations_by_type(
@@ -195,7 +211,7 @@ class WPSG_PersonRelationsRepository {
         int $related_person_id,
         string $relation_type = ''
     ) : bool {
-        return $this->data->relation_exists(
+        return $this->dbdata->relation_exists(
             $person_id,
             $related_person_id,
             $relation_type
@@ -207,7 +223,7 @@ class WPSG_PersonRelationsRepository {
         int $related_person_id,
         string $relation_type = ''
     ):int {
-        return $this->data->relation_exists(
+        return $this->dbdata->relation_exists(
             $person_id,
             $related_person_id,
             $relation_type

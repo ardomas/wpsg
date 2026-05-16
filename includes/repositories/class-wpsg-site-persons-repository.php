@@ -6,10 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPSG_SitePersonsRepository {
 
     /** @var WPSG_SitePersonsData */
-    protected $data;
+    protected $dbdata;
 
     public function __construct() {
-        $this->data = new WPSG_SitePersonsData();
+        $this->dbdata = new WPSG_SitePersonsData();
     }
 
     /* ---------------------------------------------------------
@@ -22,12 +22,13 @@ class WPSG_SitePersonsRepository {
         string $role,
         string $status = 'active'
     ): bool {
-        return $this->data->insert([
+        $data = [
             'site_id'   => $site_id,
             'person_id' => $person_id,
             'role'      => $role,
             'status'    => $status,
-        ]);
+        ];
+        return $this->dbdata->insert( $data );
     }
 
     public function update(
@@ -36,12 +37,25 @@ class WPSG_SitePersonsRepository {
         string $role,
         string $status
     ): bool {
-        return $this->data->update(
-            $site_id,
-            $person_id,
-            $role,
-            $status
-        );
+        $data = [
+            'site_id'   => $site_id,
+            'person_id' => $person_id,
+            'role'      => $role,
+            'status'    => $status,
+        ];
+        $init_data = $this->dbdata->get_by_site_person_role( $site_id, $person_id, $role );
+        if( $init_data ){
+            if( isset( $init_data['id'] ) && !is_null($init_data['id']) ){
+                if( $this->dbdata->update( $init_data['id'], $data ) ){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function delete( $person_id ){
+        return $this->dbdata->soft_delete($person_id);
     }
 
     public function exists(
@@ -49,12 +63,13 @@ class WPSG_SitePersonsRepository {
         int $person_id,
         string $role
     ): bool {
-        return (bool) $this->data->get_by_site_person_role(
+        return (bool) $this->dbdata->get_by_site_person_role(
             $site_id,
             $person_id,
             $role
         );
     }
+
     public function ensure_link(
         int $site_id,
         int $person_id,
@@ -76,19 +91,19 @@ class WPSG_SitePersonsRepository {
         int $site_id,
         array $args = []
     ): array {
-        return $this->data->get_by_site( $site_id, $args );
+        return $this->dbdata->get_by_site( $site_id, $args );
     }
 
     public function get_sites_by_person(
         int $person_id
     ): array {
-        return $this->data->get_by_person( $person_id );
+        return $this->dbdata->get_by_person( $person_id );
     }
 
     public function get_by_site_person(
         int $site_id,
         int $person_id
     ): array {
-        return $this->data->get_by_site_person( $site_id, $person_id );
+        return $this->dbdata->get_by_site_person( $site_id, $person_id );
     }
 }

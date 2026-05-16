@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-$children_service = new WPSG_PersonsService();
+// $children_service = new WPSG_PersonsService();
 
 $user      = wp_get_current_user();
 // echo '<p>User:<br/>';
@@ -37,6 +37,7 @@ if( !$param_ok ){
 $is_edit   = $person_id > 0;
 
 // default data
+/*
 $data = [
     'name'        => '',
     'status'      => 'active',
@@ -46,6 +47,7 @@ $data = [
     'blood_type'  => '',
     'address'     => '',
 ];
+*/
 
 ?>
 
@@ -70,6 +72,7 @@ $data = [
         <div class="wpsg-page-content">
     <?php
             $person_id = $_GET['id'] ?? '';
+/*
             if( $person_id!='' ){
                 $person = $children_service->get_person( absint($person_id) );
                 if( $person ){
@@ -82,6 +85,7 @@ $data = [
                     $data['address']     = $person['address'] ?? '';
                 }
             }
+*/
             // print_r($data);
             /*
             <form method="post" action="<?php echo esc_url( add_query_arg( ['sid'=> $_GET['sid'] ?? '','action' => 'add',], home_url('/app/') ) ); ?>">
@@ -89,10 +93,10 @@ $data = [
     ?>
             <form method="post" action="<?php echo admin_url("admin-post.php"); ?>">
 
-                <input type="hidden" name="sid" id="sid" value="<?php echo esc_attr( $_GET['sid'] ); ?>">
+                <input type="hidden" name="sid" id="sid" value="<?php echo esc_attr( $_GET['sid'] ); ?>"/>
                 <input type="hidden" name="cid" id="cid" value="<?php echo esc_attr( $_GET['cid'] ); ?>"/>
                 <input type="hidden" name="vid" id="vid" value="<?php echo esc_attr( $code_key ); ?>"/>
-                <input type="hidden" name="action" value="wpsg_save_child_as_person_data">
+                <input type="hidden" name="action" value="wpsg_save_child_as_person_data"/>
                 <input type="hidden" name="person_id" value="<?php echo $person_id; ?>"/>
 
                 <?php wp_nonce_field('wpsg_save_child_as_person_data','wpsg_children_nonce'); ?>
@@ -126,31 +130,36 @@ $data = [
                 </div>
 
                 <script type="text/javascript" lang="javascript">
-                    document.addEventListener('DOMContentLoaded',()=>{
-                        //
-                        let sid = document.getElementById('sid').value;
-                        let cid = document.getElementById('cid').value;
-                        let vid = document.getElementById('vid').value;
-                        //
-                        if( cid!=vid ){
-                            window.alert('something wrong...!!!');
-                            window.location = window.origin + '/<?php echo fe_get_app_url(); ?>?sid='+sid;
-                        }
-
-                        //
-                        const btn_delete = document.getElementById('btn-delete');
-                        btn_delete.addEventListener('click',(e)=>{
-                            if( window.confirm('Are you sure, You want to delete this data') ){
-                                let data_url = btn_delete.getAttribute('data-url');
-                                // console.log( data_url );
-                                window.location = data_url;
-                                // e.preventDefault();
-                                // console.log('button delete clicked');
-                                // console.log(e);
-                                // console.log(data_url);
+                    (()=>{
+                        document.addEventListener('DOMContentLoaded',()=>{
+                            //
+                            console.log('ready');
+                            //
+                            let sid = document.getElementById('sid').value;
+                            let cid = document.getElementById('cid').value;
+                            let vid = document.getElementById('vid').value;
+                            //
+                            if( cid!=vid ){
+                                window.alert('something wrong...!!!');
+                                window.location = window.origin + '/<?php echo fe_get_app_url(); ?>?sid='+sid;
                             }
+
+                            //
+                            const btn_delete = document.getElementById('btn-delete');
+                            btn_delete.addEventListener('click',(e)=>{
+                                if( window.confirm('Are you sure, You want to delete this data') ){
+                                    let data_url = btn_delete.getAttribute('data-url');
+                                    // console.log( data_url );
+                                    window.location = data_url;
+                                    // e.preventDefault();
+                                    // console.log('button delete clicked');
+                                    // console.log(e);
+                                    // console.log(data_url);
+                                }
+                            });
+                            //
                         });
-                    });
+                    })();
                 </script>
 
             </form>

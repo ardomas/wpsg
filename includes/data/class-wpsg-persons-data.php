@@ -62,6 +62,7 @@ class WPSG_PersonsData {
             'id',
             'user_id',
             'name',
+            'nickname',
             'slug',
             'email',
             'status',
@@ -130,12 +131,14 @@ class WPSG_PersonsData {
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT UNSIGNED NULL,
             name VARCHAR(191) NOT NULL,
+            nickname VARCHAR (64) NULL,
             email VARCHAR(191) NULL,
             slug VARCHAR(191) NOT NULL,
             status VARCHAR(50) NOT NULL DEFAULT 'active',
             description TEXT NULL,
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP NULL,
             PRIMARY KEY (id),
             UNIQUE KEY slug_unique (slug),
             UNIQUE KEY user_id_unique (user_id),
@@ -148,8 +151,9 @@ class WPSG_PersonsData {
             person_id BIGINT UNSIGNED NOT NULL,
             meta_key VARCHAR(191) NOT NULL,
             meta_value LONGTEXT NULL,
-            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP NULL,
             PRIMARY KEY (id),
             KEY person_meta_person_id_idx (person_id),
             KEY person_meta_key_idx (meta_key),
@@ -202,6 +206,7 @@ class WPSG_PersonsData {
     private function filter_fields( $data ) {
         $allowed = [
             'name',
+            'nickname',
             'user_id',
             'slug',
             'email',
@@ -220,6 +225,9 @@ class WPSG_PersonsData {
                 switch ( $k ) {
                     case 'name':
                         $out['name'] = sanitize_text_field( $data['name'] );
+                        break;
+                    case 'nickname':
+                        $out['nickname'] = sanitize_text_field( $data['nickname'] );
                         break;
                     case 'user_id':
                         $out['user_id'] = sanitize_text_field( $data['user_id'] );
@@ -347,6 +355,7 @@ class WPSG_PersonsData {
 
         $insert = [
             'name'        => $data['name'],
+            'nickname'    => $data['nickname'] ?? null,
             'user_id'     => $data['user_id'],
             'email'       => $data['email'],
             'slug'        => $data['slug'],
@@ -436,7 +445,7 @@ class WPSG_PersonsData {
         if ( is_null( $id ) || $id == '' || $id==0 ) {
             $id = $this->insert_person( $data );
         } else {
-            $id = $this->update_person( $id, $data );
+            $this->update_person( $id, $data );
         }
         if( $this->is_wp_error ){
             return -1;
@@ -652,7 +661,7 @@ class WPSG_PersonsData {
      * @return bool|WP_Error
      */
     public function soft_delete( $id ) {
-        return $this->update_person( $id, [ 'status' => 'deleted' ] );
+        return $this->update_person( $id, [ 'status' => 'deleted', 'deleted_at' => current_time( 'mysql' ) ] );
     }
 
     /* -------------------------

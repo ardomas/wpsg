@@ -10,12 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WPSG_PersonsService {
 
-    protected WPSG_PersonsRepository $persons_repository;
+    protected $persons_repository;
+    protected $site_persons_repository;
 
     public function __construct(
         // WPSG_PersonsRepository $persons_repository
     ) {
-        $this->persons_repository = new WPSG_PersonsRepository;
+        $this->persons_repository = new WPSG_PersonsRepository();
+        $this->site_persons_repository = new WPSG_SitePersonsRepository();
         // $persons_repository;
     }
 
@@ -27,7 +29,12 @@ class WPSG_PersonsService {
      * Ambil data person berdasarkan ID
      */
     public function get_person(int $person_id): ?array {
-        return $this->persons_repository->get($person_id);
+        $site_id = wpsg_get_network_id();
+        $person = $this->persons_repository->get($person_id);
+        $roles  = $this->site_persons_repository->get_by_site_person($site_id, $person['id']);
+        $person['site_id'] = $site_id;
+        $person['roles'] = wp_list_pluck( $roles, 'role' );
+        return $person;
     }
     public function get_by_ids( array $ids ): ?array { 
         return $this->persons_repository->get_by_ids($ids);
@@ -47,7 +54,7 @@ class WPSG_PersonsService {
      * Ambil person berdasarkan WP User ID
      */
     public function get_person_by_user(int $user_id): ?array {
-        return $this->persons_repository->find_by_user_id($user_id);
+        return $this->persons_repository->get_by_user_id($user_id);
     }
 
     /**

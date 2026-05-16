@@ -3,24 +3,24 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_IndicatorAttributesRepository {
 
-    private $data;
+    private $dbdata;
 
     public function __construct() {
-        $this->data = new WPSG_IndicatorAttributesData();
+        $this->dbdata = new WPSG_IndicatorAttributesData();
     }
 
     public function get($id, $include_deleted = false) {
-        return $this->data->get($id, $include_deleted);
+        return $this->dbdata->get($id, $include_deleted);
     }
     public function get_list($args = [], $include_deleted = false) {
-        return $this->data->get_list($args, $include_deleted);
+        return $this->dbdata->get_list($args, $include_deleted);
     }
 
     public function insert($data) {
-        return $this->data->insert($data);
+        return $this->dbdata->insert($data);
     }
     public function update($id, $data) {
-        return $this->data->update($id, $data);
+        return $this->dbdata->update($id, $data);
     }
 
     /* ---------------------------------------------------------
@@ -31,9 +31,9 @@ class WPSG_IndicatorAttributesRepository {
      * --------------------------------------------------------- */
     public function save($data) {
         if( !empty($data['id']) ){
-            return $this->data->update($data['id'], $data);
+            return $this->dbdata->update($data['id'], $data);
         }
-        return $this->data->insert($data);
+        return $this->dbdata->insert($data);
     }
 
     /* ---------------------------------------------------------
@@ -43,7 +43,7 @@ class WPSG_IndicatorAttributesRepository {
      * pada data menggunakan metode soft_delete, pada repository menggunakan metode delete
      * --------------------------------------------------------- */
     public function delete($id) {
-        return $this->data->soft_delete($id, [ 'deleted_at' => current_time('mysql') ]);
+        return $this->dbdata->soft_delete($id, [ 'deleted_at' => current_time('mysql') ]);
     }
 
     /* ---------------------------------------------------------
@@ -53,7 +53,7 @@ class WPSG_IndicatorAttributesRepository {
      * pada data menggunakan metode restore, pada repository menggunakan metode restore
      * --------------------------------------------------------- */
     public function restore($id) {
-        return $this->data->restore($id, [ 'deleted_at' => null ]);
+        return $this->dbdata->restore($id, [ 'deleted_at' => null ]);
     }
 
     /* ---------------------------------------------------------
@@ -70,7 +70,7 @@ class WPSG_IndicatorAttributesRepository {
      * pada data menggunakan metode delete, pada repository menggunakan metode destroy
      * --------------------------------------------------------- */
     public function destroy($id) {
-        return $this->data->delete($id);
+        return $this->dbdata->delete($id);
     }
 
 }

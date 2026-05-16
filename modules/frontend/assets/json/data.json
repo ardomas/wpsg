@@ -10,33 +10,48 @@
             "icon" : "fas fa-children", 
             "path" : "frontend/children",
             "show" : true,
+            "type" : "prod",
             "pos"  : "left",
             "group": "main",
             "role" : ["administrator","teacher","staff","guardian","children"]
         },
-        "schedules"  : {
+        "childdev" : {
+            "title": "Daftar Anak (Dev)",
+            "icon" : "fas fa-child", 
+            "path" : "frontend/children", 
+            "file" : "main2.php",
+            "show" : false,
+            "type" : "dev",
+            "pos"  : "left",
+            "group": "main", 
+            "role" : ["administrator","teacher","staff","guardian"]
+        },
+        "calendars" : {
             "title": "Jadwal",
             "icon" : "fas fa-calendar-alt",
-            "path" : "frontend/schedules",
-            "show" : true,
+            "path" : "frontend/calendars",
+            "show" : false,
+            "type" : "prod",
             "pos"  : "left",
             "group": "main",
             "role" : ["administrator","teacher","staff","guardian","children"]
         },
         "activities" : {
-            "title": "Catatan Aktivitas",
+            "title": "Aktivitas",
             "icon" : "fas fa-pen-to-square", 
             "path" : "frontend/activities", 
             "show" : true,
+            "type" : "prod",
             "pos"  : "left",
             "group": "main", 
-            "role" : ["administrator","teacher","staff"]
+            "role" : ["administrator","teacher"]
         },
         "reports" : {
             "title": "Laporan",
-            "icon" : "fas fa-file-circle-check",
+            "icon" : "fas fa-print",
             "path" : "frontend/reports",
-            "show" : false,
+            "show" : true,
+            "type" : "prod",
             "pos"  : "left",
             "group": "main",
             "role" : ["administrator","teacher","staff","guardian","children"]
@@ -46,15 +61,17 @@
             "icon" : "fas fa-gears",
             "path" : "frontend/settings",
             "show" : true,
+            "type" : "prod",
             "pos"  : "left",
             "group": "main",
-            "role" : ["administrator","teacher","staff"]
+            "role" : ["administrator","staff"]
         },
         "users" : {
             "title": "Users",
             "icon" : "fas fa-user-friends", 
             "path" : "frontend/users", 
             "show" : true,
+            "type" : "prod",
             "pos"  : "left",
             "group": "administrator", 
             "role" : ["administrator","staff"]
@@ -67,6 +84,7 @@
             "icon" : "fas fa-chart-bar",
             "path" : "frontend/settings/indicators",
             "show" : true,
+            "type" : "prod",
             "file" : "main.php",
             "group": "main",
             "role" : ["administrator","teacher","staff"]
@@ -76,6 +94,7 @@
             "icon" : "fas fa-calendar-day",
             "path" : "frontend/settings/daily-activities",
             "show" : true,
+            "type" : "prod",
             "file" : "main.php",
             "group": "main",
             "role" : ["administrator","teacher","staff"]

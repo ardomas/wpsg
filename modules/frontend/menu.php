@@ -7,13 +7,15 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+$user = wpsg_get_current_user();
+
 $chk_key = null;
 if( isset($_GET['sid']) ){
     $chk_key = $_GET['sid'];
 }
 
 $app_menu = fe_get_app_menu();
-$str_menu = fe_generate_menu_navbar( $app_menu );
+$str_menu = fe_render_menu_navbar( $app_menu );
 
 ?>
 

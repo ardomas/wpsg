@@ -1,6 +1,6 @@
 <?php
 /**
- * modules/frontend/settings/main.php
+ * modules/frontend/activities/main.php
  */
 
 if( !fe_check_default_requirement() ){
@@ -16,10 +16,11 @@ $user = wp_get_current_user();
 $json_file = __DIR__ . '/assets/json/data.json';
 $json_data = wpsg_get_json_data( $json_file );
 
-$raw_menu = $json_data['menu'] ?? [];
+$json_menu   = $json_data['menu'  ] ?? [];
+$json_scores = fe_get_app_json_score_data();
 
 $menu = [];
-foreach( $raw_menu as $key=>$item ){
+foreach( $json_menu as $key=>$item ){
     $sub = wpsg_encode_keys( [$user->ID, $key] );
     // $item['url'] = fe_get_app_url() . '/settings?sid=' . $sid . '&s1=' . $sub;
     $menu[$sub] = $item;
@@ -27,12 +28,12 @@ foreach( $raw_menu as $key=>$item ){
 
 if( !isset( $_GET['s1'] ) ){
 
-    echo fe_generate_href_menu_buttons([ 'menu'=>$menu, 'key_id_name'=>'s1', 'url_params' => ['sid'=>$sid] ]);
+    echo fe_render_href_menu_text_list([ 'menu'=>$menu, 'key_id_name'=>'s1', 'url_params' => ['sid'=>$sid] ]);
 
 } else {
 
     $subkey = $_GET['s1'];
-    $sub_menu = $menu[$subkey] ?? null;
+    $sub_menu = $menu[ $subkey ] ?? null;
 
     $path = $sub_menu['path'];
     $file = $sub_menu['file'];

@@ -23,7 +23,18 @@ class WPSG_DailyActivitiesService
         return $data;
     }
     public function get_list($args = [], $include_deleted = false) {
-        $data_list = $this->repo->get_list($args, $include_deleted);
+        $temp_1 = $this->repo->get_list($args, $include_deleted);
+        $temp_2 = [];
+        $data_list = [];
+        foreach( $temp_1 as $item ){
+            $key = $item['time_start'] . '-' . $item['time_end'] . '-' . str_pad( $item['sort_order'], 6, '0', STR_PAD_LEFT ); 
+            $item['original_sort_key'] = $key;
+            $item['activity_id'] = $item['id'];
+            $temp_2[$key] = $item;
+        }
+        foreach( $temp_2 as $item ){
+            $data_list[] = $item;
+        }
         return $data_list;
     }
 

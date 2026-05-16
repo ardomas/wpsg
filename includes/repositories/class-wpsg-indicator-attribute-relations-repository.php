@@ -4,30 +4,30 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_IndicatorAttributeRelationsRepository {
 
-    private $data;
+    private $dbdata;
 
     public function __construct() {
-        $this->data = new WPSG_IndicatorAttributeRelationsData();
+        $this->dbdata = new WPSG_IndicatorAttributeRelationsData();
     }
 
     public function get($id, $include_deleted = false) {
-        return $this->data->get($id, $include_deleted);
+        return $this->dbdata->get($id, $include_deleted);
     }
     public function get_list($args = [], $include_deleted = false) {
-        return $this->data->get_list($args, $include_deleted);
+        return $this->dbdata->get_list($args, $include_deleted);
     }
 
     public function insert($data) {
         if( empty($data['site_id']) || empty($data['indicator_id']) || empty($data['attribute_id']) ){
             return false;
         }
-        return $this->data->insert($data);
+        return $this->dbdata->insert($data);
     }
     public function update($id, $data) {
         if( empty($id) || empty($data) ){
             return false;
         }
-        return $this->data->update($id, $data);
+        return $this->dbdata->update($id, $data);
     }
 
     /* ---------------------------------------------------------
@@ -38,9 +38,9 @@ class WPSG_IndicatorAttributeRelationsRepository {
      * --------------------------------------------------------- */
     public function save($data) {
         if( !empty($data['id']) ){
-            return $this->data->update($data['id'], $data);
+            return $this->dbdata->update($data['id'], $data);
         }
-        return $this->data->insert($data);
+        return $this->dbdata->insert($data);
     }
 
     /* ---------------------------------------------------------
@@ -53,31 +53,31 @@ class WPSG_IndicatorAttributeRelationsRepository {
         if( empty($id) ){
             return false;
         }
-        return $this->data->soft_delete($id, [ 'deleted_at' => current_time('mysql') ]);
+        return $this->dbdata->soft_delete($id, [ 'deleted_at' => current_time('mysql') ]);
     }
     public function delete_by_ids($ids) {
         if( empty($ids) || !is_array($ids) ){
             return false;
         }
-        return $this->data->soft_delete_by_ids($ids);
+        return $this->dbdata->soft_delete_by_ids($ids);
     }
     public function delete_by_site($site_id) {
         if( empty($site_id) ){
             return false;
         }
-        return $this->data->soft_delete_by_site($site_id);
+        return $this->dbdata->soft_delete_by_site($site_id);
     }
     public function delete_by_indicator($indicator_id) {
         if( empty($indicator_id) ){
             return false;
         }
-        return $this->data->soft_delete_by_indicator($indicator_id);
+        return $this->dbdata->soft_delete_by_indicator($indicator_id);
     }
     public function delete_by_attribute($attribute_id) {
         if( empty($attribute_id) ){
             return false;
         }
-        return $this->data->soft_delete_by_attribute($attribute_id);
+        return $this->dbdata->soft_delete_by_attribute($attribute_id);
     }
 
     /* ---------------------------------------------------------
@@ -90,31 +90,31 @@ class WPSG_IndicatorAttributeRelationsRepository {
         if( empty($id) ){
             return false;
         }
-        return $this->data->restore($id, [ 'deleted_at' => null ]);
+        return $this->dbdata->restore($id, [ 'deleted_at' => null ]);
     }
     public function restore_by_ids($ids) {
         if( empty($ids) || !is_array($ids) ){
             return false;
         }
-        return $this->data->restore_by_ids($ids);
+        return $this->dbdata->restore_by_ids($ids);
     }
     public function restore_by_site($site_id) {
         if( empty($site_id) ){
             return false;
         }
-        return $this->data->restore_by_site($site_id);
+        return $this->dbdata->restore_by_site($site_id);
     }
     public function restore_by_indicator($indicator_id) {
         if( empty($indicator_id) ){
             return false;
         }
-        return $this->data->restore_by_indicator($indicator_id);
+        return $this->dbdata->restore_by_indicator($indicator_id);
     }
     public function restore_by_attribute($attribute_id) {
         if( empty($attribute_id) ){
             return false;
         }
-        return $this->data->restore_by_attribute($attribute_id);
+        return $this->dbdata->restore_by_attribute($attribute_id);
     }
 
     /* ---------------------------------------------------------
@@ -135,25 +135,25 @@ class WPSG_IndicatorAttributeRelationsRepository {
         if( empty($id) ){
             return false;
         }
-        return $this->data->delete($id);
+        return $this->dbdata->delete($id);
     }
     public function destroy_by_site($site_id) {
         if( empty($site_id) ){
             return false;
         }
-        return $this->data->delete_by_site($site_id);
+        return $this->dbdata->delete_by_site($site_id);
     }
     public function destroy_by_indicator($indicator_id) {
         if( empty($indicator_id) ){
             return false;
         }
-        return $this->data->delete_by_indicator($indicator_id);
+        return $this->dbdata->delete_by_indicator($indicator_id);
     }
     public function destroy_by_attribute($attribute_id) {
         if( empty($attribute_id) ){
             return false;
         }
-        return $this->data->delete_by_attribute($attribute_id);
+        return $this->dbdata->delete_by_attribute($attribute_id);
     }
 
 }

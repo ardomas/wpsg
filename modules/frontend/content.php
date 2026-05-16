@@ -10,6 +10,8 @@ if (! defined('ABSPATH')) {
 
 require __DIR__ . '/helpers.php';
 
+$user = wpsg_get_current_user();
+
 ?>
     <div class="wp-block-template-part">
         <div class="text-start g-0 m-0 p-0">
@@ -60,6 +62,9 @@ require_once( WPSG_DIR . '/modules/frontend/menu.php' );
                         if( isset( $path ) ){
 
                             $str_main = 'main.php';
+                            if( isset( $menu_item['file'] ) && !is_null( $menu_item['file'] ) ){
+                                $str_main = trim( $menu_item['file'] );
+                            }
                             $str_file = WPSG_DIR . '/modules/' . $path . '/' . $str_main;
 
                             $chk_file = file_exists( $str_file );

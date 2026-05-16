@@ -20,12 +20,13 @@ $data_indi = [];
 foreach( $data_indi_temp as $item_indi ){
     $mo_1 = $item_indi['age_min_month'];
     $mo_2 = $item_indi['age_max_month'];
-    $key  = str_pad($mo_1,2,'0',STR_PAD_LEFT) . '-' . str_pad($mo_2,2,'0',STR_PAD_LEFT);
+    $key  = str_pad($mo_1,2,'0',STR_PAD_LEFT) . '-' . str_pad($mo_2,2,'0',STR_PAD_LEFT) . '-' . str_pad( $item_indi['sort_order'], 3, '0', STR_PAD_LEFT );
     if( !isset( $data_indi[$key] ) ){
         $data_indi[$key] = [];
     }
     $data_indi[$key][$item_indi['id']] = $item_indi;
 }
+ksort( $data_indi );
 
 ?><div class="container pb-4">
     <div class="row">
@@ -36,17 +37,17 @@ foreach( $data_indi_temp as $item_indi ){
                 </div>
                 <div class="col-12 col-sm-4 text-end">
                     <div class="row"><div class="col-12 d-inline"><?php
-                        echo fe_generate_href_button([
+                        echo fe_render_href_button([
                             'url_params'=>[ 'sid' => $_GET['sid'], 's1' => $_GET['s1'] ?? null, 's2'=>$_GET['s2'] ?? null, 'act'=>wpsg_encrypt('add') ], 
                             'class'=>'btn-process mx-1',
-                            'text'=>'Tambah',
+                            'title'=>'Tambah',
                             'icon'=>'fas fa-plus fa-fw'
                         ]);
-                        echo fe_generate_href_button([
+                        echo fe_render_href_button([
                             'url_params'=>[ 'sid' => $_GET['sid'], 's1' => $_GET['s1'] ?? null ], 
                             'exclude_keys'=>[], 
                             'class'=>'btn-process',
-                            'text'=>'Kembali', 
+                            'title'=>'Kembali', 
                             'icon'=>'fas fa-reply fa-fw'
                         ]);
                 ?></div></div></div>

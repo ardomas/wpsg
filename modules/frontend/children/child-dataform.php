@@ -14,6 +14,32 @@ if( $can_edit_data ){
     $read_or_write = ' readonly="readonly"';
 }
 
+$children_service = new WPSG_PersonsService();
+
+$data = [
+    'name'        => '',
+    'status'      => 'active',
+    'birth_place' => '',
+    'birth_date'  => '',
+    'gender'      => '',
+    'blood_type'  => '',
+    'address'     => '',
+];
+
+$person_id = $_GET['id'] ?? '';
+if( $person_id!='' ){
+    $person = $children_service->get_person( absint($person_id) );
+    if( $person ){
+        $data['name']        = $person['name'] ?? '';
+        $data['status']      = $person['status'] ?? 'active';
+        $data['birth_place'] = $person['birth_place'] ?? '';
+        $data['birth_date']  = $person['birth_date'] ?? '';
+        $data['gender']      = $person['gender'] ?? '';
+        $data['blood_type']  = $person['blood_type'] ?? '';
+        $data['address']     = $person['address'] ?? '';
+    }
+}
+
 ?>
 
                 <div class="row mb-3">

@@ -10,20 +10,6 @@ $obj_person   = new WPSG_PersonsRepository();
 $user = wp_get_current_user();
 $cur_person  = get_person_by_user_id( $user->ID );
 
-// print_r( $cur_person );
-
-/*
-$url_new_data = esc_url( 
-    add_query_arg( 
-        [
-            'sid'=>$_GET['sid'],
-            'act'=>wpsg_encode_keys( [$user->ID,'add']), 
-            'cid'=>wpsg_encode_keys( [$user->ID], '0' )
-        ] 
-    )
-);
-*/
-
 $url_new_data = esc_url( fe_get_app_url() )
               . '?' . 'sid=' . $_GET['sid']
               . '&' . 'act=' . wpsg_encode_keys( [$user->ID, 'add'] )
@@ -63,6 +49,7 @@ $url_new_data = esc_url( fe_get_app_url() )
 
         <div id="div-children-area" class="wpsg-page-content wpsg-grid-border wpsg-grid-hover py-2 px-2"><?php
             $children = $obj_children->get_children();
+            // print_r( $children );
             if( empty( $children ) ){
                 ?><?php
             } else {
@@ -235,9 +222,10 @@ $url_new_data = esc_url( fe_get_app_url() )
                         menu.style.position = 'fixed';
                         menu.style.top  = pos_y + 'px';
                         menu.style.left = pos_x + 'px';
+                        //
                         // menu.style.top  = ( 1 * e.pageY ) + 'px';
                         // menu.style.left = ((document.body.offsetWidth - menu.offsetWidth)/2) + 'px';
-
+                        //
                     });
                 });
 

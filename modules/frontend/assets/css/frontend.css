@@ -2,7 +2,8 @@
 
 :root {
     --grid--border--color: #99aaee;
-    --wpsg--grid--data--background--hover: rgba( var(--bs-primary-rgb), 0.125 );
+    --wpsg--grid--data--foreground: rgba( var(--bs-primary-rgb) );
+    --wpsg--grid--data--background--hover: rgba( var(--bs-primary-rgb), 0.0125 );
     --announcement--bg--color: #fafafa;
     --announcement--text-color: #3f3f3f;
 }
@@ -66,6 +67,14 @@
     border-style: solid;
     border-color: var(--grid--border--color);
 }
+
+.wpsg-grid-border-bottom {
+    /* background: linear-gradient( 180deg, rgba(255,255,255,0.0625) 50%, rgba(0,0,0,0.01625) 100% ); */
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: var(--border-bottom-color);
+}
+
 /*
 .wpsg-grid-border > div:first-child {
     border-top-width: 1px;
@@ -78,11 +87,13 @@
     border-color: rgba( var(--bs-primary-rgb), 0.25 );
 }
 */
-.wpsg-grid-hover .wpsg-grid-data:hover {
-    background-color: var(--wpsg--grid--data--background--hover);
-    /* rgba( var(--bs-warning-rgb), 0.125 ); */
+.wpsg-grid-hover .wpsg-grid-menu {
+    color: var(--wpsg--grid--data--foreground);
 }
-.wpsg-grid-hover .wpsg-grid-data {
+
+.wpsg-grid-hover .wpsg-grid-menu:hover,
+.wpsg-grid-hover .wpsg-grid-data:hover {
+    background: linear-gradient(to bottom, var(--wpsg--grid--data--background--hover) 0%, var(--wpsg--grid--data--background--hover) 100% );
     cursor: pointer;
 }
 

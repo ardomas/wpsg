@@ -1,16 +1,8 @@
 {
     "menu": {
-        "indicator": {
-            "title": "Indikator Perkembangan",
-            "icon" : "fas fa-chart-bar",
-            "path" : "frontend/settings/indicators",
-            "file" : "indicators.php",
-            "show" : true,
-            "group": "main",
-            "role" : ["administrator","teacher","staff"]
-        },
-        "indicator_domain": {
+        "domain": {
             "title": "Domain Perkembangan",
+            "description" : "Master daftar Domain/Aspek Perkembangan",
             "icon" : "fas fa-sitemap",
             "path" : "frontend/settings/indicators",
             "file" : "categories.php",
@@ -18,8 +10,19 @@
             "group": "main",
             "role" : ["administrator","teacher","staff"]
         },
-        "indicator_attribute": {
+        "indicator": {
+            "title": "Indikator Perkembangan",
+            "description" : "Master daftar Indikator Perkembangan",
+            "icon" : "fas fa-chart-bar",
+            "path" : "frontend/settings/indicators",
+            "file" : "indicators.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "attribute": {
             "title": "Atribut Indikator",
+            "description" : "Master daftar Atribut Indikator",
             "icon" : "fas fa-th-large",
             "path" : "frontend/settings/indicators",
             "file" : "attributes.php",

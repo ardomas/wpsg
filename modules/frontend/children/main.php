@@ -47,7 +47,6 @@ switch ( $action ) {
     case wpsg_encode_keys([$user->ID,'delete']):
         require __DIR__ . '/child-delete.php';
         break;
-
     case $def_action:
     default:
         require __DIR__ . '/child-list.php';

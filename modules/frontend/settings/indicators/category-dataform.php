@@ -1,22 +1,36 @@
 <?php
 
 $data_service = new WPSG_IndicatorCategoriesService();
+$indi_repo = new WPSG_IndicatorsRepository();
 
 $site_id = wpsg_get_network_id();
 $id = isset( $_GET['id'] ) && !empty( $_GET['id'] ) ? wpsg_decrypt( $_GET['id'] ) : 0;
 
+$is_new = $id == 0;
 
-$data = empty( $id ) ? $data_service->blank_data() : $data_service->get( $id );
+$data = $is_new ? $data_service->blank_data() : $data_service->get( $id );
 
-if( !isset( $can_edit_category ) ){
-    $can_edit_category = false;
+$indi_count = $indi_repo->get_count( ['site_id'=>$site_id, 'category_id'=>$id] );
+
+$can_delete_data = true;
+if( !isset( $can_edit_data ) ){
+    $can_edit_data = false;
+    $can_delete_data = false;
+} else {
+    if( $indi_count > 0 ){
+        $can_delete_data = false;
+    }
 }
 
-$read_or_write = '';
-$access_select = '';
-if( ! $can_edit_category ){
+$read_or_write  = '';
+$access_select  = '';
+$delete_disabled= '';
+if( ! $can_edit_data ){
     $read_or_write = 'readonly="readonly"';
     $access_select = 'disabled';
+}
+if( ! $can_delete_data ){
+    $delete_disabled = 'disabled="disabled"';
 }
 
 ?>
@@ -47,13 +61,13 @@ if( ! $can_edit_category ){
 
 <?php
 
-if( $can_edit_category ){
+if( $can_edit_data ){
 
     ?><div class="container">
         <div class="row my-5">
             <div class="col-6 text-start"><?php
                 if( $id != 0 ){
-                    ?><button type="button" class="btn btn-danger" id="indicator-category-btn-delete" 
+                    ?><button type="button" class="btn btn-danger" id="indicator-category-btn-delete" <?php echo $delete_disabled; ?>
                         data-url="<?php echo esc_url( remove_query_arg( ['act'] ) . '&act=' . wpsg_encrypt( 'delete' ) ); ?>">
                         <i class="fas fa-trash-alt fa-fw"></i>
                         <span class="d-none d-md-inline">Hapus</span>
@@ -61,7 +75,7 @@ if( $can_edit_category ){
                 }
             ?></div>
             <div class="col-6 text-end">
-                <button type="submit" class="btn btn-process">
+                <button type="submit" class="btn btn-submit">
                     <i class="fas fa-floppy-disk fa-fw"></i>
                     <span class="d-none d-md-inline">Simpan</span>
                 </button>

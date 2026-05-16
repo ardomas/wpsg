@@ -5,62 +5,107 @@
     --btn-wpsg-bg-l-hover: 60%;   /* Lebih gelap untuk hover */
     --btn-wpsg-bg-l-active: 40%;  /* Lebih gelap lagi untuk klik */
 
-    --sat-process: 0%;
-    --sat-cancel: 70%;
-    --sat-exit: 70%;
+    /* Definisi Hue, Saturasi, dan Luminance untuk masing-masing fungsi */
 
-    --lum-process: 0%;
-    --lum-cancel: 50%;
-    --lum-exit: 50%;
+    /* Hue */
+    --hue-process: 120; /* Hijau */
+    --hue-submit: 200;  /* Biru */
+    --hue-cancel: 35;   /* Oranye/Kuning */
+    --hue-exit: 15;     /* Merah */
 
+    /* Saturasi */
+    --sat-process: 7.5%;
+    --sat-submit: 25%;
+    --sat-cancel: 25%;
+    --sat-exit: 25%;
+
+    /* Luminance */
+    --lum-process: 45%;
+    --lum-submit: 45%;
+    --lum-cancel: 45%;
+    --lum-exit: 45%;
+    /* Luminance untuk border */
+    --lum-process-border: 60%;
+    --lum-submit-border: 60%;
+    --lum-cancel-border: 60%;
+    --lum-exit-border: 60%;
+
+    /* Text Color */
     --btn-wpsg-text-h: 0;
     --btn-wpsg-text-s: 0%;
     --btn-wpsg-text-l: 100%;
+    --btn-wpsg-text-a: 1;
 
-    /* Definisi Hue untuk masing-masing fungsi */
-    --hue-process: 150; /* Hijau */
-    --hue-cancel: 35;   /* Oranye/Kuning */
-    --hue-exit: 10;     /* Merah */
+}
+
+.btn.btn-submit {
+    --hue: var(--hue-submit);
+    --sat: var(--sat-submit);
+    --lum: var(--lum-submit);
+    --lum-border: var(--lum-submit-border);
+    --btn-wpsg-text-h: 0;
+    --btn-wpsg-text-s: 0%;
+    /* --btn-wpsg-text-l: 100%; */
+    --btn-wpsg-text-a: 1;
 }
 
 .btn.btn-process {
-    --h: var(--hue-process);
-    --bs-btn-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-hover-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-hover));
-    --bs-btn-hover-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-hover));
-    --bs-btn-active-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l-active));
-    --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
+    --hue: var(--hue-process);
+    --sat: var(--sat-process);
+    --lum: var(--lum-process);
+    --lum-border: var(--lum-process-border);
+    --btn-wpsg-text-h: 0;
+    --btn-wpsg-text-s: 0%;
+    /* --btn-wpsg-text-l: 0%; */
+    --btn-wpsg-text-a: 1;
 }
 
 /* --- BUTTON CANCEL --- */
 .btn.btn-cancel {
-    --h: var(--hue-cancel);
-    --bs-btn-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l));
-    --bs-btn-border-color: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l));
-    --bs-btn-hover-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l-hover));
-    --bs-btn-active-bg: hsl(var(--h), var(--sat-cancel), var(--btn-wpsg-bg-l-active));
-    --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
+    --hue: var(--hue-cancel);
+    --sat: var(--sat-cancel);
+    --lum: var(--lum-cancel);
+    --lum-border: var(--lum-cancel-border);
+    --btn-wpsg-text-h: 0;
+    --btn-wpsg-text-s: 0%;
+    /* --btn-wpsg-text-l: 0%; */
+    --btn-wpsg-text-a: 1;
 }
 
 /* --- BUTTON EXIT --- */
 .btn.btn-exit {
-    --h: var(--hue-exit);
-    --bs-btn-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l));
-    --bs-btn-border-color: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l));
-    --bs-btn-hover-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l-hover));
-    --bs-btn-active-bg: hsl(var(--h), var(--sat-exit), var(--btn-wpsg-bg-l-active));
+    --hue: var(--hue-exit);
+    --sat: var(--sat-exit);
+    --lum: var(--lum-exit);
+    --lum-border: var(--lum-exit-border);
+    --btn-wpsg-text-h: 0;
+    --btn-wpsg-text-s: 0%;
+    /* --btn-wpsg-text-l: 0%; */
+    --btn-wpsg-text-a: 1;
+}
+
+.btn.btn-bahaya {
+    --hue: 0;
+    --sat: 50%;
+    --lum: 95%;
+}
+
+.btn.btn-submit, .btn.btn-process, .btn.btn-cancel, .btn.btn-exit, .btn.btn-bahaya {
+    --bs-btn-bg: hsl(var(--hue), var(--sat), var(--lum));
+    --bs-btn-border-color: hsl(var(--hue), var(--sat), var(--lum-border));
+    --bs-btn-hover-bg: hsl(var(--hue), var(--sat), var(--btn-wpsg-bg-l-hover));
+    --bs-btn-active-bg: hsl(var(--hue), var(--sat), var(--btn-wpsg-bg-l-active));
     --bs-btn-color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
 }
 
+/*
 .btn.btn-outline-process {
-    --h: var(--hue-process);
-    --bs-btn-color: hsl(var(--hue-process), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-hover-bg: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-hover-border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l));
-    --bs-btn-active-bg: hsl(var(--btn-wpsg-text-h), var(--sat-process), var(--btn-wpsg-bg-l-active));
+    --bs-btn-border-color: hsl(var(--hue), var(--sat), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-bg: hsl(var(--hue), var(--sat), var(--btn-wpsg-bg-l));
+    --bs-btn-hover-border-color: hsl(var(--hue), var(--sat), var(--btn-wpsg-bg-l));
+    --bs-btn-active-bg: hsl(var(--btn-wpsg-text-h), var(--sat), var(--btn-wpsg-bg-l-active));
 }
+*/
 
 [class^="btn-process"]:disabled, [class^="btn-cancel"]:disabled, [class^="btn-exit"]:disabled {
     filter: grayscale(0.25);
@@ -70,21 +115,23 @@
 }
 
 /* Gabungkan semua class tombol custom kamu di sini */
-.btn.btn-process, .btn.btn-cancel, .btn.btn-exit {
+.btn.btn-submit, .btn.btn-process, .btn.btn-cancel, .btn.btn-exit {
     background-color: var(--bs-btn-bg) !important;
     border-color: var(--bs-btn-border-color) !important;
-    color: var(--bs-btn-color) !important;
+    /* color: var(--bs-btn-color) !important; */
+    color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l));
 }
 
 /* Mengatur perilaku saat Hover */
 
-.btn.btn-process:hover, .btn.btn-cancel:hover, .btn.btn-exit:hover {
+.btn.btn-submit:hover, .btn.btn-process:hover, .btn.btn-cancel:hover, .btn.btn-exit:hover {
     background-color: var(--bs-btn-hover-bg) !important;
-    border-color: var(--bs-btn-hover-border-color, var(--bs-btn-hover-bg)) !important;
+    /* border-color: var(--bs-btn-hover-border-color, var(--bs-btn-hover-bg)) !important; */
+    /* color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l)); */
     /* color: var(--bs-btn-hover-color, #fff) !important; */
-    /* color: var(--bs-btn-color) !important; */
+    color: var(--bs-btn-color) !important;
+    /* color: hsl(var(--btn-wpsg-text-h), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l)); */
 }
-
 
 /* Mengatur perilaku saat Active (Diklik) */
 .btn.btn-process:active, .btn.btn-cancel:active, .btn.btn-exit:active {
@@ -93,14 +140,20 @@
 }
 
 /* Khusus untuk Outline agar tidak tabrakan */
-.btn.btn-outline-process, .btn.btn-outline-cancel, .btn.btn-outline-exit {
+.btn.btn-outline-submit, .btn.btn-outline-process, .btn.btn-outline-cancel, .btn.btn-outline-exit {
     background-color: transparent !important;
     border-color: var(--bs-btn-bg) !important;
     /* border-color: hsl(var(--h), var(--sat-process), var(--btn-wpsg-bg-l)) !important; */
-    color: hsl(var(--h), var(--btn-wpsg-text-l), var(--btn-wpsg-text-l)) !important;
+    color: hsl(var(--hue), var(--btn-wpsg-text-s), var(--btn-wpsg-text-l)) !important;
 }
 
-.btn.btn-outline-process:hover, .btn.btn-outline-cancel:hover, .btn.btn-outline-exit:hover {
+.btn.btn-outline-submit:hover, .btn.btn-outline-process:hover, .btn.btn-outline-cancel:hover, .btn.btn-outline-exit:hover {
     background-color: var(--bs-btn-hover-bg) !important;
     /* color: var(--bs-btn-color) !important; */
+}
+
+.btn:disabled {
+    filter: blur(1px) grayscale(0.70) !important;
+    cursor: not-allowed;
+    pointer-events: none;
 }

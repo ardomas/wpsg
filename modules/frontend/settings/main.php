@@ -27,7 +27,7 @@ foreach( $raw_menu as $key=>$item ){
 
 if( !isset( $_GET['s1'] ) ){
 
-    echo fe_generate_href_menu_buttons([ 'menu'=>$menu, 'key_id_name'=>'s1', 'url_params' => ['sid'=>$sid] ]);
+    echo fe_render_href_menu_text_list([ 'menu'=>$menu, 'key_id_name'=>'s1', 'url_params' => ['sid'=>$sid] ]);
 
 } else {
 

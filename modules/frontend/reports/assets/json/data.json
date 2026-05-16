@@ -1,0 +1,22 @@
+{
+    "menu": {
+        "monthly":  {
+            "title": "Laporan Bulanan Perkembangan Anak",
+            "icon" : "far fa-calendar-check",
+            "path" : "frontend/reports",
+            "file" : "rpt-page-monthly.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        },
+        "daily": {
+            "title": "Laporan Harian Aktivitas Anak",
+            "icon" : "far fa-calendar-days",
+            "path" : "frontend/reports",
+            "file" : "rpt-page-daily.php",
+            "show" : true,
+            "group": "main",
+            "role" : ["administrator","teacher","staff"]
+        }
+    }
+}

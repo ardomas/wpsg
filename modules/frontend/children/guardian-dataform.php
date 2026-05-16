@@ -8,6 +8,18 @@ if( !isset( $can_edit_data ) ){
     $can_edit_data = false;
 }
 
+$user = wp_get_current_user();
+$user_id   = $user->ID;
+
+$child_id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
+$code_key  = wpsg_encode_keys( [$user_id, $child_id] );
+
+if( isset( $_GET['rid'] )){
+    $rid = $_GET['rid'];
+} else {
+    $rid = wpsg_encode_keys( [$user_id, 'father'] );
+}
+
 if( $can_edit_data ){
     $read_or_write = '';
     $select_search = '';
@@ -18,19 +30,6 @@ if( $can_edit_data ){
 
 ?>
         <form method="post" action="<?php echo admin_url("admin-post.php"); ?>">
-
-            <div class="d-none">
-                <input type="hidden" name="sid" id="sid" value="<?php echo esc_attr( $_GET['sid'] ); ?>">
-                <input type="hidden" name="cid" id="cid" value="<?php echo esc_attr( $_GET['cid'] ); ?>"/>
-                <input type="hidden" name="vid" id="vid" value="<?php echo esc_attr( $code_key ); ?>"/>
-
-                <code id="data-persons"><?php echo json_encode($persons); ?></code>
-
-                <code id="data-father"><?php echo json_encode($guardians['father']); ?></code>
-                <code id="data-mother"><?php echo json_encode($guardians['mother']); ?></code>
-                <code id="data-guardian"><?php echo json_encode($guardians['guardian']); ?></code>
-
-            </div>
 
             <input type="hidden" name="action" value="wpsg_save_guardian_as_person_data">
             <input type="hidden" name="sid" value="<?php echo esc_attr($_GET['sid']); ?>">
@@ -165,12 +164,19 @@ if( $can_edit_data ){
                     const relationTypeEl = document.getElementById('relation_type');
                     const childIdEl  = document.getElementById('child_id');
                     const personIdEl = document.getElementById('person_id');
-                    const persons    = JSON.parse(document.getElementById('data-persons').textContent);
-                    const guardians  = {
+
+                    let persons    = null
+                    let guardians  = null;
+
+                    persons    = JSON.parse(document.getElementById('data-persons').textContent);
+                    guardians  = {
                         'father': JSON.parse(document.getElementById('data-father').textContent),
                         'mother': JSON.parse(document.getElementById('data-mother').textContent),
                         'guardian': JSON.parse(document.getElementById('data-guardian').textContent),
                     };
+
+                    var load_default_values=(()=>{
+                    })
                     console.log( persons   );
                     console.log( guardians );
                     var elm_types = {
@@ -178,12 +184,20 @@ if( $can_edit_data ){
                         'occupation'    : {'type':'input', 'default':'' },
                         'birth_place'   : {'type':'input', 'default':'' },
                         'birth_date'    : {'type':'input', 'default':'' },
-                        'gender'        : {'type':'select','default':'', 'options':{'':'-- unset --','M':'Laki-laki','F':'Perempuan'} },
+                        'gender'        : {'type':'select','default':'', 'options':{'':'-- unset --', 'M':'Laki-laki', 'F':'Perempuan' } },
                         'blood_type'    : {'type':'select','default':'', 'options':{'':'-- unset --', 'O':'O', 'A':'A', 'B':'B', 'AB':'AB'}},
                         'email'         : {'type':'input', 'default':'' },
                         'phone'         : {'type':'input', 'default':'' },
                     };
                     const btnDelete = document.getElementById('btn-delete');
+
+                    var ajax_fetch_guardians=(()=>{
+                        let ajaxUrl = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>';
+                        return jQuery.post( ajaxUrl, {
+                            action: 'wpsg_fetch_guardians',
+                            nonce: '<?php echo wp_create_nonce('fetch_guardians'); ?>',
+                        });
+                    });
 
                     var populate_data_persons = function(gender=null){
                         personIdEl.innerHTML = '<option value="" selected="true">-- Input Data Baru --</option>';
@@ -313,11 +327,19 @@ if( $can_edit_data ){
                         }
                     }
 
-                    change_relation_type();
+                    ajax_fetch_guardians().then((response)=>{
+                        if( response.status=='success' ){
+                            let data_list = response.data;
+                            document.getElementById('data-persons').textContent = JSON.stringify( data_list );
+                            // console.log(data_list);
+                        }
 
-                    personIdEl.addEventListener('change', function(){ populate_data_form(); });
-                    relationTypeEl.addEventListener('change', function(){ change_relation_type(); });
-                    btnDelete.addEventListener('click', function(){ delete_guardian(); });
+                        change_relation_type();
+
+                        personIdEl.addEventListener('change', function(){ populate_data_form(); });
+                        relationTypeEl.addEventListener('change', function(){ change_relation_type(); });
+                        btnDelete.addEventListener('click', function(){ delete_guardian(); });
+                    });
 
                 });
             </script>

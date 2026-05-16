@@ -81,7 +81,7 @@ class WPSG_ProfilesData {
 
         if ($data === null) {
             $data = WPSG_SettingsData::get('platform-private-default', []);
-            WPSG_SettingsData::set_setting($option_key, $data);
+            WPSG_SettingsData::set($option_key, $data);
         }
 
         return $data;
@@ -90,7 +90,7 @@ class WPSG_ProfilesData {
     // Simpan data platform-private, pakai default jika belum ada
     public static function set_platform_private($data) {
         if (!is_array($data)) return false;
-        return WPSG_SettingsData::set_setting('wpsg_platform_private', $data);
+        return WPSG_SettingsData::set('wpsg_platform_private', $data);
     }
 
     // Ambil data platform-public, pakai default jika belum ada
@@ -100,7 +100,7 @@ class WPSG_ProfilesData {
 
         if ($data === null) {
             $data = WPSG_SettingsData::get('platform-public-default', []);
-            WPSG_SettingsData::set_setting($option_key, $data);
+            WPSG_SettingsData::set($option_key, $data);
         }
 
         return $data;
@@ -109,7 +109,7 @@ class WPSG_ProfilesData {
     // Simpan data platform-public, pakai default jika belum ada
     public static function set_platform_public($data) {
         if (!is_array($data)) return false;
-        return WPSG_SettingsData::set_setting('wpsg_platform_public', $data);
+        return WPSG_SettingsData::set('wpsg_platform_public', $data);
     }
 
     /**

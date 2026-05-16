@@ -10,6 +10,30 @@ if (! defined('ABSPATH')) {
 
 $x = wpsg_site_abbreviation();
 
+$service_person   = new WPSG_PersonsService();
+$service_children = new WPSG_ChildrenService();
+
+$user_name = esc_html( $user->display_name ?: $user->user_login );
+
+$person_base = $service_person->get_by_user_id( $user->ID );
+$person_full = [];
+if( $person_base!=[] ){
+    $person_full = $service_person->get_person( $person_base['id'] );
+    switch( strtolower( trim( $person_full['gender'] ) ) ){
+        case 'm':
+            $user_name = 'Pak';
+            break;
+        case 'f':
+            $user_name = 'Bu';
+            break;
+        default:
+            $user_name = 'Kak';
+    }
+    $user_name .= ' ' . $person_base['name'];
+}
+
+$children = $service_children->get_children();
+
 ?>
 
 <section class="wpsg-main">
@@ -19,18 +43,20 @@ $x = wpsg_site_abbreviation();
 
             <div class="wpsg-panel">
 
-                <h3>Halo, <?php echo esc_html( $user->display_name ?: $user->user_login ); ?></h3>
+                <h3>Halo, <?php echo esc_html( $user_name ); ?></h3>
                 <p>Ringkasan singkat hari ini:</p>
 
-                <h3>Anak Anda</h3>
-                <?php if (!empty($children)): ?>
-                    <ul class="wpsg-list">
-                        <?php foreach ($children as $c): ?>
-                            <li><?php echo esc_html( $c->name ?? $c['name'] ?? '—' ); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else: ?>
-                    <p>Tidak ada anak terdaftar untuk akun ini.</p>
+                <?php if( $person_base!=[] && in_array( 'guardian', $person_full['roles']) ): ?>
+                    <h3>Anak Anda</h3>
+                    <?php if (!empty($children)): ?>
+                        <ul class="wpsg-list">
+                            <?php foreach ($children as $c): ?>
+                                <li><?php echo esc_html( $c->name ?? $c['name'] ?? '—' ); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p>Tidak ada anak terdaftar untuk akun ini.</p>
+                    <?php endif; ?>
                 <?php endif; ?>
 
                 <h3>Kegiatan Hari Ini</h3>

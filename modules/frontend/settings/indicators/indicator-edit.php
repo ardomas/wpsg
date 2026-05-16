@@ -20,7 +20,7 @@ if( $id == 0  ){
                         ?></h3>
                     </div>
                     <div class="col-4 col-sm-4 col-md-2 text-end"><?php
-                        echo fe_generate_href_button([
+                        echo fe_render_href_button([
                             'url_params'=>[ 'sid' => $_GET['sid'], 's1' => $_GET['s1'] ?? null, 's2' => $_GET['s2'] ?? null ], 
                             'class'=>'btn-process',
                             'text'=>'Kembali (Batal)', 
