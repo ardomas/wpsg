@@ -7,18 +7,19 @@ class WPSG_BuilderBase {
     // public $name = 'Basic Builder';
     // public $slug = 'basic-builder';
 
-    private $is_ready;
+    private bool $is_ready;
 
-    public $table_name;
-    public $columns;
-    public $indexed;
+    public string $table_name;
+    public array $columns;
+    public array $indexed;
 
-    public $columns_assoc;
-    public $registered_fields;
+    public array $columns_assoc;
+    public array $registered_fields;
 
     public function __construct() {
         // throw new \Exception('Not implemented');
         // do nothing
+        $this->is_ready = false;
         return $this;
     }
 

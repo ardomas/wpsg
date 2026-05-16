@@ -781,6 +781,8 @@ class WPSG_PersonsData {
 
             }
         }
+        // print_r( $values );
+        // die('<br/>test');
         return $values;
     }
 

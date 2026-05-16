@@ -38,8 +38,11 @@ $data = [
     'gender'      => '',
     'blood_type'  => '',
     'address'     => '',
+    'city'        => '',
+    'province'    => '',
 ];
 $guardian_fields = [
+    'id'          => 0,
     'user_id'     => null,
     'name'        => '',
     'nickname'    => '',
@@ -52,9 +55,11 @@ $guardian_fields = [
     'blood_type'  => '',
     'occupation'  => '',
     'company'     => '',
-    'phone_office'=> '',
     'worktime'    => '',
+    'phone_office'=> '',
     'address_office' => '',  
+    'city_office'    => '',
+    'province_office'=> '',
 ];
 $father = [];
 $mother = [];
@@ -64,6 +69,49 @@ foreach( $guardian_fields as $key => $val ){
 }
 
 $parents   = [];
+if( $person_id != 0 ){
+    $person = $children_service->get_child( absint($person_id) );
+    if( $person ){
+        foreach( $person as $key=>$val ){
+            // if( isset( $person[$key] ) ){
+                $data[$key] = $person[$key];
+            // }
+        }
+        // $data['id']          = $person['id'] ?? 0;
+        // $data['name']        = $person['name'] ?? '';
+        // $data['nickname']    = $person['nickname'] ?? '';
+        // $data['status']      = $person['status'] ?? 'active';
+        // $data['birth_place'] = $person['birth_place'] ?? '';
+        // $data['birth_date']  = $person['birth_date'] ?? '';
+        // $data['gender']      = $person['gender'] ?? '';
+        // $data['blood_type']  = $person['blood_type'] ?? '';
+        // $data['address']     = $person['address'] ?? '';
+        // $data['roles']       = $person['roles'] ?? [];
+    }
+
+    if( isset( $person['parents'] ) ){
+        //
+        if( isset( $person['parents']['father'] ) ){
+            foreach( $father as $key => $val ){
+                if( isset( $person['parents']['father'][$key] ) ){
+                    $father[$key] = $person['parents']['father'][$key];
+                }
+            }
+        }
+        if( isset( $person['parents']['mother'] ) ){
+            foreach( $mother as $key => $val ){
+                if( isset( $person['parents']['mother'][$key] ) ){
+                    $mother[$key] = $person['parents']['mother'][$key];
+                }
+            }
+        }
+        $parents['father'] = $father;
+        $parents['mother'] = $mother;
+        //
+    }
+
+}
+
 $guardians = [];
 $guardians_all = $children_service->get_guardians();
 // $init_parents  = $relations->get_relations_of_person( $person_id );
@@ -73,65 +121,13 @@ foreach( $guardians_all as $guardian ){
         $guardians[$gender] = [];
     }
     $guardians[$gender][] = $guardian;
-    // $child_id = $person_id;
-    // if( isset( $guardian['relations'] ) ){
-    //     $data_relation = $guardian['relations'];
-    //     foreach( $data_relation as $relation ){
-    //         if($relation['person_id']==$person_id){
-    //             $child_id = $relation['person_id'];
-    //             $relation_type = $relation['relation_type'];
-    //             $parents[$relation_type] = $guardian;
-    //         }
-    //     }
-    // }
-}
-
-// echo '<br/>' . $person_id . '<br/><xmp>';
-// print_r( $parents );
-// die('</xmp><br/>test');
-
-/*
-if( isset( $parents['father'] ) ){ 
-    $father_id = $parents['father']['id'];
-    foreach( $parents['father'] as $key => $val ){
-        $father[$key] = $val;
-    }
-}
-
-if( isset( $parents['mother'] ) ){ 
-    $mother_id = $parents['mother']['id']; 
-    foreach( $parents['mother'] as $key => $val ){
-        $mother[$key] = $val;
-    }
-}
-*/
-
-if( $person_id != 0 ){
-    $person = $children_service->get_child( absint($person_id) );
-    if( $person ){
-        $data['id']          = $person['id'] ?? 0;
-        $data['name']        = $person['name'] ?? '';
-        $data['nickname']    = $person['nickname'] ?? '';
-        $data['status']      = $person['status'] ?? 'active';
-        $data['birth_place'] = $person['birth_place'] ?? '';
-        $data['birth_date']  = $person['birth_date'] ?? '';
-        $data['gender']      = $person['gender'] ?? '';
-        $data['blood_type']  = $person['blood_type'] ?? '';
-        $data['address']     = $person['address'] ?? '';
-    }
-    // print_r( $guardians );
-    // $person['guardians'] = $parents;
-    if( isset( $person['parents'] ) ){
-        $parents['father'] = $person['parents']['father']; if( empty($parents['father']) ) $parents['father'] = $guardian_fields;
-        $parents['mother'] = $person['parents']['mother']; if( empty($parents['mother']) ) $parents['mother'] = $guardian_fields;
-        // if( isset( $person['parents']['father'] ) ){ $parents['father'] = $person['parents']['father']; }
-        // if( isset( $person['parents']['mother'] ) ){ $parents['mother'] = $person['parents']['mother']; }
-    }
 }
 
 /*
 echo '<xmp>';
 print_r( $person );
+echo '</xmp><xmp>';
+print_r( $data );
 echo '</xmp><xmp>';
 print_r( $guardians );
 echo '</xmp><xmp>';
@@ -160,10 +156,10 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
             </div>
         </div>
 
-        <div class="d-block">
-            <input type="text" id="person_id" name="person_id" value="<?php echo $person_id; ?>"/>
-            <input type="text" id="father_id" name="father_id" value="<?php echo $father_id; ?>"/>
-            <input type="text" id="mother_id" name="mother_id" value="<?php echo $mother_id; ?>"/>
+        <div class="d-none">
+            <input type="hidden" id="person_id" name="person_id" value="<?php echo $person_id; ?>"/>
+            <input type="hidden" id="father_id" name="father_id" value="<?php echo $father_id; ?>"/>
+            <input type="hidden" id="mother_id" name="mother_id" value="<?php echo $mother_id; ?>"/>
         </div>
 
         <div class="row mb-3" id="child_data_area">
@@ -227,10 +223,10 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                         <label class="form-label">Golongan Darah</label>
                         <select id="blood_type" name="blood_type" <?php echo $read_or_write; ?> class="form-select">
                             <option value="">— Pilih —</option>
+                            <option value="O" <?php selected( $data['blood_type'], 'O' ); ?>>O</option>
                             <option value="A" <?php selected( $data['blood_type'], 'A' ); ?>>A</option>
                             <option value="B" <?php selected( $data['blood_type'], 'B' ); ?>>B</option>
                             <option value="AB" <?php selected( $data['blood_type'], 'AB' ); ?>>AB</option>
-                            <option value="O" <?php selected( $data['blood_type'], 'O' ); ?>>O</option>
                         </select>
                     </div>
                 </div>
@@ -239,6 +235,17 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                     <div class="mb-2 col-12">
                         <label class="form-label">Alamat</label>
                         <textarea id="address" name="address" <?php echo $read_or_write; ?> class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="row px-2">
+                    <div class="mb-2 col-12 col-sm-6">
+                        <label class="form-label">Kabupaten/Kota</label>
+                        <input type="text" id="city" name="city" <?php echo $read_or_write; ?> class="form-control"/>
+                    </div>
+                    <div class="mb-2 col-12 col-sm-6">
+                        <label class="form-label">Provinsi</label>
+                        <input type="text" id="province" name="province" <?php echo $read_or_write; ?> class="form-control"/>
                     </div>
                 </div>
 
@@ -262,10 +269,12 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
             <script type="text/javascript" lang="javascript">
 
                 class child_sub_form {
+                    //
                     constructor() {
                         this.controller = new AbortController();
-                        this.init();
+                        // this.init();
                     }
+                    //
                     show_mesg(msg){
                         let obj_msg = document.getElementById('child_process_msg');
                         obj_msg.innerHTML = msg;
@@ -273,23 +282,21 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             obj_msg.innerHTML = '&nbsp;';
                         },2500);
                     }
-                    fetch(id){
-                        let ajaxUrl  = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>';
-                        let child_id = document.getElementById('person_id').value;
-                        return jQuery.post(ajaxUrl, {
-                            action: 'wpsg.fe-children.fetch_child',
-                            nonce: '<?php echo wp_create_nonce('fe-children.fetch_child'); ?>',
-                            data: { 'child_id': child_id }
-                        }).then((response) => {
-                            console.log( response );
-                            if( response.success ){
-                                let person  = response.data;
-                                let parents = person.parents;
-                                document.getElementById('father_id').value = parents['father']['id'] ?? 0;
-                                document.getElementById('mother_id').value = parents['mother']['id'] ?? 0;
-                            }
-                        })
+                    render( data ) {
+                        // let data = <?php echo json_encode( $data ); ?>;
+                        document.getElementById('person_id').value = data.id;
+                        document.getElementById('name').value = data.name;
+                        document.getElementById('nickname').value = data.nickname;
+                        document.getElementById('status').value = data.status;
+                        document.getElementById('birth_place').value = data.birth_place;
+                        document.getElementById('birth_date').value = data.birth_date;
+                        document.getElementById('gender').value = data.gender;
+                        document.getElementById('blood_type').value = data.blood_type;
+                        document.getElementById('address').value = data.address;
+                        document.getElementById('city').value = data.city;
+                        document.getElementById('province').value = data.province;
                     }
+                    //
                     person_id_changed(){
                         let obj_person_id = document.getElementById('person_id');
                         let father_data_area = document.getElementById('father_data_area');
@@ -319,8 +326,8 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             // deaktivasi anak
                             // ambil data guardians
                             // hapus hubungan dengan guardians
-                            // hapus data ayah, jika data ayah tidak memiliki hubungan dengan anak lain
-                            // hapus data ibu, jika data ibu tidak memiliki hubungan dengan anak lain
+                            // hapus data ayah, jika data ayah tidak memiliki hubungan dengan anak lain (soft delete)
+                            // hapus data ibu, jika data ibu tidak memiliki hubungan dengan anak lain (soft delete)
                             // hapus anak (soft-delete)
                         }
                     }
@@ -334,7 +341,9 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             'birth_date': document.getElementById('birth_date').value,
                             'gender': document.getElementById('gender').value,
                             'blood_type': document.getElementById('blood_type').value,
-                            'address': document.getElementById('address').value
+                            'address': document.getElementById('address').value,
+                            'city': document.getElementById('city').value,
+                            'province': document.getElementById('province').value
                         };
                         if( document.getElementById('person_id').value > 0 ){
                             child_data['id'] = document.getElementById('person_id').value;
@@ -360,32 +369,42 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                         });
                         // simpan data anak
                     }
-                    render() {
-                        let data = <?php echo json_encode( $data ); ?>;
-                        document.getElementById('person_id').value = data.id;
-                        document.getElementById('name').value = data.name;
-                        document.getElementById('nickname').value = data.nickname;
-                        document.getElementById('status').value = data.status;
-                        document.getElementById('birth_place').value = data.birth_place;
-                        document.getElementById('birth_date').value = data.birth_date;
-                        document.getElementById('gender').value = data.gender;
-                        document.getElementById('blood_type').value = data.blood_type;
-                        document.getElementById('address').value = data.address;
-                        // JSON.parse( document.getElementById('child').textContent );
-                        // console.log(data);
+                    destroy(){
+                        this.controller.abort();
                     }
+                    //
                     register_action(){
                         document.getElementById('button-delete-child').addEventListener('click',this.delete.bind(this));
                         document.getElementById('button-submit-child').addEventListener('click',this.submit.bind(this));
                     }
-                    destroy(){
-                        this.controller.abort();
+                    fetch(id){
+                        let ajaxUrl  = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>';
+                        let child_id = document.getElementById('person_id').value;
+                        return jQuery.post(ajaxUrl, {
+                            action: 'wpsg.fe-children.fetch_child',
+                            nonce: '<?php echo wp_create_nonce('fe-children.fetch_child'); ?>',
+                            data: { 'child_id': child_id }
+                        }).then((response) => {
+                            console.log( response );
+                            if( response.success ){
+                                //
+                                let person  = response.data;
+                                let parents = person.parents;
+                                //
+                                this.render( person );
+                                // document.getElementById('father_id').value = parents['father']['id'] ?? 0;
+                                // document.getElementById('mother_id').value = parents['mother']['id'] ?? 0;
+                            }
+                        })
                     }
+                    //
                     init() {
                         console.log('child form ready!');
-                        this.fetch();
-                        this.render();
-                        this.register_action();
+                        return this.fetch().then(()=>{
+                            // console.log(response);
+                            this.register_action();
+                        });
+                        // this.render();
                         // do something
                     }
                 }
@@ -409,8 +428,8 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                                     id="name_father" name="name_father" 
                                     list="data_father" 
                                     placeholder="Nama Lengkap Ayah">
-                                <span class="input-group-text btn btn-process btn-secondary" id="btn_father_clear"><i class="fa fa-recycle fa-fw"></i></span>
-                                <span class="input-group-text" id="sign-fother"><i class="fa fa-user-times fa-fw"></i></span>
+                                <span class="input-group-text btn btn-process" id="btn_father_clear" title="Clear data"><i class="fa fa-user-times fa-fw"></i></span>
+                                <span class="input-group-text btn btn-process" id="btn_father_search" title="Search data"><i class="fa fa-search fa-fw"></i></span>
                             </div>
                             <input type="hidden" id="id-input-father" name="data_id_father"/>
                             <datalist id="data_father"><?php
@@ -480,6 +499,15 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                                 echo esc_attr( $father['address_office'] );
                             ?></textarea>
                         </div>
+                        <div class="mb-2 col-12 col-sm-6">
+                            <label class="form-label">Kabupaten/Kota</label>
+                            <input type="text" id="city_office_father" name="city_office_father" <?php echo $read_or_write; ?> class="form-control"/>
+                        </div>
+                        <div class="mb-2 col-12 col-sm-6">
+                            <label class="form-label">Provinsi</label>
+                            <input type="text" id="province_office_father" name="province_office_father" <?php echo $read_or_write; ?> class="form-control"/>
+                        </div>
+
                     </div>
 
                 </div>
@@ -529,13 +557,15 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             phone: document.getElementById('phone_father').value,
                             birth_place: document.getElementById('birth_place_father').value,
                             birth_date: document.getElementById('birth_date_father').value,
-                            gender: 'M',
+                            gender: document.getElementById('gender_father').value,
                             blood_type: document.getElementById('blood_type_father').value,
                             occupation: document.getElementById('occ_father').value,
                             company: document.getElementById('company_father').value,
                             worktime: document.getElementById('worktime_father').value,
                             phone_office: document.getElementById('phone_office_father').value,
                             address_office: document.getElementById('address_office_father').value,
+                            city_office: document.getElementById('city_office_father').value,
+                            province_office: document.getElementById('province_office_father').value
                         };
                         if( document.getElementById('father_id').value != '' ){
                             init_data['id'] = document.getElementById('father_id').value ?? 0;
@@ -561,21 +591,22 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             }
                         });
                     }
-                    render(){
-                        let data = <?php echo json_encode( $father ); ?>;
+                    render( data ){
                         document.getElementById('father_id').value = data.id ?? 0;
                         document.getElementById('name_father').value = data.name;
                         document.getElementById('email_father').value = data.email;
                         document.getElementById('phone_father').value = data.phone;
                         document.getElementById('birth_place_father').value = data.birth_place;
                         document.getElementById('birth_date_father').value = data.birth_date;
-                        document.getElementById('gender_father').value = data.gender;
+                        document.getElementById('gender_father').value = 'M';
                         document.getElementById('blood_type_father').value = data.blood_type;
                         document.getElementById('occ_father').value = data.occupation;
                         document.getElementById('company_father').value = data.company;
                         document.getElementById('worktime_father').value = data.worktime;
                         document.getElementById('phone_office_father').value = data.phone_office;
                         document.getElementById('address_office_father').value = data.address_office;
+                        document.getElementById('city_office_father').value = data.city_office;
+                        document.getElementById('province_office_father').value = data.province_office;
                         console.log( data );
                     }
                     register_action(){
@@ -589,7 +620,8 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                         const displayInput = document.getElementById('name_father');
                         const dataList = document.getElementById('data_father');
                         const idInput  = document.getElementById('id-input-father');
-                        this.render();
+                        const data = <?php echo json_encode( $parents['father'] ); ?>;
+                        this.render( data );
                         displayInput.addEventListener('input', function() {
                             const selectedOption = Array.from(dataList.options).find(option => option.value === this.value);
                             if (selectedOption) {
@@ -624,8 +656,8 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                                     id="name_mother" name="name_mother"
                                     value="<?php echo esc_attr( $mother['name'] ); ?>"
                                     list="data_mother" placeholder="Nama Lengkap Ibu">
-                                <span class="input-group-text btn btn-process btn-secondary" id="btn_mother_clear"><i class="fa fa-recycle fa-fw"></i></span>
-                                <span class="input-group-text" id="sign-mother"><i class="fa fa-user-times fa-fw"></i></span>
+                                <span class="input-group-text btn btn-process" id="btn_clear_mother" title="Clear data"><i class="fa fa-user-times fa-fw"></i></span>
+                                <span class="input-group-text btn btn-process" id="btn_search_mother" title="Search data"><i class="fa fa-search fa-fw"></i></span>
                             </div>
                             <input type="hidden" id="id-input-mother" name="data_id_mother"/>
                             <datalist id="data_mother"><?php
@@ -695,6 +727,15 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                                 echo esc_attr( $mother['address_office'] );
                             ?></textarea>
                         </div>
+                        <div class="mb-2 col-12 col-sm-6">
+                            <label class="form-label">Kabupaten/Kota</label>
+                            <input type="text" id="city_office_mother" name="city_office_mother" <?php echo $read_or_write; ?> class="form-control"/>
+                        </div>
+                        <div class="mb-2 col-12 col-sm-6">
+                            <label class="form-label">Provinsi</label>
+                            <input type="text" id="province_office_mother" name="province_office_mother" <?php echo $read_or_write; ?> class="form-control"/>
+                        </div>
+
                     </div>
 
                 </div>
@@ -749,6 +790,8 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                             worktime: document.getElementById('worktime_mother').value,
                             phone_office: document.getElementById('phone_office_mother').value,
                             address_office: document.getElementById('address_office_mother').value,
+                            city_office: document.getElementById('city_office_mother').value,
+                            province_office: document.getElementById('province_office_mother').value
                         };
                         if( document.getElementById('mother_id').value != '' ){
                             init_data['id'] = document.getElementById('mother_id').value;
@@ -775,20 +818,22 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
                         });
                     }
                     render(){
-                        let data = <?php echo json_encode( $mother ); ?>;
+                        let data = <?php echo json_encode( $parents['mother'] ); ?>;
                         document.getElementById('mother_id').value = data.id ?? 0;
                         document.getElementById('name_mother').value = data.name;
                         document.getElementById('email_mother').value = data.email;
                         document.getElementById('phone_mother').value = data.phone;
                         document.getElementById('birth_place_mother').value = data.birth_place;
                         document.getElementById('birth_date_mother').value = data.birth_date;
-                        document.getElementById('gender_mother').value = data.gender;
+                        document.getElementById('gender_mother').value = 'F';
                         document.getElementById('blood_type_mother').value = data.blood_type;
                         document.getElementById('occ_mother').value = data.occupation;
                         document.getElementById('company_mother').value = data.company;
                         document.getElementById('worktime_mother').value = data.worktime;
                         document.getElementById('phone_office_mother').value = data.phone_office;
                         document.getElementById('address_office_mother').value = data.address_office;
+                        document.getElementById('city_office_mother').value = data.city_office;
+                        document.getElementById('province_office_mother').value = data.province_office;
                         // console.log( data );
                     }
                     register_action(){
@@ -849,8 +894,11 @@ $parent_block = $person_id == 0 ? 'd-none' : 'd-block';
             }
             init(){
                 this.child_form  = new child_sub_form();
-                this.father_form = new father_sub_form();
-                this.mother_form = new mother_sub_form();
+                this.child_form.init().then(()=>{
+                    // console.log(test);
+                    this.father_form = new father_sub_form();
+                    this.mother_form = new mother_sub_form();
+                });
             }
         }
 

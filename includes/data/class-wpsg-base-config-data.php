@@ -4,7 +4,7 @@ if(  !defined( 'ABSPATH' ) ) exit;
 
 class WPSG_BaseConfigData extends WPSG_DataBase {
 
-    protected $table_config;
+    protected array $table_config;
 
     public function __construct(){
         parent::__construct();
