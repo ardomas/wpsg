@@ -55,27 +55,22 @@ class WPSG_DataBase {
     }
     */
 
-    protected function _create_table() {
-        return $this->builder->_create_table();
-        /*
-        if( ! $this->is_ready ){
-            return false;
-        }
-        $query = $this->_generate_sql_create_table();
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        return dbDelta( $query );
-        */
+    protected function create_table() {
+        return $this->builder->create_table();
     }
 
     public function get_last_order_number(string $field_name = 'sort_order'){
         if( !isset( $this->registered_fields[$field_name] ) ) {
             return 0;
         }
-        $max_num = $this->wpdb->get_var( $this->wpdb->prepare(
-            "SELECT MAX({$field_name}) FROM {$this->table_name} WHERE site_id=%d", 
-            wpsg_get_network_id()
-        ));
-        $max_num = $max_num ? (int) $max_num : 0;
+        $max_num = 0;
+        if( isset( $this->columns_assoc['site_id'] ) ){
+            $max_num = $this->wpdb->get_var( $this->wpdb->prepare(
+                "SELECT MAX({$field_name}) FROM {$this->table_name} WHERE site_id=%d", 
+                wpsg_get_network_id()
+            ));
+            $max_num = $max_num ? (int) $max_num : 0;
+        }
         $max_num++;
         return $max_num;
     }
@@ -129,8 +124,8 @@ class WPSG_DataBase {
             $where[] = "deleted_at IS NULL";
         }
 
-        // $special_treatment_keys = ['site_id'];
-        /* special filter - site_id */
+        /* $special_treatment_keys = ['site_id']; */
+        /* special filter - site_id  */
         if( !isset( $args['site_id'] ) ){
             if( isset( $this->columns_assoc['site_id'] ) ){
                 // if( empty($args['site_id']) || (isset( $args['site_id'] ) && trim($args['site_id']) === '' ) ){
@@ -218,13 +213,6 @@ class WPSG_DataBase {
 
         if( !empty($where) ){
             $query .= " WHERE " . implode( ' AND ', $where );
-            // if( trim($str_where) != '' ){
-            //     $query .= ' AND ' . $str_where;
-            // }
-        // } else {
-        //     if( trim($str_where) != '' ){
-        //         $query .= ' WHERE ' . $str_where;
-        //     }
         }
 
         if( isset( $this->columns_assoc['sort_order'] ) ){
@@ -248,14 +236,6 @@ class WPSG_DataBase {
         /* */
 
         $test_result = $this->wpdb->get_results( $query, ARRAY_A );
-
-        // echo '<pre>';
-        // echo "1. Query Mentah (dengan hash): " . $query . "\n\n";
-        // echo "2. Data di Array Values: "; print_r($values);
-        // echo "\n3. Query Final (yang dikirim ke MySQL): " . $this->wpdb->last_query . "\n";
-        // echo "4. Error DB (jika ada): " . $this->wpdb->last_error . "\n";
-        // echo '</pre>';
-        // die();
 
         return $test_result;
 

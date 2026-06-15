@@ -76,7 +76,7 @@ class WPSG_RepositoryBase {
         }
     }
 
-    public function ensure_data(array $data=[]) {
+    public function ensure_data($data=[]) {
         $data = $this->treat_special_columns($data);
         return $this->dbdata->_ensure_data($data);
     }

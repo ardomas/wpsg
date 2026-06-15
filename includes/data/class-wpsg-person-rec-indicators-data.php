@@ -32,7 +32,7 @@ class WPSG_PersonRecIndicatorsData extends WPSG_DataBase {
 
     public function create_table(){
         // $this->generate_table_structure();
-        $this->_create_table();
+        $this->create_table();
     }
 
     public function get_list_published( $args=[], $include_deleted = false ){

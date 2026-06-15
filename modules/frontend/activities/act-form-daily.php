@@ -645,6 +645,7 @@ foreach( $list_activities as $item ){
                             'person_id': document.getElementById('child_id').value,
                             'date_record': document.getElementById('date_record').value
                         };
+                        // console.log( init_data );
                         return jQuery.post( ajaxUrl, {
                             action: 'wpsg_ensure_person_activity_data_master',
                             nonce: '<?php echo wp_create_nonce('ensure_person_activity_data_master'); ?>',

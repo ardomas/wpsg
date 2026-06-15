@@ -18,8 +18,10 @@ $url_new_data = esc_url( fe_get_app_url() )
               . '&' . 'act=' . wpsg_encode_keys( [$user->ID, 'form'] )
               . '&' . 'cid=' . wpsg_encrypt( '0' );
 
+/*
 echo '<br/>url: ' . $url_new_data;
 echo '<br/>act: ' . wpsg_encode_keys([$user->ID,'form']);
+/* */
 
 ?>
 
@@ -60,6 +62,7 @@ echo '<br/>act: ' . wpsg_encode_keys([$user->ID,'form']);
 
                     $person_id  = $child['id'];
                     $name       = $child['name'] ?? '(noname)';
+                    $nickname   = $child['nickname'] ?? '';
                     $birth_date = $child['birth_date'] ?? '-';
                     $age        = '-';
                     $gender     = '-'; 
@@ -100,10 +103,11 @@ echo '<br/>act: ' . wpsg_encode_keys([$user->ID,'form']);
                         ?>">
                         <div class="col-12 col-md-8">
                             <div class="row">
-                                <div class="col-12 fw-bold"><?php  echo esc_html( $name   ); ?></div>
-                                <div class="col-12 col-md-5"><?php echo esc_html( $age    ); ?> ( <?php echo $birth_date; ?> )</div>
-                                <div class="col-12 col-md-4"><?php echo esc_html( $gender ); ?></div>
-                                <div class="col-12 col-md-3"><?php echo esc_html( $status ); ?></div>
+                                <div class="col-12 col-sm-9 fw-bold"><?php  echo esc_html( $name   ); ?></div>
+                                <div class="col-12 col-sm-3 fw-bold"><?php echo esc_html( $nickname ); ?></div>
+                                <div class="col-12 col-sm-6"><?php echo esc_html( $age    ); ?> ( <?php echo $birth_date; ?> )</div>
+                                <div class="col-12 col-sm-3"><?php echo esc_html( $gender ); ?></div>
+                                <div class="col-12 col-sm-3"><?php echo esc_html( $status ); ?></div>
                             </div>
                         </div>
                         <div class="col12 col-md-4"><?php
@@ -190,76 +194,7 @@ echo '<br/>act: ' . wpsg_encode_keys([$user->ID,'form']);
                         // console.log(new_act);
                         window.location.href = new_act.toString();
                     });
-                    /*
-                    row.addEventListener('click', function (e) {
-
-                        let body_rect = document.getElementById('div-children-area').getBoundingClientRect();
-                        e.preventDefault();
-
-                        pos_y = e.clientY - 20;
-                        pos_x = e.clientX + 10;
-                        if( pos_x > body_rect.right - menu.offsetWidth ){
-                            pos_x = body_rect.right - menu.offsetWidth - 10;
-                        }
-                        if( pos_x > body_rect.right - 120 ){
-                            pos_x = e.clientX - menu.offsetWidth - 10;
-                            pos_y = e.clientY + 10;
-                        }
-
-                        currentRow = row;
-
-                        menu.style.display = 'block';
-                        menu.style.position = 'fixed';
-                        menu.style.top  = pos_y + 'px';
-                        menu.style.left = pos_x + 'px';
-                        // menu.style.top  = ( 1 * e.pageY ) + 'px';
-                        // menu.style.left = ((document.body.offsetWidth - menu.offsetWidth)/2) + 'px';
-
-                    });
-                    */
                 });
-
-                // klik menu
-                /*
-                menu.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    // console.log( e.target.dataset );
-
-                    // console.log( currentRow.dataset );
-                    let code_id = currentRow.getAttribute('code-id');
-
-                    const action = e.target.dataset.action;
-
-                    if (!action || !currentRow) return;
-
-                    const url = new URL( currentRow.dataset.editUrl, window.location.origin );
-                    url.searchParams.set( 'cid', code_id );
-                    url.searchParams.set( 'act', action  );
-                    url.searchParams.set( 'id' , currentRow.dataset.id );
-
-                    // console.log( url.toString() );
-
-                    window.location.href = url.toString();
-
-                });
-                */
-
-                // klik di luar → tutup
-                /*
-                document.addEventListener('click', function (e) {
-                    if (!menu.contains(e.target) && !e.target.closest('.wpsg-child-row')) {
-                        menu.style.display = 'none';
-                    }
-                });
-                */
-
-                /*
-                let test = new children_list_class();
-                test.fetch_data().then(()=>{
-                    console.log( test.children );
-                });
-                */
 
             });
         </script>

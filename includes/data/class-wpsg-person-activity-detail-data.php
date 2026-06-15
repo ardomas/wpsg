@@ -29,7 +29,7 @@ class WPSG_PersonActivityDetailData extends WPSG_DataBase {
 
     public function create_table(){
         global $wpdb;
-        $this->_create_table();
+        parent::create_table();
         $wpdb->query( "ALTER TABLE {$this->table_name} ALTER COLUMN score SET DEFAULT 0" );
     }
 

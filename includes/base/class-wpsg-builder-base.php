@@ -164,7 +164,7 @@ class WPSG_BuilderBase {
         return $query;
     }
 
-    public function _create_table(){
+    public function create_table(){
         if( !$this->is_ready ){
             return '';
         }

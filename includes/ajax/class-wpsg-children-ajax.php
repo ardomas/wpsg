@@ -9,7 +9,7 @@ class WPSG_ChildrenAjax {
 
         // $this->site_id = get_current_network_id();
 
-        /* Get Children List */
+        /* Children */
         add_action('wp_ajax_wpsg_fetch_children', [$this, 'fetch_children_old']);
         /* ------------------------------------------------ */
         add_action('wp_ajax_wpsg.fe-children.fetch_children', [$this, 'fetch_children']);
@@ -21,11 +21,22 @@ class WPSG_ChildrenAjax {
         add_action('wp_ajax_wpsg.fe-children.submit_child', [$this, 'submit_child']);
         add_action('wp_ajax_nopriv_wpsg.fe-children.submit_child', [$this, 'submit_child']);
         /* ------------------------------------------------ */
-        add_action('wp_ajax_wpsg.fe-children.submit_guardian', [$this, 'submit_guardian']);
-        add_action('wp_ajax_nopriv_wpsg.fe-children.submit_guardian', [$this, 'submit_guardian']);
-        /* BE process - use soft delete ------------------- */
+        add_action('wp_ajax_wpsg.fe-children.delete_child', [$this, 'delete_child']);
+        add_action('wp_ajax_nopriv_wpsg.fe-children.delete_child', [$this, 'delete_child']);
+        /* Backend process - use soft delete -------------- */
+        /*
         add_action('wp_ajax_wpsg.fe-children.delete_children', [$this, 'delete_children']);
         add_action('wp_ajax_nopriv_wpsg.fe-children.delete_children', [$this, 'delete_children']);
+        */
+        /* ------------------------------------------------ */
+
+        /* Guardian/Parent */
+        /* ------------------------------------------------ */
+        add_action('wp_ajax_wpsg.fe-children.submit_guardian', [$this, 'submit_guardian']);
+        add_action('wp_ajax_nopriv_wpsg.fe-children.submit_guardian', [$this, 'submit_guardian']);
+        /* Backend process - use soft delete -------------- */
+        add_action('wp_ajax_wpsg.fe-children.delete_guardian', [$this, 'delete_guardian']);
+        add_action('wp_ajax_nopriv_wpsg.fe-children.delete_guardian', [$this, 'delete_guardian']);
         /* ------------------------------------------------ */
 
         /* Get Guardians List */
@@ -69,6 +80,7 @@ class WPSG_ChildrenAjax {
         //
     }
 
+    /* Children */
     private function _fetch_children(){
         $service = new WPSG_ChildrenService();
         $data_list = $service->get_children();
@@ -83,6 +95,38 @@ class WPSG_ChildrenAjax {
         wp_send_json_success( $this->_fetch_children() );
     }
 
+    public function fetch_child(){
+        check_admin_referer('fe-children.fetch_child', 'nonce');
+        $data = $_POST['data'];
+        $service = new WPSG_ChildrenService();
+        $result = $service->get_child( $data['child_id'] );
+        wp_send_json_success( $result );
+    }
+
+    public function delete_child(){
+        check_ajax_referer('fe-children.delete_child', 'nonce');
+        $data = $_POST['data'];
+        $relation = new WPSG_PersonRelationsRepository();
+        $service = new WPSG_ChildrenService();
+        $result = $service->delete_person( $data['id'] );
+        wp_send_json_success( $result );
+    }
+
+    public function submit_child(){
+        check_ajax_referer('fe-children.submit_child', 'nonce');
+        $data    = $_POST['data'];
+        // $person  = $data['person'];
+        // $site_id = $data['site_id'];
+        $person_id = 0;
+        if( isset($data['id']) ){
+            $person_id = $data['id'];
+        }
+        $service = new WPSG_ChildrenService();
+        $result = $service->save_person( $data, $person_id, 'child' );
+        wp_send_json_success( $result );
+    }
+
+    /* Guardian */
     private function _fetch_guardians(){
         $service = new WPSG_ChildrenService();
         $data = [];
@@ -103,34 +147,18 @@ class WPSG_ChildrenAjax {
         wp_send_json_success($data_list);
     }
 
-    public function fetch_child(){
-        check_admin_referer('fe-children.fetch_child', 'nonce');
-        $data = $_POST['data'];
-        $service = new WPSG_ChildrenService();
-        $result = $service->get_child( $data['child_id'] );
-        wp_send_json_success( $result );
+    private function _delete_guardian(int $person_id, string $relation_type){
+        $relation = new WPSG_PersonRelationsRepository();
+        $relation->remove_relations_by_type( $person_id, $relation_type );
     }
 
-    public function delete_child(){
-        check_ajax_referer('fe-children.delete_child', 'nonce');
+    public function delete_guardian(){
+        check_ajax_referer('fe-children.delete_guardian', 'nonce');
+        // delete relation
         $data = $_POST['data'];
-        $service = new WPSG_ChildrenService();
-        $result = $service->delete_person( $data['id'] );
-        wp_send_json_success( $result );
-    }
-
-    public function submit_child(){
-        check_ajax_referer('fe-children.submit_child', 'nonce');
-        $data    = $_POST['data'];
-        // $person  = $data['person'];
-        // $site_id = $data['site_id'];
-        $person_id = 0;
-        if( isset($data['id']) ){
-            $person_id = $data['id'];
-        }
-        $service = new WPSG_ChildrenService();
-        $result = $service->save_person( $data, $person_id, 'child' );
-        wp_send_json_success( $result );
+        $this->_delete_guardian($data['person_id'], $data['relation_type']);
+        // check other relations
+        // delete person if no other relations
     }
 
     public function submit_guardian(){
@@ -152,6 +180,11 @@ class WPSG_ChildrenAjax {
         $result[1] = $result_1;
         if( $result_1 ){
             $relation = new WPSG_PersonRelationsRepository();
+            if( $rels = $relation->get_related_persons_by_type( $child_id, $relation_type ) ){
+                if( $rels[0]['related_person_id']!=$person_id ){
+                    $this->_delete_guardian( $child_id, $relation_type );                    
+                }
+            }
             $result_2 = $relation->ensure_relation( $child_id, $person_id, $relation_type );
             $result[2] = $result_2;
             if( $result_2 ){
@@ -163,8 +196,6 @@ class WPSG_ChildrenAjax {
         } else {
             wp_send_json_error( $result );
         }
-        //
-        // wp_send_json_success( $result );
         //
     }
 
@@ -317,22 +348,36 @@ class WPSG_ChildrenAjax {
         check_ajax_referer('ensure_person_activity_data_master', 'nonce');
 
         $post = $_POST['data'];
+        /*
+        if( !isset( $post['time_check'] ) ){
+            $post['time_check'] = '08:00';
+        }
+        if( !isset( $post['time_leave'] ) ){
+            $post['time_leave'] = '17:00';
+        }
+        */
 
         $service = new WPSG_PersonActivitiesService();
         $person_activity_id = $service->ensure_data_master( $post );
-        if( $person_activity_id && ( $post['time_check'] || $post['time_leave'] ) ){
-            $post['id'] = $person_activity_id;
-            $this->_submit_person_daily_activity_master( $post );
-            /*
-            $this->submit_person_activity_data_master(
-                [
-                'person_activity_id'=>$person_activity_id[0],
-                'time_check'=>$post['time_check']
-                ]
-            );
-            */
+        if( isset( $post['time_check'] ) && isset( $post['time_leave'] ) ){
+            if( $person_activity_id && ( $post['time_check'] || $post['time_leave'] ) ){
+                $post['id'] = $person_activity_id;
+                $this->_submit_person_daily_activity_master( $post );
+                /*
+                $this->submit_person_activity_data_master(
+                    [
+                    'person_activity_id'=>$person_activity_id[0],
+                    'time_check'=>$post['time_check']
+                    ]
+                );
+                */
+            }
         }
-        wp_send_json_success( $person_activity_id );
+        if( $person_activity_id ){
+            wp_send_json_success( $person_activity_id );
+        } else {
+            wp_send_json_error( $post );
+        }
     }
 
     public function delete_person_activity_data_master(){

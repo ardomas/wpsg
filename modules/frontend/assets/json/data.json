@@ -9,17 +9,18 @@
             "title": "Daftar Anak", 
             "icon" : "fas fa-children", 
             "path" : "frontend/children",
+            "file" : "main.php",
             "show" : true,
             "type" : "prod",
             "pos"  : "left",
             "group": "main",
             "role" : ["administrator","teacher","staff","guardian","children"]
         },
-        "childdev" : {
-            "title": "Daftar Anak (Dev)",
+        "childold" : {
+            "title": "Daftar Anak (Old)",
             "icon" : "fas fa-child", 
             "path" : "frontend/children", 
-            "file" : "main2.php",
+            "file" : "main-old.php",
             "show" : false,
             "type" : "dev",
             "pos"  : "left",

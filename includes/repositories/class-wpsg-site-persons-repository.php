@@ -106,4 +106,13 @@ class WPSG_SitePersonsRepository {
     ): array {
         return $this->dbdata->get_by_site_person( $site_id, $person_id );
     }
+
+    public function delete_by_site_person( $site_id, $person_id ){
+        return $this->dbdata->delete_by_site_person( $site_id, $person_id );
+    }
+
+    public function delete_by_person( $person_id ){
+        return $this->dbdata->delete_by_person( $person_id );
+    }
+
 }

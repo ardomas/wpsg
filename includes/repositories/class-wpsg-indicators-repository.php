@@ -3,6 +3,8 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_IndicatorsRepository extends WPSG_RepositoryBase {
 
+    public object $dbdata;
+
     public function __construct() {
         parent::__construct();
         $this->dbcnf_assignment();

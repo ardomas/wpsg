@@ -159,6 +159,20 @@ class WPSG_PersonRelationsData {
     }
 
     /**
+     * Get all relations for a person
+     */
+    public function get_by_relation_type(int $person_id, string $relation_type, bool $only_active = true): array {
+        $sql = "SELECT * FROM {$this->table} WHERE person_id = %d AND relation_type = %s";
+        if ( $only_active ) {
+            $sql .= " AND is_active = 1";
+        }
+        return $this->db->get_results(
+            $this->db->prepare( $sql, $person_id, $relation_type ),
+            ARRAY_A
+        );
+    }
+
+    /**
      * Get relations between two persons
      */
     public function get_between(

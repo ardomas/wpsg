@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WPSG_PersonsService {
 
-    protected $persons_repository;
-    protected $site_persons_repository;
+    protected object $persons_repository;
+    protected object $site_persons_repository;
 
     public function __construct(
         // WPSG_PersonsRepository $persons_repository
@@ -39,7 +39,7 @@ class WPSG_PersonsService {
     public function get_by_ids( array $ids ): ?array { 
         return $this->persons_repository->get_by_ids($ids);
     }
-    public function get_by_user_id( $user_id ) {
+    public function get_by_user_id( int $user_id ) {
         return $this->persons_repository->get_by_user_id( $user_id );
     }
 
@@ -106,8 +106,7 @@ class WPSG_PersonsService {
         return $this->persons_repository->delete( $person_id );
     }
 
-    public function get_by_meta( $meta_key, $meta_value, $args = [] )
-    {
+    public function get_by_meta( string $meta_key, $meta_value, $args = [] ) {
         $defaults = [
             'limit'  => 20,
             'offset' => 0,
@@ -124,7 +123,7 @@ class WPSG_PersonsService {
         );
     }
 
-    public function get_all_meta( $person_id ) {
+    public function get_all_meta( int $person_id ) {
         return $this->persons_repository->get_all_meta( $person_id );
     }
 

@@ -33,10 +33,10 @@ class WPSG_SitePersonsData extends WPSG_DataBase {
 
     public function create_table(){
         $this->generate_table_structure();
-        $this->_create_table();
+        parent::create_table();
     }
 
-    public function get_by_site( $site_id, array $args = [] ) {
+    public function get_by_site( int $site_id, array $args = [] ) {
         $params = ['site_id'=>$site_id];
         if( $args!=[] ){
             $params = array_merge( ['site_id'=>$site_id] , $args);
@@ -51,7 +51,7 @@ class WPSG_SitePersonsData extends WPSG_DataBase {
         return $result;
     }
 
-    public function get_by_person( $person_id, array $args = [] ) {
+    public function get_by_person( int $person_id, array $args = [] ) {
         $params = ['person_id'=>$person_id];
         if( $args!=[] ){
             $params = array_merge($params, $args);
@@ -59,7 +59,7 @@ class WPSG_SitePersonsData extends WPSG_DataBase {
         return $this->get_list( $params );
     }
 
-    public function get_by_site_person( $site_id, $person_id ){
+    public function get_by_site_person( int $site_id, int $person_id ){
         $args = ['site_id'=>$site_id, 'person_id'=>$person_id];
         $result = $this->get_list( $args );
         // echo '<br/>';
@@ -69,10 +69,24 @@ class WPSG_SitePersonsData extends WPSG_DataBase {
         return $result;
     }
     
-    public function get_by_site_person_role( $site_id, $person_id, $role ){
+    public function get_by_site_person_role( int $site_id, int $person_id, string $role ){
         $params = ['site_id'=>$site_id, 'person_id'=>$person_id, 'role'=>$role];
         $result = $this->get_list( $params );
         return $result;
+    }
+
+    public function delete_by_site_person( int $site_id, int $person_id ){
+        $init_data = $this->get_by_site_person( $site_id, $person_id );
+        foreach( $init_data as $data ){
+            $this->delete( $data['id'] );
+        }
+    }
+
+    public function delete_by_person( int $person_id ){
+        $init_data = $this->get_by_person( $person_id );
+        foreach( $init_data as $data ){
+            $this->delete( $data['id'] );
+        }
     }
 
 }

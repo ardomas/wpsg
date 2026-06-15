@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_PersonActivityDetailRepository extends WPSG_RepositoryBase {
 
-    public $dbdata;
+    public object $dbdata;
     
     public function __construct() {
         parent::__construct();

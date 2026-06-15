@@ -92,7 +92,8 @@ register_activation_hook(__FILE__, function() {
     WPSG_PersonsData::get_instance();
     WPSG_PersonsData::create_tables();
 
-    WPSG_SitePersonsData::create_table();
+    $site_persons = new WPSG_SitePersonsData();
+    $site_persons->create_table();
 
     $base_config= new WPSG_BaseConfigData();
     $base_config->create_table();

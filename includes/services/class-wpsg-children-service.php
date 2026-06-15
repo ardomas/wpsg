@@ -280,8 +280,17 @@ class WPSG_ChildrenService {
         return $persons;
     }
     public function delete_person(int $person_id) {
-        $this->site_persons->delete( $person_id );
+        $this->site_persons->delete_by_site_person( $this->site_id, $person_id );
+        $this->relation->delete_by_person( $person_id );
+        $this->relation->delete_by_related_person( $person_id );
         return $this->persons->delete( $person_id );
+    }
+
+    public function delete_child(int $person_id) {
+        return $this->delete_person($person_id);
+    }
+    public function delete_guardian(int $person_id) {
+        return $this->delete_person($person_id);
     }
 
     protected function _get_id_list( array $args = [] ): array {

@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 class WPSG_PersonRecIndicatorsRepository extends WPSG_RepositoryTreeBase {
 
-    public $dbdata;
+    public object $dbdata;
     
     public function __construct() {
         parent::__construct();

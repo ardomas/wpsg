@@ -29,7 +29,7 @@ class WPSG_PersonRecIndicatorDetailData extends WPSG_DataBase {
 
     public function create_table(){
         // $this->generate_table_structure();
-        $this->_create_table();
+        parent::create_table();
     }
 
 }

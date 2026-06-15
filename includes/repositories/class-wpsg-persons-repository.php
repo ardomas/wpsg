@@ -28,11 +28,11 @@ class WPSG_PersonsRepository {
      * (Forward calls to Data layer, but this is the extension point)
      * --------------------------------------------------------- */
 
-    public function get( $id ) {
+    public function get( int $id ) {
         return $this->dbdata->get( $id );
     }
 
-    public function get_by_ids($ids){
+    public function get_by_ids(array $ids){
         return $this->dbdata->get_by_ids($ids);
     }
 
@@ -40,30 +40,30 @@ class WPSG_PersonsRepository {
         return $this->dbdata->set_default_data();
     }
 
-    public function get_by_user_id( $user_id ) {
+    public function get_by_user_id( int $user_id ) {
         return $this->dbdata->get_by_user_id( $user_id );
     }
 
-    public function get_by_email( $email ) {
+    public function get_by_email( string $email ) {
         return $this->dbdata->get_by_email( $email );
     }
 
-    public function get_user_id($id){
+    public function get_user_id(int $id){
         $values = $this->dbdata->get( $id );
         return $values['user_id'] ?? null;
     }
 
-    public function get_user($person_id) {
+    public function get_user(int $person_id) {
         $user_id = $this->get_user_id($person_id);
         return $user_id ? get_userdata($user_id) : null;
     }
 
-    public function get_email($person_id){
+    public function get_email(int $person_id){
         $person = $this->dbdata->get($person_id);
         return $person['email'] ?? null;
     }
 
-    public function set( $data ) {
+    public function set( array $data ) {
         $data_person = [];
         $meta_person = [];
         $main_fields = $this->dbdata->get_main_fields();
@@ -94,7 +94,7 @@ class WPSG_PersonsRepository {
         return $person_id;
     }
 
-    public function delete( $id ) {
+    public function delete( int $id ) {
         return $this->dbdata->soft_delete( $id );
     }
 
@@ -106,23 +106,23 @@ class WPSG_PersonsRepository {
      * META WRAPPERS
      * --------------------------------------------------------- */
 
-    public function set_meta( $person_id, $key, $value ){
+    public function set_meta( int $person_id, string $key, $value='' ){
         return $this->dbdata->set_meta( $person_id, $key, $value );
     }
 
-    public function get_meta( $person_id, $key ) {
+    public function get_meta( int $person_id, string $key ) {
         return $this->dbdata->get_meta( $person_id, $key );
     }
 
-    public function delete_meta( $person_id, $key ) {
+    public function delete_meta( int $person_id, string $key ) {
         return $this->dbdata->delete_meta( $person_id, $key );
     }
 
-    public function delete_all_meta($person_id){
+    public function delete_all_meta(int $person_id){
         return $this->dbdata->delete_all_meta($person_id);
     }
 
-    public function get_all_meta( $person_id ) {
+    public function get_all_meta( int $person_id ) {
         return $this->dbdata->get_all_meta( $person_id );
     }
 
@@ -137,7 +137,7 @@ class WPSG_PersonsRepository {
      * Catatan Penting:
      * Method ini unsafe untuk UI langsung
      */
-    public function find_or_create_by_email( $email, $data = [] ) {
+    public function find_or_create_by_email( string $email, $data = [] ) {
 
         $person = $this->get_by_email( $email );
 
@@ -154,7 +154,7 @@ class WPSG_PersonsRepository {
     /**
      * Check if a person exists (by ID)
      */
-    public function exists( $person_id ) : bool {
+    public function exists( int $person_id ) : bool {
         return (bool) $this->get( $person_id );
     }
 
@@ -180,7 +180,7 @@ class WPSG_PersonsRepository {
     //     return $this->update_meta( $person_id, $key, $value );
     // }
 
-    public function get_by_meta( $meta_key, $meta_value, $args = [] )
+    public function get_by_meta( string $meta_key, $meta_value='', $args = [] )
     {
         global $wpdb;
 

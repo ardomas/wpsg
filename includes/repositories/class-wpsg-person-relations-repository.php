@@ -72,6 +72,14 @@ class WPSG_PersonRelationsRepository {
      * QUERY HELPERS
      * --------------------------------------------------------- */
 
+    public function get_by_person(int $person_id){
+        return $this->dbdata->get_by_person_id($person_id);
+    }
+
+    public function get_by_relation_type(int $person_id, string $relation_type){
+        return $this->dbdata->get_by_relation_type($person_id, $relation_type);
+    }
+
     /**
      * Get all relations for a person (as subject)
      */
@@ -236,7 +244,7 @@ class WPSG_PersonRelationsRepository {
         $exists = $this->is_related(
             $data['person_id'],
             $data['related_person_id'],
-            $data['relation_type'] ?? ''
+            $data['relation_type'] ?? 'n/a'
         );
 
         if ( $exists ) {
@@ -244,6 +252,20 @@ class WPSG_PersonRelationsRepository {
         }
 
         return $this->create( $data );
+    }
+
+    public function delete_by_person(int $person_id){
+        $init_data = $this->get_by_person( $person_id );
+        foreach( $init_data as $data ){
+            $this->delete( $data['id'] );
+        }
+    }
+
+    public function delete_by_related_person(int $person_id){
+        $init_data = $this->get_all_by_related_person( $person_id );
+        foreach( $init_data as $data ){
+            $this->delete( $data['id'] );
+        }
     }
 
 }
